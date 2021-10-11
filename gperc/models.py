@@ -139,8 +139,12 @@ class Processor(nn.Module):
 class Decoder(nn.Module):
     def __init__(self, config):
         super().__init__()
-        assert config.decoder_cross_attention or config.decoder_projection, "Must have either cross attention or projection"
+        def __check_conditionals():
+            assert config.decoder_cross_attention or config.decoder_projection, "Must have either cross attention or projection"
+            if config.decoder_projection:
+                assert hasattr(config, "n_classes") and config.n_classes, "Must have n_classes > 0 if using projection"
 
+        __check_conditionals()
         self.config = config
 
         if config.decoder_cross_attention:
@@ -154,7 +158,6 @@ class Decoder(nn.Module):
             )
 
         if config.decoder_projection:
-            assert hasattr(config, "n_classes"), "Must have n_classes to use projection"
             self.projection = nn.Linear(config.latent_dim, config.n_classes)
 
     def forward(self, decoder_query, latents):

@@ -13,22 +13,6 @@ from tqdm import trange
 
 import numpy as np
 
-config = PerceiverConfig(
-  input_len = 32 * 32,
-  input_dim = 3,
-  latent_len = 32,
-  latent_dim = 64,
-  num_layers = 6,
-  ffw_latent = 16,
-  output_len = 1,
-  output_dim = 32,
-  n_classes = 10,
-  decoder_projection = True,
-  dropout = 0.3,
-  seed = 4
-)
-print(config)
-
 class PerceiverCIFAR10(torch.nn.Module):
   def __init__(self, config):
     super().__init__()
@@ -45,7 +29,8 @@ class PerceiverCIFAR10(torch.nn.Module):
     return self.perceiver(out)
 
 
-
+# Sample network from the pytorch tutorial
+#
 # class Net(nn.Module):
 #     def __init__(self):
 #         super().__init__()
@@ -55,7 +40,7 @@ class PerceiverCIFAR10(torch.nn.Module):
 #         self.fc1 = nn.Linear(16 * 5 * 5, 120)
 #         self.fc2 = nn.Linear(120, 84)
 #         self.fc3 = nn.Linear(84, 10)
-
+#
 #     def forward(self, x):
 #         x = self.pool(F.relu(self.conv1(x)))
 #         x = self.pool(F.relu(self.conv2(x)))
@@ -65,6 +50,21 @@ class PerceiverCIFAR10(torch.nn.Module):
 #         x = self.fc3(x)
 #         return x
 
+config = PerceiverConfig(
+  input_len = 32 * 32,
+  input_dim = 3,
+  latent_len = 32,
+  latent_dim = 64,
+  num_layers = 6,
+  ffw_latent = 16,
+  output_len = 1,
+  output_dim = 32,
+  n_classes = 10,
+  decoder_projection = True,
+  dropout = 0.3,
+  seed = 4
+)
+print(config)
 
 set_seed(config.seed)
 model = PerceiverCIFAR10(config)
@@ -98,7 +98,7 @@ for i in pbar:
   except StopIteration:
     iter_dl_train = iter(dl_train)
     x, y = next(iter_dl_train)
-  
+
   optim.zero_grad()
   _y = model(x)
   loss = F.cross_entropy(_y, y)
