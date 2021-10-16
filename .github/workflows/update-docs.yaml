@@ -14,11 +14,6 @@ jobs:
         with:
           submodules: true
 
-      - uses: actions/cache@v2
-        with:
-          path: ~/.local/lib/python3.8/site-packages
-          key: ${{ hashFiles('setup.py') }}-${{ hashFiles('requirements.txt') }}
-
       - name: Install Sphinx, furo, gperc
         run: |
           # sudo apt-get -y install python3-sphinx
@@ -35,8 +30,6 @@ jobs:
         working-directory: "docs/"
         run: |
           make html
-        env:
-          NBX_AUTH: 1
 
       - name: Commit docs
         working-directory: docs/build/html
