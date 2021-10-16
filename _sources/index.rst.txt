@@ -37,6 +37,7 @@ Indices and tables
    gperc.data
    gperc.models
    gperc.utils
+   tests
    
 
 
