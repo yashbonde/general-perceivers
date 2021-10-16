@@ -44,5 +44,6 @@ jobs:
           git config --global user.name "yashbonde"
           git config --global user.email 'bonde.yash97@gmail.com'
           git switch gh-pages
+          git add .
           git commit -am "Update Docs ${GITHUB_SHA::8}"
           git push origin HEAD:gh-pages
