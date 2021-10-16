@@ -130,21 +130,19 @@ class TextConfig(PerceiverConfig):
 
 
 class ImageConfig(PerceiverConfig):
-    def __init__(self, image_shape: Tuple, latent_len: int, latent_dim: int, task: str = "classification", **kwargs):
+    def __init__(self, image_shape: Tuple, latent_len: int, latent_dim: int, n_classes: int, task: str = "classification", **kwargs):
         r"""Config class to specially deal with the image modality cases
 
         Args:
             image_shape (Tuple): The shape of the image in [H, W, C]
             latent_len (int): The length of the latent space
             latent_dim (int): The dimension of the latent space
+            n_classes (int): The number of classes after the output space
             task (str, optional): The task to be performed, can be one of ``classification``,
                 and ``segmentation``
 
         """
         assert task in ["classification", "segmentation"], "task must be one of 'classification' or 'segmentation'"
-
-        if task == "classification":
-            assert "n_classes" in kwargs, "n_classes must be specified for classification"
 
         super().__init__(**kwargs)
         self.image_shape = image_shape
@@ -154,51 +152,21 @@ class ImageConfig(PerceiverConfig):
         self.latent_dim = latent_dim
         self.output_len = image_shape[0]
         self.output_dim = latent_dim
+        self.n_classes = n_classes
+        self.task = task
 
-        self.decoder_cross_attention = False
-        self.decoder_residual = False
-        self.decoder_projection = True
-
-
-# class Presets:
-#     perciever_tiny = PerceiverConfig()
-
-#     def perceiver_cifar10():
-#         config = PerceiverConfig()
-#         config.input_len = 32 * 32
-#         config.input_dim = 3
-#         config.decoder_len = 1
-#         config.decoder_proj = True
-#         config.output_pos_enc = False
-#         config.decoder_residual = False
-#         return config
-
-#     perciever = PerceiverConfig(
-#         pre_processing=None,
-#         input_len=2048,
-#         input_dim=768,
-#         num_layers=26,
-#         latent_len=256,
-#         latent_dim=1280,
-#         ffw_latent=1280,
-#         output_len=2048,
-#         output_dim=768,
-#         ffw_output=768,
-#         decoder_residual=False,
-#         post_processing=None,
-#     )
-
-#     perciever_large = PerceiverConfig(
-#         pre_processing=None,
-#         input_len=2048,
-#         input_dim=768,
-#         num_layers=40,
-#         latent_len=256,
-#         latent_dim=1536,
-#         ffw_latent=1536,
-#         output_len=512,
-#         output_dim=768,
-#         ffw_output=768,
-#         decoder_residual=False,
-#         post_processing=None,
-#     )
+        if task == "classification":
+            """When performing a classification task, we do not need to query from the output_array
+            meaning that there is no need for cross_attention or residual connection, but there
+            needs to be a projection layer to the number of classes."""
+            self.decoder_cross_attention = False
+            self.decoder_residual = False
+            self.decoder_projection = True
+        
+        elif task == "segmentation":
+            """When performing segmentation task, the output_array will query the latent but we
+            should not use the residual connection, and we should use a projection layer to the
+            number of classes. Avoiding residual connection is recommended in the paper."""
+            self.decoder_cross_attention = True
+            self.decoder_residual = False
+            self.decoder_projection = True
