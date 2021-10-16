@@ -158,6 +158,7 @@
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="stories.html">Stories</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="stories.1.html">1. Quick Dopamine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="stories.2.html">2. Using CLIs (WIP)</a></li>
 </ul>
 </li>
 </ul>
@@ -208,7 +209,28 @@ given sufficient data.</p>
 <img alt="Alternative text" src="_images/structure.png"/>
 <p>This is mostly an auto generated documentation and documentation for submodules is in the code files.
 When building such a tool it is very important to know how to use it, so I have added
-<a class="reference external" href="stories.html">stories</a> where you can read and see how to get the thing working.</p>
+<a class="reference external" href="stories.html">stories</a> where you can read and see how to get the thing working. Since this is a
+very power general structure you must understand <a class="reference external" href="gperc.configs.html">configurations</a> well.</p>
+<section id="samples">
+<h2>Samples<a class="headerlink" href="#samples" title="Permalink to this headline">¶</a></h2>
+<p>Here is how you can build a classification model using
+<a class="reference external" href="gperc.configs.html#gperc.configs.ImageConfig">gperc.ImageConfig</a> in just a few lines:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gperc</span> <span class="kn">import</span> <span class="n">ImageConfig</span><span class="p">,</span> <span class="n">Perceiver</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+
+<span class="n">conf</span> <span class="o">=</span> <span class="n">ImageConfig</span><span class="p">(</span>
+   <span class="n">image_shape</span> <span class="o">=</span> <span class="p">[</span><span class="mi">224</span><span class="p">,</span> <span class="mi">224</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="c1"># in [H, W, C] format</span>
+   <span class="n">latent_len</span> <span class="o">=</span> <span class="mi">128</span><span class="p">,</span>
+   <span class="n">latent_dim</span> <span class="o">=</span> <span class="mi">128</span><span class="p">,</span>
+   <span class="n">n_classes</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">Perceiver</span><span class="p">(</span><span class="n">conf</span><span class="p">)</span>
+
+<span class="n">out</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">224</span> <span class="o">*</span> <span class="mi">224</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<span class="k">assert</span> <span class="n">out</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
 </section>
 <section id="indices-and-tables">
 <h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
@@ -217,6 +239,7 @@ When building such a tool it is very important to know how to use it, so I have 
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="stories.html">Stories</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="stories.1.html">1. Quick Dopamine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="stories.2.html">2. Using CLIs (WIP)</a></li>
 </ul>
 </li>
 </ul>
@@ -293,7 +316,10 @@ When building such a tool it is very important to know how to use it, so I have 
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">Welcome to gperc’s documentation!</a></li>
+<li><a class="reference internal" href="#">Welcome to gperc’s documentation!</a><ul>
+<li><a class="reference internal" href="#samples">Samples</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#indices-and-tables">Indices and tables</a><ul>
 </ul>
 </li>

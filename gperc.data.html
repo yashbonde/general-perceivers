@@ -158,6 +158,7 @@
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="stories.html">Stories</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="stories.1.html">1. Quick Dopamine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="stories.2.html">2. Using CLIs (WIP)</a></li>
 </ul>
 </li>
 </ul>
@@ -201,9 +202,102 @@
 <h2>Data Reader<a class="headerlink" href="#data-reader" title="Permalink to this headline">¶</a></h2>
 <p>This file has the datareaders for the <code class="docutils literal notranslate"><span class="pre">gperc</span></code> program. The datareaders work as follows:</p>
 <ol class="arabic simple">
-<li><p>The default datareader is <code class="docutils literal notranslate"><span class="pre">gperc.BinaryConsumer</span></code> and it reads all the files that are   provided to this. It reads the binaries of the files and reads the data based on pretty   much the size of the file.</p></li>
-<li><p>You can provide extra metadata to the datareaders. This is done by providing a dictionary   or list. For more information read below.</p></li>
+<li><p>The default datareader is <code class="docutils literal notranslate"><span class="pre">gperc.BinaryConsumer</span></code> and it reads all the files that are     provided to this. It reads the binaries of the files and reads the data based on pretty     much the size of the file.</p></li>
+<li><p>You can provide extra metadata to the datareaders. This is done by providing a dictionary     or list. For more information read below.</p></li>
 </ol>
+<p>Though there is some code added below, it does not work. I have added it here because that is
+suppossed to be the general progression towards. The general idea is that the trainer should be
+able to select the kind of data that it wants to use. This means that there needs to be a
+structured way to represent and fetch the information. This is done as follows:</p>
+<ol class="arabic simple">
+<li><p>The input data <code class="docutils literal notranslate"><span class="pre">F</span></code> can be loaded in 4 different styles as given in the documentation below.</p></li>
+<li><p>The fetching <code class="docutils literal notranslate"><span class="pre">I</span></code> can happen in 6 different styles as given in the documentation below.</p></li>
+</ol>
+<p>I am following the same system that I have implemented in
+<a class="reference external" href="https://nimbleboxai.github.io/nbox/nbox.parsers.html">nbox.Parsers</a>. Here is a quick brief on
+<strong>primitives</strong> <code class="docutils literal notranslate"><span class="pre">P</span></code> and <strong>structures</strong> <code class="docutils literal notranslate"><span class="pre">S</span></code>:</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">P</span></code> are the basic data types that are used in the data. This is the actual data     you want your model to process.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">S</span></code> are the structures that are used to represent the data. This is how data is organised.</p></li>
+</ol>
+<p>In our day to day life, we call data is nothing but an interplay of <code class="docutils literal notranslate"><span class="pre">P</span></code> and <code class="docutils literal notranslate"><span class="pre">S</span></code>.</p>
+<section id="documentation">
+<h3>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="gperc.data.Consumer">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">gperc.data.</span></span><span class="sig-name descname"><span class="pre">Consumer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fps</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tokenizer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seqlen</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">512</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gperc.data.Consumer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Consumer takes in list of files along with it’s meta data and becomes a callable generator.
+When calling you can tell it what kind of data that you want. It is a full fledged data engine in itself.
+This will sit in nbox one day and thus has to be engineered in such a what that it is production grade with
+good documentation. In the nbox hierarchy it sits parallel to nbox.Model thus has to continue the following
+traits as <a class="reference external" href="https://nimbleboxai.github.io/nbox/nbox.parsers.html">nbox.Parsers</a>:</p>
+<ol class="arabic simple">
+<li><p><strong>primitive</strong> that tells the actual fetching instruction</p></li>
+<li><p><strong>structure</strong> should be same as the source meta data</p></li>
+</ol>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fps</strong> (<em>Any</em>) – <p>The file paths have to be the primary index inside the lists and so filepaths “fps” can look like these:</p>
+<ol class="arabic simple">
+<li><p><strong>(F0)</strong> list of strings: <code class="docutils literal notranslate"><span class="pre">["file1.txt",</span> <span class="pre">"file2.txt",</span> <span class="pre">...]</span></code></p></li>
+<li><p><strong>(F1)</strong> list of dicts: <code class="docutils literal notranslate"><span class="pre">[{"file1.txt":</span> <span class="pre">"cat1"},</span> <span class="pre">{"file2.txt":</span> <span class="pre">"cat2"},</span> <span class="pre">...]</span></code></p></li>
+<li><p><strong>(F2)</strong> dict of strings: <code class="docutils literal notranslate"><span class="pre">{"file1.txt":</span> <span class="pre">"cat1",</span> <span class="pre">"file2.txt":</span> <span class="pre">"cat2",</span> <span class="pre">...}</span></code></p></li>
+<li><p><strong>(F3)</strong> dict of categories: <code class="docutils literal notranslate"><span class="pre">{"cat1":</span> <span class="pre">["file1.txt",</span> <span class="pre">"file2.txt",</span> <span class="pre">...],</span> <span class="pre">"cat2":</span> <span class="pre">["file3.txt",</span> <span class="pre">"file4.txt",</span> <span class="pre">...]}</span></code></p></li>
+</ol>
+</p></li>
+<li><p><strong>tokenizer</strong> (<em>TokenizerObject</em>) – Object of the Tokenizer</p></li>
+<li><p><strong>seqlen</strong> (<em>int</em><em>, </em><em>optional</em>) – Length of the Sequence. Defaults to 512.</p></li>
+<li><p><strong>batch_size</strong> (<em>int</em><em>, </em><em>optional</em>) – Size of the Batches. Defaults to 1.</p></li>
+<li><p><strong>seed</strong> (<em>int</em><em>, </em><em>optional</em>) – Seed value for randomness used to determine the batches</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gperc.data.Consumer.__getitem__">
+<span class="sig-name descname"><span class="pre">__getitem__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><span class="pre">torch.Tensor</span></span></span><a class="headerlink" href="#gperc.data.Consumer.__getitem__" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>Any</em>) – <p>There is only one input since this is a special method. We take in this input item and process it accordingly based on following rules:</p>
+<ol class="arabic simple">
+<li><p><strong>(I0)</strong> <code class="docutils literal notranslate"><span class="pre">None</span></code>: when x is None we have an internal idx that is incremented and the next batch is returned</p></li>
+<li><p><strong>(I1)</strong> <code class="docutils literal notranslate"><span class="pre">int</span></code>: when x is an int we return the batch at that index</p></li>
+<li><p><strong>(I2)</strong> <code class="docutils literal notranslate"><span class="pre">slice</span></code>: when x is a slice we return the batches in the slice</p></li>
+<li><p><strong>(I3)</strong> <code class="docutils literal notranslate"><span class="pre">list/tuple</span></code>: when x is a list we return the batches in the list containing the indices (<code class="docutils literal notranslate"><span class="pre">int</span></code>)</p></li>
+<li><p><strong>(I4)</strong> <code class="docutils literal notranslate"><span class="pre">dict</span> <span class="pre">-&gt;</span> <span class="pre">ints</span></code>: when values of x are ints we return the batches in the list containing the indices (<code class="docutils literal notranslate"><span class="pre">int</span></code>)</p></li>
+<li><p><strong>(I5)</strong> <code class="docutils literal notranslate"><span class="pre">dict</span> <span class="pre">-&gt;</span> <span class="pre">list</span></code>: when values of x are lists we return the batches in the list containing the indices (<code class="docutils literal notranslate"><span class="pre">list</span></code>)</p></li>
+</ol>
+</p>
+</dd>
+</dl>
+<p>Using this is very simple. T</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># define the consumer object</span>
+<span class="n">my_kewl_dataset</span> <span class="o">=</span> <span class="n">Consumer</span><span class="p">(</span>
+    <span class="n">fps</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">"cat"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"img0.png"</span><span class="p">,</span> <span class="s2">"/tmp/ssg3hng.png"</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span>
+    <span class="s2">"dog"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"img1.png"</span><span class="p">,</span> <span class="s2">"/tmp/uo35523.png"</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span>
+    <span class="p">},</span>
+    <span class="n">seed</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="p">)</span>
+
+<span class="c1"># output in all cases is a batched tensor of desired shape</span>
+<span class="n">out</span> <span class="o">=</span> <span class="n">my_kewl_dataset</span><span class="p">[</span><span class="bp">None</span><span class="p">]</span> <span class="c1"># get whatever is the next batch</span>
+<span class="n">out</span> <span class="o">=</span> <span class="n">my_kewl_dataset</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>    <span class="c1"># get the data at index 0</span>
+<span class="n">out</span> <span class="o">=</span> <span class="n">my_kewl_dataset</span><span class="p">[</span><span class="mi">5</span><span class="p">:</span><span class="mi">10</span><span class="p">]</span> <span class="c1"># get the data at indices 5 to 10</span>
+<span class="n">out</span> <span class="o">=</span> <span class="n">my_kewl_dataset</span><span class="p">[{</span>
+    <span class="s2">"cat"</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+    <span class="s2">"dog"</span><span class="p">:</span> <span class="mi">4</span>
+<span class="p">}]</span>                          <span class="c1"># return random batches of 10 samples from class cat and 4 samples from class dog</span>
+<span class="n">out</span> <span class="o">=</span> <span class="n">my_kewl_dataset</span><span class="p">[{</span>
+    <span class="s2">"cat"</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span>
+    <span class="s2">"dog"</span><span class="p">:</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">]</span>
+<span class="p">}]</span>                          <span class="c1"># return the batches at indices [0...4] and [5...9] from class cat and class dog respectively</span>
+</pre></div>
+</div>
+</dd></dl>
+</dd></dl>
+</section>
 </section>
 </section>
 
@@ -261,7 +355,10 @@
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">gperc Data</a><ul>
-<li><a class="reference internal" href="#data-reader">Data Reader</a></li>
+<li><a class="reference internal" href="#data-reader">Data Reader</a><ul>
+<li><a class="reference internal" href="#documentation">Documentation</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

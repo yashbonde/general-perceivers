@@ -22,7 +22,30 @@ given sufficient data.
 
 This is mostly an auto generated documentation and documentation for submodules is in the code files.
 When building such a tool it is very important to know how to use it, so I have added
-`stories <stories.html>`__ where you can read and see how to get the thing working.
+`stories <stories.html>`__ where you can read and see how to get the thing working. Since this is a
+very power general structure you must understand `configurations <gperc.configs.html>`__ well.
+
+Samples
+-------
+
+Here is how you can build a classification model using
+`gperc.ImageConfig <gperc.configs.html#gperc.configs.ImageConfig>`__ in just a few lines:
+
+.. code-block:: python
+
+   from gperc import ImageConfig, Perceiver
+   import torch
+
+   conf = ImageConfig(
+      image_shape = [224, 224, 3], # in [H, W, C] format
+      latent_len = 128,
+      latent_dim = 128,
+      n_classes = 100,
+   )
+   model = Perceiver(conf)
+
+   out = model(torch.randn(2, 224 * 224, 3))
+   assert out.shape == (2, 100)
 
 
 Indices and tables
