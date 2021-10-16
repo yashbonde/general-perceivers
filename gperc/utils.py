@@ -3,7 +3,8 @@ import numpy as np
 import random
 
 
-def set_seed(s = 4):
+def set_seed(s=4):
+    """set seed for controlling randomness"""
     random.seed(s)
     np.random.seed(s)
     torch.manual_seed(s)

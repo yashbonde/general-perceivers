@@ -1,0 +1,48 @@
+name: Update gperc docs
+on:
+  push:
+    branches: [master, docs]
+    paths:
+      - "docs/**"
+  workflow_dispatch:
+jobs:
+  docs-gen:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the files
+        uses: actions/checkout@v2
+        with:
+          submodules: true
+
+      - uses: actions/cache@v2
+        with:
+          path: ~/.local/lib/python3.8/site-packages
+          key: ${{ hashFiles('setup.py') }}-${{ hashFiles('requirements.txt') }}
+
+      - name: Install Sphinx, furo, nbox-dependencies
+        run: |
+          # sudo apt-get -y install python3-sphinx
+          pip install furo
+          pip install --upgrade --upgrade-strategy eager -r requirements.txt
+
+      - name: switch branch
+        uses: actions/checkout@v2
+        with:
+          path: docs/build/html
+          ref: gh-pages
+
+      - name: Make sphinx docs
+        working-directory: "docs/"
+        run: |
+          make html
+        env:
+          NBX_AUTH: 1
+
+      - name: Commit docs
+        working-directory: docs/build/html
+        run: |
+          git config --global user.name "yashbonde"
+          git config --global user.email 'bonde.yash97@gmail.com'
+          git switch gh-pages
+          git commit -am "Update Docs ${GITHUB_SHA::8}"
+          git push origin HEAD:gh-pages

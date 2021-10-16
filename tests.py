@@ -8,27 +8,25 @@ import unittest
 
 from tqdm import trange
 
+
 class Test(unittest.TestCase):
     def test_cifar10_forward(self):
         config = PerceiverConfig(
-            input_len = 32 * 32,
-            input_dim = 3,
-            latent_len = 32,
-            latent_dim = 16,
-            output_len = 10,
-            output_dim = 32,
-            decoder_len = 1,
-            decoder_projection = True,
-            output_pos_enc = False,
-            decoder_residual = False,
-            n_classes = 10,
+            input_len=32 * 32,
+            input_dim=3,
+            latent_len=32,
+            latent_dim=16,
+            output_len=10,
+            output_dim=32,
+            decoder_len=1,
+            decoder_projection=True,
+            output_pos_enc=False,
+            decoder_residual=False,
+            n_classes=10,
         )
         model = Perceiver(config)
 
-        out, attentions = model(
-            torch.randn(1, config.input_len, config.input_dim),
-            return_attentions = True
-        )
+        out, attentions = model(torch.randn(1, config.input_len, config.input_dim), return_attentions=True)
 
         # check the shapes
         self.assertEquals(out.shape, (1, config.n_classes))
@@ -40,29 +38,29 @@ class Test(unittest.TestCase):
 
     def test_image_overfit(self):
         config = PerceiverConfig(
-            input_len = 9*9,
-            input_dim = 3,
-            latent_len = 32,
-            latent_dim = 16,
-            num_layers = 1,
-            output_len = 2,
-            output_dim = 10,
-            decoder_len = 1,
-            decoder_cross_attention = True,
-            decoder_projection = False,
-            output_pos_enc = False,
-            decoder_residual = False,
-            n_classes = 10,
-            seed = 4
+            input_len=9 * 9,
+            input_dim=3,
+            latent_len=32,
+            latent_dim=16,
+            num_layers=1,
+            output_len=2,
+            output_dim=10,
+            decoder_len=1,
+            decoder_cross_attention=True,
+            decoder_projection=False,
+            output_pos_enc=False,
+            decoder_residual=False,
+            n_classes=10,
+            seed=4,
         )
         print(config)
         set_seed(config.seed)
         model = Perceiver(config)
 
-        optim = torch.optim.Adam(model.parameters(),lr = 3e-4)
+        optim = torch.optim.Adam(model.parameters(), lr=3e-4)
 
         x = torch.randn(3, config.input_len, config.input_dim)
-        y = torch.randint(low = 0, high = config.output_dim, size = (3,))
+        y = torch.randint(low=0, high=config.output_dim, size=(3,))
 
         pbar = trange(4000)
         all_loss = []

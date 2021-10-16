@@ -22,7 +22,7 @@ class PerceiverConfig:
         self.latent_dim = 16  # D: latent size
         self.ffw_latent = 32  # FFW hidden dimension for latents
 
-        self.dropout = 0.1 # dropout rate
+        self.dropout = 0.1  # dropout rate
 
         self.decoder_cross_attention = False  # is decoder a
         self.output_len = 1  # O: number of outputs during pretraining
@@ -31,7 +31,7 @@ class PerceiverConfig:
         self.output_pos_enc = False  # whether to add position encoding for the output
         self.decoder_projection = True  # is there a projection layer after the decoder
 
-        self.seed = 4 # random seed
+        self.seed = 4  # random seed
 
         # is there some post processing to be done?
         self.post_processing = None

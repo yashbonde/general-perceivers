@@ -1,13 +1,29 @@
-import math
+"""
+Perceiver Model
+===============
 
+This file has code on the neural network of the pervceiver architecture. ``gperc.models.Perceiver`` sits at \
+    the heart of this operation.
+"""
+
+
+from typing import Callable
 import torch
 from torch import nn
-from torch.nn import functional as F
-
-import einops
 
 
-def build_position_encoding(position_encoding_type, config, num_index_items, emb_dim):
+def build_position_encoding(position_encoding_type: str, config: dict, num_index_items: int, emb_dim: int):
+    """How to build the position encoding.
+
+    Args:
+        position_encoding_type (str): [description]
+        config: Config
+        num_index_items (int): number of items in the embedding, eg. ``vocab_size``
+        emb_dim (int): embedding dimension
+
+    Returns:
+        ``torch.nn.Parameter``: Item that can be used as a parameter in a ``torch.nn.Embedding``
+    """
     if position_encoding_type == "trainable":
         # first define the positional encodings
         latent_pos_emb = nn.Parameter(torch.normal(mean=0.0, std=config.pos_init_std, size=(num_index_items, emb_dim)))
@@ -21,8 +37,17 @@ def build_position_encoding(position_encoding_type, config, num_index_items, emb
 
 
 class Block(nn.Module):
-    def __init__(self, kv_dim, q_dim, num_heads, ffw_dim, dropout=0.0, add_residual=False):
-        """Generic block with Attention and MLP layers"""
+    def __init__(self, kv_dim: int, q_dim: int, num_heads: int, ffw_dim: int, dropout:float =0.0, add_residual: bool=False):
+        """Generic block with Attention and MLP layers
+
+        Args:
+            kv_dim (int): dimension of the key-value embeddings
+            q_dim (int): dimension of the query embeddings
+            num_heads (int): number of heads in the multihead attention
+            ffw_dim (int): dimension of the feed-forward layer
+            dropout (float, optional): dropout rate
+            add_residual (bool, optional): whether to add residual to the query
+        """
         super().__init__()
         assert q_dim % num_heads == 0, "Latent Dimension must be divisible by number of heads"
 
@@ -76,11 +101,11 @@ class Block(nn.Module):
         # print("K:", K.shape)
         # print("V:", V.shape)
         # print(K.permute(0, 1, 3, 2).shape)
-        A = Q @ K.permute(0, 1, 3, 2) * (self.dim ** -0.5)  # [b, n, h, e/h] @ [b, h, m, e/h] -> [b, n, m, e/h]
-        A = self.drop_att(A.softmax(dim=-1))
+        A = Q @ K.permute(0, 1, 3, 2) * (self.dim ** -0.5)  # [b, h, n, e/h] @ [b, h, e/h, m] -> [b, h, n, m]
+        A = self.drop_att(A.softmax(dim=-1))  # [b, h, n, m]
         # print("A:", A.shape)
         # print((A @ V).shape)
-        out = (A @ V).reshape((q.shape[0], -1, self.q_dim))
+        out = (A @ V).reshape((q.shape[0], -1, self.q_dim))  # [b, h, n, m] @ [b, h, m, e/h] -> [b, h, n, e/h] -> [b, n, e]
         # print("out:", out.shape)
         out = self.fo(out)
         # print("out:", out.shape)
@@ -102,9 +127,20 @@ class Block(nn.Module):
 
 class Encoder(nn.Module):
     def __init__(self, config):
+        """Generic Encoder Block of the model which takes in ``input_array`` as key-value and \
+            ``latent_array`` as query.
+
+        Args:
+            config: Config
+        """
         super().__init__()
         self.encoder_block = Block(
-            kv_dim=config.input_dim, q_dim =config.latent_dim,  num_heads=config.num_heads, ffw_dim=config.ffw_latent, dropout=config.dropout, add_residual=True
+            kv_dim=config.input_dim,
+            q_dim=config.latent_dim,
+            num_heads=config.num_heads,
+            ffw_dim=config.ffw_latent,
+            dropout=config.dropout,
+            add_residual=True,
         )
 
     def forward(self, input_array, latent_query):
@@ -118,11 +154,21 @@ class Encoder(nn.Module):
 
 class Processor(nn.Module):
     def __init__(self, config):
+        """Generic Processor Block of the model which takes in ``latent_array`` as key-value-query
+
+        Args:
+            config: Config
+        """
         super().__init__()
         self.processors = nn.ModuleList(
             [
                 Block(
-                    kv_dim=config.latent_dim, q_dim =config.latent_dim, num_heads=config.num_heads, ffw_dim=config.ffw_latent, dropout=config.dropout, add_residual=True
+                    kv_dim=config.latent_dim,
+                    q_dim=config.latent_dim,
+                    num_heads=config.num_heads,
+                    ffw_dim=config.ffw_latent,
+                    dropout=config.dropout,
+                    add_residual=True,
                 )
                 for _ in range(config.num_layers)
             ]
@@ -138,7 +184,14 @@ class Processor(nn.Module):
 
 class Decoder(nn.Module):
     def __init__(self, config):
+        """Generic Decoder Block of the model which takes in ``latent_array`` as key-value and \
+            ``output_array`` as query.
+
+        Args:
+            config: Config
+        """
         super().__init__()
+
         def __check_conditionals():
             assert config.decoder_cross_attention or config.decoder_projection, "Must have either cross attention or projection"
             if config.decoder_projection:
@@ -149,7 +202,7 @@ class Decoder(nn.Module):
 
         if config.decoder_cross_attention:
             self.decoder_block = Block(
-                kv_dim = config.latent_dim,
+                kv_dim=config.latent_dim,
                 q_dim=config.output_dim,
                 num_heads=config.num_heads,
                 ffw_dim=config.ffw_latent,
@@ -175,7 +228,16 @@ class Decoder(nn.Module):
 
 
 class Perceiver(nn.Module):
-    def __init__(self, config, input_preprocessing=None, output_postprocessing=None):
+    def __init__(self, config, input_preprocessing: Callable=None, output_postprocessing: Callable=None):
+        """Unassuming Perceiver Architecture that sits at the heart of this project.
+
+        Args:
+            config: Config
+            input_preprocessing (Callable, optional): callable object that takes in ``input_array`` and performs \
+                operation on it.
+            output_postprocessing (Callable, optional): callable object that takes in ``output_array`` and performs \
+                operation on it.
+        """
         super().__init__()
         self.config = config
         self.input_preprocessing = input_preprocessing
@@ -188,10 +250,18 @@ class Perceiver(nn.Module):
         self.processor = Processor(config)
         self.decoder = Decoder(config)
 
-    def num_parameters(self):
+    def num_parameters(self, include_non_trainable: bool = True):
+        """function that returns the number of parameters in the modle
+
+        Args:
+            include_non_trainable (bool, optional): If true includes tensors that have ``requires_grad=False`` as well
+
+        Returns:
+            int: number of parameters in the model
+        """
         return sum(p.numel() for p in self.parameters())
 
-    def forward(self, input_array, return_attentions=False):
+    def forward(self, input_array: torch.Tensor, output_array: torch.Tensor=None, return_attentions:bool=False):
         if self.input_preprocessing:
             input_array = self.input_preprocessing(input_array)
 
@@ -199,8 +269,11 @@ class Perceiver(nn.Module):
         latent_array = torch.cat([self.pos_emb_latent[None, ...] for _ in range(input_array.shape[0])], dim=0)
         latents, enc_att = self.encoder(input_array, latent_array)
         latents, proc_att = self.processor(latents)
-        # print(">>>> latents", latents.shape)
-        decoder_query = torch.cat([self.pos_emb_decoder[None, ...] for _ in range(latents.shape[0])], dim=0)
+
+        if output_array is None:
+            decoder_query = torch.cat([self.pos_emb_decoder[None, ...] for _ in range(latents.shape[0])], dim=0)
+        else:
+            decoder_query = output_array + self.pos_emb_decoder[None, ...]  # add the positional embedding to output array
         out, dec_att = self.decoder(decoder_query, latents)
 
         if self.output_postprocessing:
