@@ -13,7 +13,9 @@ from torchvision.datasets import CIFAR10
 from gperc.utils import set_seed
 from gperc import ImageConfig, Perceiver
 from gperc.models import build_position_encoding
+
 # -----
+
 
 class PerceiverCIFAR10(torch.nn.Module):
     def __init__(self, config):
@@ -29,6 +31,7 @@ class PerceiverCIFAR10(torch.nn.Module):
         pos_emb = torch.cat([self.emb[None, ...] for _ in range(x.shape[0])], dim=0)
         out = x + pos_emb
         return self.perceiver(out)
+
 
 # define your datasets
 ds_train = CIFAR10(
@@ -58,10 +61,10 @@ ds_test = CIFAR10(
 
 # define the config and load the model
 config = ImageConfig(
-    image_shape=[32,32,3],
+    image_shape=[32, 32, 3],
     latent_len=32,
     latent_dim=32,
-    n_classes = 10,
+    n_classes=10,
 )
 
 set_seed(config.seed)

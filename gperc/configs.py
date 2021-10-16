@@ -148,7 +148,7 @@ class ImageConfig(PerceiverConfig):
 
         super().__init__(**kwargs)
         self.image_shape = image_shape
-        self.input_len = image_shape[0] * image_shape[1] # image if flattened to a fix shape
+        self.input_len = image_shape[0] * image_shape[1]  # image if flattened to a fix shape
         self.input_dim = image_shape[2]
         self.latent_len = latent_len
         self.latent_dim = latent_dim

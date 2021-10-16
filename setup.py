@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="gperc",
-    version="0.1-beta",
+    version="0.2.0",
     author="Yash Bonde",
     author_email="bonde.yash97@gmail.com",
     description="General purpose perceiver architectures!",

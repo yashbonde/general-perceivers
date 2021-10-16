@@ -11,6 +11,7 @@ from torch.nn import functional as F
 # -------
 from gperc import TextConfig, Perceiver
 from gperc.utils import set_seed
+
 # -------
 
 # ------------ create a dataset
@@ -103,12 +104,7 @@ tensor_mask = create_dataset(tensor_target, mask_token_id, mask_perc=0.15)
 assert tensor_mask.sum() != tensor_target.sum() and tensor_target.shape == tensor_mask.shape, "Your dataset function does not work!"
 
 # define the config and the model
-config = TextConfig(
-    latent_dim = 8,
-    vocab_size = len(vocabulary),
-    max_len = tensor_target.shape[1],
-    latent_frac = 0.15
-)
+config = TextConfig(latent_dim=8, vocab_size=len(vocabulary), max_len=tensor_target.shape[1], latent_frac=0.15)
 set_seed(config.seed)
 print(config)
 bert_model = PerceiverMLM(config)
