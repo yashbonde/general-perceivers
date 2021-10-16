@@ -1,18 +1,19 @@
-from gperc import PerceiverConfig, Perceiver
-from gperc.models import build_position_encoding
-from gperc.utils import set_seed
-
-from torchvision.datasets import CIFAR10
-from torchvision import transforms as TR
-import torch
-from torch.utils.data import DataLoader
-from torch.optim import Adam
-from torch.nn import functional as F
-
+from tempfile import gettempdir
 from tqdm import trange
-
 import numpy as np
 
+import torch
+from torch.optim import Adam
+from torch.nn import functional as F
+from torch.utils.data import DataLoader
+from torchvision import transforms as TR
+from torchvision.datasets import CIFAR10
+
+# -----
+from gperc.utils import set_seed
+from gperc import ImageConfig, Perceiver
+from gperc.models import build_position_encoding
+# -----
 
 class PerceiverCIFAR10(torch.nn.Module):
     def __init__(self, config):
@@ -29,50 +30,9 @@ class PerceiverCIFAR10(torch.nn.Module):
         out = x + pos_emb
         return self.perceiver(out)
 
-
-# Sample network from the pytorch tutorial
-#
-# class Net(nn.Module):
-#     def __init__(self):
-#         super().__init__()
-#         self.conv1 = nn.Conv2d(3, 6, 5)
-#         self.pool = nn.MaxPool2d(2, 2)
-#         self.conv2 = nn.Conv2d(6, 16, 5)
-#         self.fc1 = nn.Linear(16 * 5 * 5, 120)
-#         self.fc2 = nn.Linear(120, 84)
-#         self.fc3 = nn.Linear(84, 10)
-#
-#     def forward(self, x):
-#         x = self.pool(F.relu(self.conv1(x)))
-#         x = self.pool(F.relu(self.conv2(x)))
-#         x = torch.flatten(x, 1) # flatten all dimensions except batch
-#         x = F.relu(self.fc1(x))
-#         x = F.relu(self.fc2(x))
-#         x = self.fc3(x)
-#         return x
-
-config = PerceiverConfig(
-    input_len=32 * 32,
-    input_dim=3,
-    latent_len=32,
-    latent_dim=64,
-    num_layers=6,
-    ffw_latent=16,
-    output_len=1,
-    output_dim=32,
-    n_classes=10,
-    decoder_projection=True,
-    dropout=0.3,
-    seed=4,
-)
-print(config)
-
-set_seed(config.seed)
-model = PerceiverCIFAR10(config)
-print("model parameters:", model.num_parameters())
-
+# define your datasets
 ds_train = CIFAR10(
-    "/tmp",
+    gettempdir(),
     train=True,
     download=True,
     transform=TR.Compose(
@@ -84,7 +44,7 @@ ds_train = CIFAR10(
     ),
 )
 ds_test = CIFAR10(
-    "/tmp",
+    gettempdir(),
     train=False,
     download=True,
     transform=TR.Compose(
@@ -95,10 +55,23 @@ ds_test = CIFAR10(
         ]
     ),
 )
+
+# define the config and load the model
+config = ImageConfig(
+    image_shape=[32,32,3],
+    latent_len=32,
+    latent_dim=32,
+    n_classes = 10,
+)
+
+set_seed(config.seed)
+model = PerceiverCIFAR10(config)
+print("model parameters:", model.num_parameters())
+
+# define the dataloaders, optimizers and lists
 batch_size = 32
 dl_train = DataLoader(ds_train, batch_size=batch_size, shuffle=True, drop_last=True)
 dl_test = DataLoader(ds_test, batch_size=batch_size, shuffle=False, drop_last=False)
-
 iter_dl_train = iter(dl_train)
 
 pbar = trange(10000)
@@ -106,6 +79,7 @@ optim = Adam(model.parameters(), lr=0.001)
 all_loss = []
 all_acc = []
 
+# train!
 for i in pbar:
     try:
         x, y = next(iter_dl_train)

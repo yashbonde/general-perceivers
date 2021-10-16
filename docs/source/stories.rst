@@ -11,4 +11,5 @@ Mozart, Beethovan, Chopin never died ... they simply became music.
    :caption: Stories
 
    stories.1
+   stories.2
 

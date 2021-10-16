@@ -61,7 +61,9 @@ class PerceiverConfig:
             num_layers (int, optional): The number of layers in the encoder and decoder
             dropout (float, optional): The dropout rate
 
-            decoder_cross_attention (bool, optional): Whether to use cross attention in the decoder
+            decoder_cross_attention (bool, optional): Whether to use cross attention in the decoder. If true
+                the output shape will be ``[batch_size, o, e]`` otherwise it will take ``mean`` over the
+                input ``latent_array`` and return ``[batch_size, e]``.
             decoder_residual (bool, optional): Whether ``output_array`` combines with ``latent_array``
             decoder_projection (bool, optional): Whether to use a projection layer in the decoder, used for
                 classification
@@ -128,21 +130,26 @@ class TextConfig(PerceiverConfig):
 
 
 class ImageConfig(PerceiverConfig):
-    def __init__(self, image_shape: Tuple, latent_dim: int, latent_len: float, task: str = "classification", **kwargs):
+    def __init__(self, image_shape: Tuple, latent_len: int, latent_dim: int, task: str = "classification", **kwargs):
         r"""Config class to specially deal with the image modality cases
 
         Args:
-            image_shape (Tuple): The shape of the image
-            latent_dim (int): The dimension of the latent space
+            image_shape (Tuple): The shape of the image in [H, W, C]
             latent_len (int): The length of the latent space
+            latent_dim (int): The dimension of the latent space
             task (str, optional): The task to be performed, can be one of ``classification``,
                 and ``segmentation``
 
         """
         assert task in ["classification", "segmentation"], "task must be one of 'classification' or 'segmentation'"
 
+        if task == "classification":
+            assert "n_classes" in kwargs, "n_classes must be specified for classification"
+
         super().__init__(**kwargs)
         self.image_shape = image_shape
+        self.input_len = image_shape[0] * image_shape[1] # image if flattened to a fix shape
+        self.input_dim = image_shape[2]
         self.latent_len = latent_len
         self.latent_dim = latent_dim
         self.output_len = image_shape[0]

@@ -3,4 +3,4 @@ from . import configs
 from . import utils
 
 from .models import Perceiver, Encoder, Processor, Decoder
-from .configs import PerceiverConfig
+from .configs import PerceiverConfig, ImageConfig, TextConfig

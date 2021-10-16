@@ -310,6 +310,8 @@ class Perceiver(nn.Module):
         if self.input_preprocessing:
             input_array = self.input_preprocessing(input_array)
 
+        assert len(input_array.shape) == 3, "Input array must be of shape (batch_size, input_len, input_dim)"
+
         # enc -> proc -> decode
         latent_array = torch.cat([self.pos_emb_latent[None, ...] for _ in range(input_array.shape[0])], dim=0)
         latents, enc_att = self.encoder(input_array, latent_array)

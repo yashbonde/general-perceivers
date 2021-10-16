@@ -8,9 +8,10 @@ import torch
 from torch.optim import Adam
 from torch.nn import functional as F
 
-from gperc import PerceiverConfig, Perceiver
+# -------
+from gperc import TextConfig, Perceiver
 from gperc.utils import set_seed
-
+# -------
 
 # ------------ create a dataset
 def get_text():
@@ -95,42 +96,26 @@ class PerceiverMLM(torch.nn.Module):
         return logits
 
 
-class TextConfig(PerceiverConfig):
-    def __init__(self, seqlen, dim, vocab_size, latent_frac, **kwargs):
-        super().__init__(**kwargs)
-        self.input_len = seqlen
-        self.input_dim = dim
-        self.latent_len = int(latent_frac * seqlen)
-        self.latent_dim = dim
-        self.output_len = seqlen
-        self.output_dim = dim
-        self.vocab_size = vocab_size
-        self.n_classes = vocab_size
-        self.decoder_projection = True
-        self.decoder_cross_attention = True
-        self.decoder_residual = True
-
-
-set_seed(4)
+# define the dataset
 tensor_target, vocabulary = get_tensors(get_text())
 mask_token_id = len(vocabulary) - 1
 tensor_mask = create_dataset(tensor_target, mask_token_id, mask_perc=0.15)
 assert tensor_mask.sum() != tensor_target.sum() and tensor_target.shape == tensor_mask.shape, "Your dataset function does not work!"
 
+# define the config and the model
 config = TextConfig(
-    seqlen=tensor_target.shape[1],
-    dim=8,
-    vocab_size=len(vocabulary),
-    latent_frac=0.15,
-    seed=4,
-    num_layers=1,
+    latent_dim = 8,
+    vocab_size = len(vocabulary),
+    max_len = tensor_target.shape[1],
+    latent_frac = 0.15
 )
+set_seed(config.seed)
 print(config)
-
 bert_model = PerceiverMLM(config)
 print(bert_model.num_parameters())
 
-pbar = trange(10000)
+# train
+pbar = trange(4000)
 optim = Adam(bert_model.parameters(), lr=0.001)
 all_loss = []
 all_acc = []
