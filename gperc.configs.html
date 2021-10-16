@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="gperc Data" href="gperc.data.html" /><link rel="prev" title="1. Quick Dopamine" href="stories.1.html" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="gperc Data" href="gperc.data.html" /><link rel="prev" title="gperc CLI" href="gperc.cli.html" />
 
     <meta name="generator" content="sphinx-4.2.0, furo 2021.10.09"/>
         <title>gperc Configurations - gperc 0.2.0 documentation</title>
@@ -134,7 +134,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -163,10 +163,12 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="gperc.cli.html">gperc CLI</a></li>
 <li class="toctree-l1 current current-page"><a class="current reference internal" href="#">gperc Configurations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gperc.data.html">gperc Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gperc.models.html">gperc Architecture</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gperc.utils.html">Utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="testing.html">Tests</a></li>
 </ul>
 
 </div>
@@ -187,7 +189,7 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
@@ -195,11 +197,88 @@
         <article role="main">
           <section id="module-gperc.configs">
 <span id="gperc-configurations"></span><h1>gperc Configurations<a class="headerlink" href="#module-gperc.configs" title="Permalink to this headline">¶</a></h1>
+<section id="configs">
+<h2>Configs<a class="headerlink" href="#configs" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">PerceiverConfig</span></code> is the final config object that is fed to the model, but it requires knowing
+exactly what you need to know about the data and the architecture. For this very purpose, there are
+some simpler configs that are more convenient to use in some cases. They are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">TextConfig</span></code>: A config that is used for text classification tasks.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ImageConfig</span></code>: A config that is used for image tasks, supports <code class="docutils literal notranslate"><span class="pre">classification</span></code> and <code class="docutils literal notranslate"><span class="pre">segmentation</span></code>.</p></li>
+</ul>
+<section id="documentation">
+<h3>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="gperc.configs.PerceiverConfig">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">gperc.configs.</span></span><span class="sig-name descname"><span class="pre">PerceiverConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gperc.configs.PerceiverConfig" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">gperc.configs.</span></span><span class="sig-name descname"><span class="pre">PerceiverConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_len</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_dim</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">latent_len</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">latent_dim</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">16</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_len</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dim</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ffw_latent</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">32</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos_init_std</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0.02</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_heads</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_layers</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decoder_cross_attention</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decoder_residual</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decoder_projection</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_pos_enc</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pre_processing</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Callable</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">post_processing</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Callable</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gperc.configs.PerceiverConfig" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Since perciever is such a powerful and versatile model, we need a good config for this.
+Different application we will simply define different configurations and wrap them in some
+model registry-kinda thing. There are many attributes in the config file and the user must
+understand what they are doing.</p>
+<p>I highly recommend reading <a class="reference external" href="stories.1.html">examples</a> before you start working with this.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input_len</strong> (<em>int</em><em>, </em><em>optional</em>) – (<code class="docutils literal notranslate"><span class="pre">m</span></code>) The length of the input space</p></li>
+<li><p><strong>input_dim</strong> (<em>int</em><em>, </em><em>optional</em>) – (<code class="docutils literal notranslate"><span class="pre">c</span></code>) The dimension of the input space</p></li>
+<li><p><strong>latent_len</strong> (<em>int</em><em>, </em><em>optional</em>) – (<code class="docutils literal notranslate"><span class="pre">n</span></code>) The length of the latent space</p></li>
+<li><p><strong>latent_dim</strong> (<em>int</em><em>, </em><em>optional</em>) – (<code class="docutils literal notranslate"><span class="pre">d</span></code>) The dimension of the latent space</p></li>
+<li><p><strong>output_len</strong> (<em>int</em><em>, </em><em>optional</em>) – (<code class="docutils literal notranslate"><span class="pre">o</span></code>) The length of the output space</p></li>
+<li><p><strong>output_dim</strong> (<em>int</em><em>, </em><em>optional</em>) – (<code class="docutils literal notranslate"><span class="pre">e</span></code>) The dimension of the output space</p></li>
+<li><p><strong>ffw_latent</strong> (<em>int</em><em>, </em><em>optional</em>) – The dimension of the latent space in the feed-forward</p></li>
+<li><p><strong>pos_init_std</strong> (<em>float</em><em>, </em><em>optional</em>) – The standard deviation of the position encoding</p></li>
+<li><p><strong>num_heads</strong> (<em>int</em><em>, </em><em>optional</em>) – The number of heads in the multi-head attention</p></li>
+<li><p><strong>num_layers</strong> (<em>int</em><em>, </em><em>optional</em>) – The number of layers in the encoder and decoder</p></li>
+<li><p><strong>dropout</strong> (<em>float</em><em>, </em><em>optional</em>) – The dropout rate</p></li>
+<li><p><strong>decoder_cross_attention</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to use cross attention in the decoder</p></li>
+<li><p><strong>decoder_residual</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether <code class="docutils literal notranslate"><span class="pre">output_array</span></code> combines with <code class="docutils literal notranslate"><span class="pre">latent_array</span></code></p></li>
+<li><p><strong>decoder_projection</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to use a projection layer in the decoder, used for
+classification</p></li>
+<li><p><strong>output_pos_enc</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to use position encoding in the decoder</p></li>
+<li><p><strong>seed</strong> (<em>int</em><em>, </em><em>optional</em>) – The seed for the random number generator</p></li>
+<li><p><strong>pre_processing</strong> (<em>Callable</em><em>, </em><em>optional</em>) – A function that takes processes the <code class="docutils literal notranslate"><span class="pre">input_array</span></code> tensor</p></li>
+<li><p><strong>post_processing</strong> (<em>Callable</em><em>, </em><em>optional</em>) – A function that takes processes the <code class="docutils literal notranslate"><span class="pre">output_array</span></code> tensor</p></li>
+<li><p><strong>**kwargs</strong> – Any other arguments to be stored in the config</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="gperc.configs.TextConfig">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">gperc.configs.</span></span><span class="sig-name descname"><span class="pre">TextConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">latent_dim</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vocab_size</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_len</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">latent_frac</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gperc.configs.TextConfig" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gperc.configs.PerceiverConfig" title="gperc.configs.PerceiverConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">gperc.configs.PerceiverConfig</span></code></a></p>
+<p>Config class to specially deal with the text modality cases</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>latent_dim</strong> (<em>int</em>) – The dimension of the latent space</p></li>
+<li><p><strong>vocab_size</strong> (<em>int</em>) – The size of the vocabulary</p></li>
+<li><p><strong>max_len</strong> (<em>int</em>) – The maximum length of the input sequence</p></li>
+<li><p><strong>latent_frac</strong> (<em>float</em>) – <code class="docutils literal notranslate"><span class="pre">latent_len</span></code> will be this multiplied by <code class="docutils literal notranslate"><span class="pre">max_len</span></code></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="gperc.configs.ImageConfig">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">gperc.configs.</span></span><span class="sig-name descname"><span class="pre">ImageConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image_shape</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Tuple</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">latent_dim</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">latent_len</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'classification'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gperc.configs.ImageConfig" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gperc.configs.PerceiverConfig" title="gperc.configs.PerceiverConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">gperc.configs.PerceiverConfig</span></code></a></p>
+<p>Config class to specially deal with the image modality cases</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>image_shape</strong> (<em>Tuple</em>) – The shape of the image</p></li>
+<li><p><strong>latent_dim</strong> (<em>int</em>) – The dimension of the latent space</p></li>
+<li><p><strong>latent_len</strong> (<em>int</em>) – The length of the latent space</p></li>
+<li><p><strong>task</strong> (<em>str</em><em>, </em><em>optional</em>) – The task to be performed, can be one of <code class="docutils literal notranslate"><span class="pre">classification</span></code>,
+and <code class="docutils literal notranslate"><span class="pre">segmentation</span></code></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+</section>
+</section>
 </section>
 
         </article>
@@ -216,14 +295,14 @@
               </div>
               <svg><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="stories.1.html">
+          <a class="prev-page" href="gperc.cli.html">
               <svg><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">1. Quick Dopamine</div>
+                <div class="title">gperc CLI</div>
                 
               </div>
             </a>
@@ -243,8 +322,30 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            Contents
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">gperc Configurations</a><ul>
+<li><a class="reference internal" href="#configs">Configs</a><ul>
+<li><a class="reference internal" href="#documentation">Documentation</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>

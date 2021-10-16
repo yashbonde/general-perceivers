@@ -19,6 +19,12 @@ given sufficient data.
 .. image:: assets/structure.png
    :alt: Alternative text
 
+
+This is mostly an auto generated documentation and documentation for submodules is in the code files.
+When building such a tool it is very important to know how to use it, so I have added
+`stories <stories.html>`__ where you can read and see how to get the thing working.
+
+
 Indices and tables
 ==================
 
@@ -33,11 +39,12 @@ Indices and tables
    :maxdepth: 2
    :caption: Documentation
 
+   gperc.cli
    gperc.configs
    gperc.data
    gperc.models
    gperc.utils
-   tests
+   testing
    
 
 

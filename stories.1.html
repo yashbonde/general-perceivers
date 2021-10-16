@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="gperc Configurations" href="gperc.configs.html" /><link rel="prev" title="Stories" href="stories.html" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="gperc CLI" href="gperc.cli.html" /><link rel="prev" title="Stories" href="stories.html" />
 
     <meta name="generator" content="sphinx-4.2.0, furo 2021.10.09"/>
         <title>1. Quick Dopamine - gperc 0.2.0 documentation</title>
@@ -163,10 +163,12 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="gperc.cli.html">gperc CLI</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gperc.configs.html">gperc Configurations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gperc.data.html">gperc Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gperc.models.html">gperc Architecture</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gperc.utils.html">Utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="testing.html">Tests</a></li>
 </ul>
 
 </div>
@@ -197,9 +199,13 @@
 <h1>1. Quick Dopamine<a class="headerlink" href="#quick-dopamine" title="Permalink to this headline">¶</a></h1>
 <p>Perceiver can consume any kind of data that you give to this, we have added exmaples to test that hypothesis
 out. I have added code for the following:</p>
-<ol class="arabic simple">
-<li><p>Training a CIFAR10 model for image classification and over time and</p></li>
-</ol>
+<p>1. [<a class="reference external" href="https://github.com/yashbonde/general-perceivers/blob/master/examples/train_cifar.py">link</a>]
+<strong>Image classification:</strong>
+Training a CIFAR10 model, the input image is flattened to a 2D array with shape <code class="docutils literal notranslate"><span class="pre">[1024,3]</span></code> and
+the latents are of shape <code class="docutils literal notranslate"><span class="pre">[32,64]</span></code></p>
+<p>1. [<a class="reference external" href="https://github.com/yashbonde/general-perceivers/blob/master/examples/train_lm.py">link</a>]
+<strong>Masked Language Modeling:</strong>
+Training a BERT model on a few articles</p>
 </section>
 
         </article>
@@ -207,12 +213,12 @@ out. I have added code for the following:</p>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="gperc.configs.html">
+          <a class="next-page" href="gperc.cli.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">gperc Configurations</div>
+                <div class="title">gperc CLI</div>
               </div>
               <svg><use href="#svg-arrow-right"></use></svg>
             </a>
