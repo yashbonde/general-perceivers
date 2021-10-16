@@ -19,7 +19,7 @@ jobs:
           path: ~/.local/lib/python3.8/site-packages
           key: ${{ hashFiles('setup.py') }}-${{ hashFiles('requirements.txt') }}
 
-      - name: Install Sphinx, furo, nbox-dependencies
+      - name: Install Sphinx, furo, gperc
         run: |
           # sudo apt-get -y install python3-sphinx
           pip install furo
