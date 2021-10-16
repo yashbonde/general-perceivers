@@ -39,7 +39,7 @@ extensions = [
 autosummary_generate = True  # Turn on sphinx.ext.autosummary
 
 autodoc_default_options = {
-    "show-inheritance": False,
+    "show-inheritance": True,
     "members": True,
     "member-order": "bysource",
     "undoc-members": True,
@@ -48,10 +48,7 @@ autodoc_default_options = {
 autoclass_content = "both"
 
 # Mock imports so even they are not installed the docs are still generated.
-autodoc_mock_imports = [
-    "torch",
-    "numpy"
-]
+autodoc_mock_imports = ["torch", "numpy"]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]

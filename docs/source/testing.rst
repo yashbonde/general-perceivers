@@ -6,5 +6,5 @@ writing big config files (**not YAML** 😛), testing of underlying layer is ver
 I have written tests for:
 
 #. ``test_cifar10_forward``: to test if it can process CIFAR10 dataset
-#. ``test_image_overfit``: to test if we overfit the model on a small random dataset, can it's loss go all
-the way to zero.
+
+#. ``test_image_overfit``: to test if we overfit the model on a small random dataset, can it's loss go all the way to zero.
