@@ -293,7 +293,10 @@ class Perceiver(nn.Module):
         Returns:
             int: number of parameters in the model
         """
-        return sum(p.numel() for p in self.parameters())
+        if include_non_trainable:
+            return sum(p.numel() for p in self.parameters())
+        else:
+            return sum(p.numel() for p in self.parameters() if p.requires_grad)
 
     def forward(self, input_array: torch.Tensor, output_array: torch.Tensor = None, return_attentions: bool = False):
         r"""Performs the forward pass of the Perceiver.
