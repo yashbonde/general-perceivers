@@ -150,7 +150,7 @@ class ImageConfig(PerceiverConfig):
         self.input_dim = image_shape[2]
         self.latent_len = latent_len
         self.latent_dim = latent_dim
-        self.output_len = image_shape[0]
+        self.output_len = 1
         self.output_dim = latent_dim
         self.n_classes = n_classes
         self.task = task
@@ -170,3 +170,4 @@ class ImageConfig(PerceiverConfig):
             self.decoder_cross_attention = True
             self.decoder_residual = False
             self.decoder_projection = True
+            self.output_len = image_shape[0] * image_shape[1]
