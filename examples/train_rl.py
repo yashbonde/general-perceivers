@@ -1,103 +1,142 @@
-import random
-import gym
-import math
+# Example from https://gym.openai.com/evaluations/eval_OeUSZwUcR2qSAqMmOE1UIw/
+
 import numpy as np
+import random
 from collections import deque
 
+import gym
+from gym import wrappers
 import torch
 import torch.nn as nn
-from torch.utils.data import DataLoader, TensorDataset
 
-class DQNCartPoleSolver():
-    def __init__(self, n_episodes=1000, n_win_ticks=195, max_env_steps=None, gamma=1.0, epsilon=1.0, epsilon_min=0.01, epsilon_log_decay=0.995, alpha=0.01, alpha_decay=0.01, batch_size=64, monitor=False, quiet=False):
-        self.memory = deque(maxlen=100000)
-        self.env = gym.make('CartPole-v0')
-        if monitor: self.env = gym.wrappers.Monitor(self.env, '../data/cartpole-1', force=True)
-        self.gamma = gamma
-        self.epsilon = epsilon
-        self.epsilon_min = epsilon_min
-        self.epsilon_decay = epsilon_log_decay
-        self.alpha = alpha
-        self.alpha_decay = alpha_decay
-        self.n_episodes = n_episodes
-        self.n_win_ticks = n_win_ticks
-        self.batch_size = batch_size
-        self.quiet = quiet
-        if max_env_steps is not None: self.env._max_episode_steps = max_env_steps
+ACTIONS_DIM = 2
+OBSERVATIONS_DIM = 4
+MAX_ITERATIONS = 10**6
+LEARNING_RATE = 0.001
 
-        # Init model
-        self.model = nn.Sequential(
-            nn.Linear(4,24),
-            nn.Tanh(),
-            nn.Linear(24,48),
-            nn.Tanh(),
-            nn.Linear(48,2)
+NUM_EPOCHS = 50
+
+GAMMA = 0.99
+REPLAY_MEMORY_SIZE = 1000
+NUM_EPISODES = 10000
+TARGET_UPDATE_FREQ = 100
+MINIBATCH_SIZE = 32
+
+RANDOM_ACTION_DECAY = 0.99
+INITIAL_RANDOM_ACTION = 1
+
+class ReplayBuffer():
+
+  def __init__(self, max_size):
+    self.max_size = max_size
+    self.transitions = deque()
+
+  def add(self, observation, action, reward, observation2):
+    if len(self.transitions) > self.max_size:
+      self.transitions.popleft()
+    self.transitions.append((observation, action, reward, observation2))
+
+  def sample(self, count):
+    return random.sample(self.transitions, count)
+
+  def size(self):
+    return len(self.transitions)
+
+def get_q(model, observation):
+  np_obs = np.reshape(observation, [-1, OBSERVATIONS_DIM])
+  return model(torch.from_numpy(np_obs))
+
+def train(model, observations, targets):
+  obs_tensor = torch.reshape(torch.Tensor(observations), (-1, OBSERVATIONS_DIM))
+  targets_tensor = torch.reshape(torch.stack(targets), (-1, ACTIONS_DIM))
+  criterion = nn.MSELoss()
+  optimizer = torch.optim.Adam(model.parameters(),lr=LEARNING_RATE)
+  targets_pred = model(obs_tensor)
+  loss = criterion(targets_pred, targets_tensor)
+  optimizer.zero_grad()
+  loss.backward()
+  optimizer.step()
+
+def predict(model, observation):
+  np_obs = np.reshape(observation, [-1, OBSERVATIONS_DIM])
+  return model(torch.from_numpy(np_obs))
+
+def get_model():
+  model = nn.Sequential(
+            nn.Linear(OBSERVATIONS_DIM,16),
+            nn.ReLU(),
+            nn.Linear(16,16),
+            nn.ReLU(),
+            nn.Linear(16,2)
         )
+  return model
 
-    def remember(self, state, action, reward, next_state, done):
-        self.memory.append((state, action, reward, next_state, done))
+def update_action(action_model, target_model, sample_transitions):
+  random.shuffle(sample_transitions)
+  batch_observations = []
+  batch_targets = []
 
-    def choose_action(self, state, epsilon):
-        return self.env.action_space.sample() if (np.random.random() <= epsilon) else torch.argmax(self.model(torch.Tensor(state))).item()
+  for sample_transition in sample_transitions:
+    old_observation, action, reward, observation = sample_transition
 
-    def get_epsilon(self, t):
-        return max(self.epsilon_min, min(self.epsilon, 1.0 - math.log10((t + 1) * self.epsilon_decay)))
+    targets = torch.reshape(get_q(action_model, old_observation), (ACTIONS_DIM,1))
+    targets[action] = reward
+    if observation is not None:
+      predictions = predict(target_model, observation)
+      new_action = torch.argmax(predictions).item()
+      targets[action] += GAMMA * predictions[0, new_action]
 
-    def preprocess_state(self, state):
-        return np.reshape(state, [1, 4])
+    batch_observations.append(old_observation)
+    batch_targets.append(targets)
 
-    def replay(self, batch_size):
-        x_batch, y_batch = [], []
-        minibatch = random.sample(
-            self.memory, min(len(self.memory), batch_size))
-        for state, action, reward, next_state, done in minibatch:
-            y_target = self.model(torch.Tensor(state))
-            y_target[0][action] = reward if done else reward + self.gamma * torch.max(self.model(torch.Tensor(next_state))[0])
-            x_batch.append(torch.Tensor(state[0]))
-            y_batch.append(y_target[0])
+  train(action_model, batch_observations, batch_targets)
 
-        criterion = nn.MSELoss()
-        optimizer = torch.optim.Adam(self.model.parameters(),lr=self.alpha, weight_decay=self.alpha_decay)
-        dataset = TensorDataset(torch.stack(x_batch), torch.stack(y_batch))
-        dataloader = DataLoader(dataset, batch_size=len(x_batch))
-        for _,(x, y) in enumerate(dataloader):
-            y_pred = self.model(x)
-            loss = criterion(y_pred, y)
-            optimizer.zero_grad()
-            loss.backward()
-            optimizer.step()
+def main():
+  steps_until_reset = TARGET_UPDATE_FREQ
+  random_action_probability = INITIAL_RANDOM_ACTION
 
-        if self.epsilon > self.epsilon_min:
-            self.epsilon *= self.epsilon_decay
+  replay = ReplayBuffer(REPLAY_MEMORY_SIZE)
 
-    def run(self):
-        scores = deque(maxlen=100)
+  action_model = get_model()
 
-        for e in range(self.n_episodes):
-            state = self.preprocess_state(self.env.reset())
-            done = False
-            i = 0
-            while not done:
-                action = self.choose_action(state, self.get_epsilon(e))
-                next_state, reward, done, _ = self.env.step(action)
-                next_state = self.preprocess_state(next_state)
-                self.remember(state, action, reward, next_state, done)
-                state = next_state
-                i += 1
 
-            scores.append(i)
-            mean_score = np.mean(scores)
-            if mean_score >= self.n_win_ticks and e >= 100:
-                if not self.quiet: print('Ran {} episodes. Solved after {} trials ✔'.format(e, e - 100))
-                return e - 100
-            if e % 100 == 0 and not self.quiet:
-                print('[Episode {}] - Mean survival time over last 100 episodes was {} ticks.'.format(e, mean_score))
+  env = gym.make('CartPole-v0')
+  env = wrappers.Monitor(env, '/tmp/cartpole-experiment-1',video_callable=lambda episode_id: True,force=True)
 
-            self.replay(self.batch_size)
+  for episode in range(NUM_EPISODES):
+    observation = env.reset()
 
-        if not self.quiet: print('Did not solve after {} episodes 😞'.format(e))
-        return e
+    for iteration in range(MAX_ITERATIONS):
+      random_action_probability *= RANDOM_ACTION_DECAY
+      random_action_probability = max(random_action_probability, 0.1)
+      old_observation = observation
 
-if __name__ == '__main__':
-    agent = DQNCartPoleSolver()
-    agent.run()
+
+      if np.random.random() < random_action_probability:
+        action = np.random.choice(range(ACTIONS_DIM))
+      else:
+        q_values = get_q(action_model, observation)
+        action = torch.argmax(q_values).item()
+
+      observation, reward, done, info = env.step(action)
+
+      if done:
+        print('Episode {}, iterations: {}'.format(
+          episode,
+          iteration
+        ))
+
+        reward = -200
+        replay.add(old_observation, action, reward, None)
+        break
+
+      replay.add(old_observation, action, reward, observation)
+
+      if replay.size() >= MINIBATCH_SIZE:
+        sample_transitions = replay.sample(MINIBATCH_SIZE)
+        update_action(action_model, action_model, sample_transitions)
+        steps_until_reset -= 1
+
+
+if __name__ == "__main__":
+  main()
