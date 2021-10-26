@@ -9,6 +9,10 @@ from gym import wrappers
 import torch
 import torch.nn as nn
 
+from gperc.utils import set_seed
+from gperc import ImageConfig, Perceiver
+from gperc.models import build_position_encoding
+
 ACTIONS_DIM = 2
 OBSERVATIONS_DIM = 4
 MAX_ITERATIONS = 10**6
@@ -25,11 +29,22 @@ MINIBATCH_SIZE = 32
 RANDOM_ACTION_DECAY = 0.99
 INITIAL_RANDOM_ACTION = 1
 
-class ReplayBuffer():
+
+class CartpoleSolver():
 
   def __init__(self, max_size):
     self.max_size = max_size
     self.transitions = deque()
+    self.model = nn.Sequential(
+            nn.Linear(OBSERVATIONS_DIM,16),
+            nn.ReLU(),
+            nn.Linear(16,16),
+            nn.ReLU(),
+            nn.Linear(16,2)
+        )
+    self.optimizer = torch.optim.Adam(self.model.parameters(),lr=LEARNING_RATE)
+    self.criterion = nn.MSELoss()
+
 
   def add(self, observation, action, reward, observation2):
     if len(self.transitions) > self.max_size:
@@ -42,101 +57,84 @@ class ReplayBuffer():
   def size(self):
     return len(self.transitions)
 
-def get_q(model, observation):
-  np_obs = np.reshape(observation, [-1, OBSERVATIONS_DIM])
-  return model(torch.from_numpy(np_obs))
+  def get_q(self, observation):
+    np_obs = np.reshape(observation, [-1, OBSERVATIONS_DIM])
+    return self.model(torch.from_numpy(np_obs))
 
-def train(model, observations, targets):
-  obs_tensor = torch.reshape(torch.Tensor(observations), (-1, OBSERVATIONS_DIM))
-  targets_tensor = torch.reshape(torch.stack(targets), (-1, ACTIONS_DIM))
-  criterion = nn.MSELoss()
-  optimizer = torch.optim.Adam(model.parameters(),lr=LEARNING_RATE)
-  targets_pred = model(obs_tensor)
-  loss = criterion(targets_pred, targets_tensor)
-  optimizer.zero_grad()
-  loss.backward()
-  optimizer.step()
+  def train(self, observations, targets):
+    obs_tensor = torch.reshape(torch.Tensor(observations), (-1, OBSERVATIONS_DIM))
+    targets_tensor = torch.reshape(torch.stack(targets), (-1, ACTIONS_DIM))
+    targets_pred = self.model(obs_tensor)
+    loss = self.criterion(targets_pred, targets_tensor)
+    self.optimizer.zero_grad()
+    loss.backward()
+    self.optimizer.step()
 
-def predict(model, observation):
-  np_obs = np.reshape(observation, [-1, OBSERVATIONS_DIM])
-  return model(torch.from_numpy(np_obs))
+  def predict(self, observation):
+    np_obs = np.reshape(observation, [-1, OBSERVATIONS_DIM])
+    return self.model(torch.from_numpy(np_obs))
 
-def get_model():
-  model = nn.Sequential(
-            nn.Linear(OBSERVATIONS_DIM,16),
-            nn.ReLU(),
-            nn.Linear(16,16),
-            nn.ReLU(),
-            nn.Linear(16,2)
-        )
-  return model
+  def update_action(self, sample_transitions):
+    random.shuffle(sample_transitions)
+    batch_observations = []
+    batch_targets = []
 
-def update_action(action_model, target_model, sample_transitions):
-  random.shuffle(sample_transitions)
-  batch_observations = []
-  batch_targets = []
+    for sample_transition in sample_transitions:
+      old_observation, action, reward, observation = sample_transition
+      targets = torch.reshape(self.get_q(old_observation), (ACTIONS_DIM,1))
+      targets[action] = reward
+      if observation is not None:
+        predictions = self.predict(observation)
+        new_action = torch.argmax(predictions).item()
+        targets[action] += GAMMA * predictions[0, new_action]
 
-  for sample_transition in sample_transitions:
-    old_observation, action, reward, observation = sample_transition
+      batch_observations.append(old_observation)
+      batch_targets.append(targets)
+    self.train(batch_observations, batch_targets)
 
-    targets = torch.reshape(get_q(action_model, old_observation), (ACTIONS_DIM,1))
-    targets[action] = reward
-    if observation is not None:
-      predictions = predict(target_model, observation)
-      new_action = torch.argmax(predictions).item()
-      targets[action] += GAMMA * predictions[0, new_action]
+  def run(self):
+    steps_until_reset = TARGET_UPDATE_FREQ
+    random_action_probability = INITIAL_RANDOM_ACTION
+    env = gym.make('CartPole-v0')
+    env = wrappers.Monitor(env, '/tmp/cartpole-experiment-1',video_callable=lambda episode_id: True,force=True)
+    reward_list=[]
+    for episode in range(1,NUM_EPISODES+1):
+      observation = env.reset()
+      for iteration in range(1,MAX_ITERATIONS+1):
+        random_action_probability *= RANDOM_ACTION_DECAY
+        random_action_probability = max(random_action_probability, 0.1)
+        old_observation = observation
 
-    batch_observations.append(old_observation)
-    batch_targets.append(targets)
+        if random.random() < random_action_probability:
+          action = random.choice(range(ACTIONS_DIM))
+        else:
+          q_values = self.get_q(observation)
+          action = torch.argmax(q_values).item()
 
-  train(action_model, batch_observations, batch_targets)
+        observation, reward, done, info = env.step(action)
+        if done:
+          reward_list.append(iteration)
+          print('Episode {}, iterations: {}, Average Reward: {}'.format(
+            episode,
+            iteration,
+            sum(reward_list[-100:])/100))
 
-def main():
-  steps_until_reset = TARGET_UPDATE_FREQ
-  random_action_probability = INITIAL_RANDOM_ACTION
+          reward = -200
+          self.add(old_observation, action, reward, None)
+          break
 
-  replay = ReplayBuffer(REPLAY_MEMORY_SIZE)
+      self.add(old_observation, action, reward, observation)
 
-  action_model = get_model()
-
-
-  env = gym.make('CartPole-v0')
-  env = wrappers.Monitor(env, '/tmp/cartpole-experiment-1',video_callable=lambda episode_id: True,force=True)
-
-  for episode in range(NUM_EPISODES):
-    observation = env.reset()
-
-    for iteration in range(MAX_ITERATIONS):
-      random_action_probability *= RANDOM_ACTION_DECAY
-      random_action_probability = max(random_action_probability, 0.1)
-      old_observation = observation
-
-
-      if np.random.random() < random_action_probability:
-        action = np.random.choice(range(ACTIONS_DIM))
-      else:
-        q_values = get_q(action_model, observation)
-        action = torch.argmax(q_values).item()
-
-      observation, reward, done, info = env.step(action)
-
-      if done:
-        print('Episode {}, iterations: {}'.format(
-          episode,
-          iteration
-        ))
-
-        reward = -200
-        replay.add(old_observation, action, reward, None)
-        break
-
-      replay.add(old_observation, action, reward, observation)
-
-      if replay.size() >= MINIBATCH_SIZE:
-        sample_transitions = replay.sample(MINIBATCH_SIZE)
-        update_action(action_model, action_model, sample_transitions)
+      if self.size() >= MINIBATCH_SIZE:
+        sample_transitions = self.sample(MINIBATCH_SIZE)
+        self.update_action(sample_transitions)
         steps_until_reset -= 1
 
+      if(sum(reward_list[-100:])/100>195):
+        print("Average Reward for consecutive 100 episodes is more than 195!")
+        break
 
-if __name__ == "__main__":
-  main()
+
+set_seed(4)
+agent = CartpoleSolver(REPLAY_MEMORY_SIZE)
+agent.run()
