@@ -34,4 +34,38 @@ out. I have added code for the following:
         latent_frac = 0.15
       )
 
+#. [`link <https://github.com/yashbonde/general-perceivers/blob/master/examples/train_segnet.py>`_] **Image Segmentation:**
+    Training a simple segmentation network on image segmentation `dataset  <https://www.robots.ox.ac.uk/~vgg/data/iseg/>`_.
+    In ``gperc`` you need to define configuration as follows:
+
+    .. code-block:: python
+
+      from gperc import ImageConfig
+
+      config = ImageConfig(
+        image_shape=(224, 224, 3),
+        latent_len=32,
+        latent_dim=32,
+        num_layers=6,
+        n_classes=2,
+        task="segmentation",
+      )
+
+#. [`link <https://github.com/yashbonde/general-perceivers/blob/master/examples/train_lm.py>`_] **Grokking:** (Testing)
+    Grokking is the phenomenon of model snapping into place and learn the rule as you keep on training,
+    from `this <https://mathai-iclr.github.io/papers/papers/MATHAI_29_paper.pdf>`_ paper.
+
+    .. code-block:: python
+
+      from gperc import TextConfig
+
+      config = TextConfig(
+        latent_dim = 8,
+        vocab_size = len(vocabulary),
+        max_len = tensor_target.shape[1],
+        latent_frac = 0.15
+      )
+
+#. **Reinforcement Learning:** (WIP) Training a perceiver to train cartpole problem.
+
 #. More 🍰 on the way
