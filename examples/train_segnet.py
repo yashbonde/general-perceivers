@@ -26,12 +26,12 @@ print("DEVICE:", DEVICE)
 
 
 class MySegnetData(Dataset):
-    def __init__(self, root_folder = "./segnet-images/"):
+    def __init__(self, root_folder="./segnet-images/"):
         if not os.path.exists(root_folder):
-            
+
             images = "https://www.robots.ox.ac.uk/~vgg/data/iseg/data/images.tgz"
             image_gt = "https://www.robots.ox.ac.uk/~vgg/data/iseg/data/images-gt.tgz"
-            
+
             subprocess.run(["wget", images, "-O", "./images.tgz"])
             subprocess.run(["tar", "-xf", "./images.tgz"])
             subprocess.run(["mv", "./images/", root_folder])
@@ -41,7 +41,7 @@ class MySegnetData(Dataset):
             subprocess.run(["tar", "-xf", "./images-gt.tgz"])
             subprocess.run(["mv", "./images-gt/", root_folder])
             os.remove("./images-gt.tgz")
-        
+
         images = sorted(glob(os.path.join(root_folder, "*.jpg")))
         masks = sorted(glob(os.path.join(root_folder, "images-gt/*.png")))
 
@@ -69,22 +69,23 @@ class MySegnetData(Dataset):
 
         src = self.transform(src)
         trg = torch.from_numpy(np.array(trg).astype(np.int32)).long()
-        trg[trg > 0] = 1.
+        trg[trg > 0] = 1.0
         return src, trg
 
-        
+
 ds_train = MySegnetData()
 print(ds_train[0])
 
 config = ImageConfig(
-    image_shape = (224, 224, 3),
-    latent_len = 32,
-    latent_dim = 32,
-    num_layers = 6,
-    n_classes = 2,
-    task = "segmentation",
+    image_shape=(224, 224, 3),
+    latent_len=32,
+    latent_dim=32,
+    num_layers=6,
+    n_classes=2,
+    task="segmentation",
 )
 print(config)
+
 
 class PerceiverSegnet(torch.nn.Module):
     def __init__(self, config):
@@ -96,11 +97,12 @@ class PerceiverSegnet(torch.nn.Module):
     def num_parameters(self):
         return sum(p.numel() for p in self.parameters() if p.requires_grad)
 
-    def forward(self, x, return_attentions = False):
+    def forward(self, x, return_attentions=False):
         pos_emb = torch.cat([self.emb[None, ...] for _ in range(x.shape[0])], dim=0)
         out = x + pos_emb
         out = self.perceiver(out, return_attentions=return_attentions)
         return out
+
 
 set_seed(config.seed)
 model = PerceiverSegnet(config)

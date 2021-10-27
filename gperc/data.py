@@ -105,8 +105,8 @@ class Consumer:
             # define the consumer object
             my_kewl_dataset = Consumer(
                 fps = {
-                "cat": ["img0.png", "/tmp/ssg3hng.png", ...],
-                "dog": ["img1.png", "/tmp/uo35523.png", ...],
+                    "cat": ["img0.png", "/tmp/ssg3hng.png", ...],
+                    "dog": ["img1.png", "/tmp/uo35523.png", ...],
                 },
                 seed = 4
             )
@@ -118,11 +118,11 @@ class Consumer:
             out = my_kewl_dataset[{
                 "cat": 10,
                 "dog": 4
-            }]                          # return random batches of 10 samples from class cat and 4 samples from class dog
+            }] # return random batches of 10 samples from class cat and 4 samples from class dog
             out = my_kewl_dataset[{
                 "cat": [0, 1, 2, 3, 4],
                 "dog": [5, 6, 7, 8, 9]
-            }]                          # return the batches at indices [0...4] and [5...9] from class cat and class dog respectively
+            }] # return the batches at indices [0...4] and [5...9] from class cat and class dog respectively
         """
         if x == None:  # i0
             batch_data = self.idx_to_ds[self.__auto_idx]

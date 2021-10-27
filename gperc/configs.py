@@ -162,7 +162,7 @@ class ImageConfig(PerceiverConfig):
             self.decoder_cross_attention = False
             self.decoder_residual = False
             self.decoder_projection = True
-        
+
         elif task == "segmentation":
             """When performing segmentation task, the output_array will query the latent but we
             should not use the residual connection, and we should use a projection layer to the

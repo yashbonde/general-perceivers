@@ -1,24 +1,23 @@
-"""
+r"""
 Perceiver Model
 ===============
 
-This file has code on the neural network of the pervceiver architecture. ``gperc.models.Perceiver`` sits at \
-    the heart of this operation.
+This file has code on the neural network of the pervceiver architecture. ``gperc.models.Perceiver`` sits at
+the heart of this project.
 """
 
 
 import torch
 from torch import nn
-from typing import Callable, List, Tuple
 
 
-def build_position_encoding(position_encoding_type: str, config: dict, num_index_items: int, emb_dim: int):
+def build_position_encoding(position_encoding_type, config, num_index_items, emb_dim):
     r"""Get the positional encoding matrix. If ``position_encoding_type == "trainable"`` then a random normal
     matrix is returned, if it is "sinusoid" then
 
     Args:
-        position_encoding_type (str): [description]
-        config: Config
+        position_encoding_type (str): type of embedding, should be one of "trainable", "sinusoid"
+        config: ``gperc.PerceiverConfig``
         num_index_items (int): number of items in the embedding, eg. ``vocab_size``
         emb_dim (int): embedding dimension
 
@@ -38,7 +37,7 @@ def build_position_encoding(position_encoding_type: str, config: dict, num_index
 
 
 class Block(nn.Module):
-    def __init__(self, kv_dim: int, q_dim: int, num_heads: int, ffw_dim: int, dropout: float = 0.0, add_residual: bool = False):
+    def __init__(self, kv_dim, q_dim, num_heads, ffw_dim, dropout=0.0, add_residual=False):
         r"""Generic block with Attention and MLP layers
 
         Args:
@@ -79,9 +78,8 @@ class Block(nn.Module):
         )
         self.drop_mlp = nn.Dropout(dropout)
 
-        # print("<<<<<<<", self.dim, self.q_dim)
 
-    def forward(self, kv, q) -> Tuple[torch.Tensor, torch.Tensor]:
+    def forward(self, kv, q):
         r"""Forward pass of the block that taken in a a key-value tensor and a query tensor and performs
         the attention and mlp layers. Since it consumes ``kv`` and ``q`` seperately, the blocks are responisble
         for cross attention like features. Returns a
@@ -155,7 +153,7 @@ class Encoder(nn.Module):
             add_residual=True,
         )
 
-    def forward(self, input_array, latent_query) -> Tuple[torch.Tensor, List[torch.Tensor]]:
+    def forward(self, input_array, latent_query):
         r"""Performs the forward pass of the encoder block.
 
         Args:
@@ -191,7 +189,7 @@ class Processor(nn.Module):
             ]
         )
 
-    def forward(self, x) -> Tuple[torch.Tensor, List[torch.Tensor]]:
+    def forward(self, x):
         r"""Performs the forward pass of the processor block.
 
         Args:
@@ -238,7 +236,7 @@ class Decoder(nn.Module):
         if config.decoder_projection:
             self.projection = nn.Linear(config.latent_dim, config.n_classes)
 
-    def forward(self, latents, decoder_query) -> Tuple[torch.Tensor, List[torch.Tensor]]:
+    def forward(self, latents, decoder_query):
         r"""Performs the forward pass of the decoder block.
 
         Args:
@@ -262,7 +260,7 @@ class Decoder(nn.Module):
 
 
 class Perceiver(nn.Module):
-    def __init__(self, config, input_preprocessing: Callable = None, output_postprocessing: Callable = None):
+    def __init__(self, config, input_preprocessing=None, output_postprocessing=None):
         r"""Unassuming Perceiver Architecture that sits at the heart of this project.
 
         Args:
@@ -332,3 +330,39 @@ class Perceiver(nn.Module):
             return out, [*enc_att, *proc_att, *dec_att]
         else:
             return out
+
+
+# ====== use case specific models ====== #
+
+class PerceiverMLM(torch.nn.Module):
+    def __init__(self, config):
+        super().__init__()
+        self.emb = torch.nn.Embedding(config.vocab_size, config.input_dim)
+        self.pos_emb = torch.nn.Parameter(torch.normal(mean=0, std=0.02, size=(config.input_len, config.input_dim)))
+        self.perc = Perceiver(config)
+
+    def num_parameters(self):
+        return sum(p.numel() for p in self.parameters() if p.requires_grad)
+
+    def forward(self, x):
+        pos = torch.cat([self.pos_emb[None, ...] for _ in range(x.shape[0])], dim=0)
+        x = self.emb(x) + pos
+        logits = self.perc(x, x)
+        return logits
+
+
+class PerceiverImage(torch.nn.Module):
+    def __init__(self, config):
+        super().__init__()
+        self.config = config
+        self.emb = build_position_encoding("trainable", config, 1024, 3)
+        self.perceiver = Perceiver(config)
+
+    def num_parameters(self):
+        return sum(p.numel() for p in self.parameters() if p.requires_grad)
+
+    def forward(self, x):
+        pos_emb = torch.cat([self.emb[None, ...] for _ in range(x.shape[0])], dim=0)
+        out = x + pos_emb
+        return self.perceiver(out)
+
