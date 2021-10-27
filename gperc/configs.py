@@ -13,6 +13,7 @@ Documentation
 -------------
 """
 
+import json
 from pprint import pformat
 from typing import Callable, Tuple
 
@@ -100,6 +101,14 @@ class PerceiverConfig:
 
     def __repr__(self) -> str:
         return pformat(self.__dict__, indent=2, sort_dicts=True)
+
+    def to_json(self, path):
+        with open(path, "w") as f:
+            json.dump(self.__dict__, f, indent=2, sort_keys=True)
+
+    def from_json(self, path):
+        with open(path, "r") as f:
+            self.__dict__ = json.load(f)
 
 
 class TextConfig(PerceiverConfig):

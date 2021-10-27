@@ -33,10 +33,10 @@ Documentation
 """
 
 import torch
-
+import numpy as np
 
 class Consumer:
-    def __init__(self, fps, tokenizer, seqlen=512, batch_size=1, seed=4):
+    def __init__(self, fps, tokenizer=None, seqlen=512, batch_size=1, seed=4):
         r"""Consumer takes in list of files along with it's meta data and becomes a callable generator.
         When calling you can tell it what kind of data that you want. It is a full fledged data engine in itself.
         This will sit in nbox one day and thus has to be engineered in such a what that it is production grade with
@@ -52,7 +52,7 @@ class Consumer:
               #. **(F0)** list of strings: ``["file1.txt", "file2.txt", ...]``
               #. **(F1)** list of dicts: ``[{"file1.txt": "cat1"}, {"file2.txt": "cat2"}, ...]``
               #. **(F2)** dict of strings: ``{"file1.txt": "cat1", "file2.txt": "cat2", ...}``
-              #. **(F3)** dict of categories: ``{"cat1": ["file1.txt", "file2.txt", ...], "cat2": ["file3.txt", "file4.txt", ...]}``
+              #. **(F3)** dict of categories (IR): ``{"cat1": ["file1.txt", "file2.txt", ...], "cat2": ["file3.txt", "file4.txt", ...]}``
 
           tokenizer (TokenizerObject): Object of the Tokenizer
           seqlen (int, optional): Length of the Sequence. Defaults to 512.
@@ -60,30 +60,44 @@ class Consumer:
           seed(int, optional): Seed value for randomness used to determine the batches
         """
         # parse the fps and covert to fixed internal reprensentaion -> {"meta": ["file1.txt", "file2.txt", ...]}
+        self._mode = None
         if isinstance(fps, list):
             if isinstance(fps[0], str):  # F0
                 fps = {"null": fps}  # list of files will start with null category
+                self._mode = "F0"
             elif isinstance(fps[0], dict):  # F1
-                fps = {}
+                _fps = {}
                 for x in fps:
                     k = list(x.keys())[0]
                     v = list(x.values())[0]
-                    fps.setdefault(v, []).append(k)  # list of dicts will start with category as key
+                    _fps.setdefault(v, []).append(k)  # list of dicts will start with category as key
+                fps = _fps
+                self._mode = "F1"
             else:
                 raise ValueError("fps is not in the correct format")
         elif isinstance(fps, dict):
             k = next(iter(fps))
             v = fps[k]
             assert isinstance(k, str), f"key has to be a string got: {type(k)}"
-            if isinstance(v, list):  # F2
+            if isinstance(v, str):  # F2
+                assert all([isinstance(_v, str) for _k, _v in fps.items()]), "All values should be a string"
+                _fps = {}
+                for k,v in fps.items():
+                    _fps.setdefault(v, []).append(k)
+                fps = _fps
+                self._mode = "F2"
+            elif isinstance(v, list):  # F3
                 # this is the format we want so just perform checks
                 assert all([isinstance(_v, list) for _k, _v in fps.items()]), "All values should be a list"
-            elif isinstance(v, str):  # F3
-                assert all([isinstance(_v, str) for _k, _v in fps.items()]), "All values should be a string"
-                fps[k] = [v]  # dict with strings as values gets converted to list of strings
+                self._mode = "F3"
         else:
             raise ValueError(f"fps is not in the correct format: {type(fps)}")
         self.fps = fps
+
+        self.__auto_idx = 0
+
+    def __repr__(self):
+        return f"<gperc Consumer (mode: {self._mode} | n_classes: {len(self.fps)})>"
 
     def __getitem__(self, x=None) -> torch.Tensor:
         """
@@ -125,22 +139,38 @@ class Consumer:
             }] # return the batches at indices [0...4] and [5...9] from class cat and class dog respectively
         """
         if x == None:  # i0
-            batch_data = self.idx_to_ds[self.__auto_idx]
+            idx_to_ds = list(self.fps.values())[0]
+            batch_data = idx_to_ds[self.__auto_idx]
             self.__auto_idx += 1
+
         elif isinstance(x, int):  # i1
-            batch_data = self.idx_to_ds[x]
+            idx_to_ds = list(self.fps.values())[0]
+            batch_data = idx_to_ds[x]
+
         elif isinstance(x, slice):  # i2
-            batch_data = self.idx_to_ds[x]
+            idx_to_ds = list(self.fps.values())[0]
+            batch_data = idx_to_ds[x]
+
         elif isinstance(x, (list, tuple)):  # i3
             assert isinstance(x[0], int), f"Items in list must be integers"
-            batch_data = [self.idx_to_ds[i] for i in x]
+            idx_to_ds = list(self.fps.values())[0]
+            batch_data = [idx_to_ds[i] for i in x]
+        
         elif isinstance(x, dict):
+            if len(self.fps) == 1 and "null" in self.fps:
+                raise ValueError("There is no category provided, so you cannot try to make a batch from a dict")
             assert isinstance(list(x.values())[0], (int, list)), f"Values in dict must be integers or lists"
+            keys_in_x_not_in_fps = set(x.keys()).difference(set(self.fps.keys()))
+            assert keys_in_x_not_in_fps == set(), f"Keys in dict must be in fps: {keys_in_x_not_in_fps}"
             batch_data = []
             for k, v in x.items():
+                idx_to_ds = self.fps[k]
                 if isinstance(v, int):  # i4
-                    batch_data.extend(self.class_to_idx.sample(k, v))
+                    assert v > 0, f"Values in dict must be positive integers"
+                    batch_data.extend(np.random.choice(idx_to_ds, v, replace=False).tolist())
                 elif isinstance(v, list):  # i5
-                    batch_data.extend([self.idx_to_ds[i] for i in v])
+                    batch_data.extend([idx_to_ds[i] for i in v])
         else:
             raise KeyError(f"Invalid input type: {type(x)}")
+
+        return batch_data
