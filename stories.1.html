@@ -161,6 +161,7 @@
 <li class="toctree-l2"><a class="reference internal" href="stories.2.html">2. Using CLIs (WIP)</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="remote.html">YoCo (Remote Execution)</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
 <ul>
@@ -233,6 +234,41 @@ average pooling across <code class="docutils literal notranslate"><span class="p
 </dd>
 </dl>
 </li>
+<li><dl>
+<dt>[<a class="reference external" href="https://github.com/yashbonde/general-perceivers/blob/master/examples/train_segnet.py">link</a>] <strong>Image Segmentation:</strong></dt><dd><p>Training a simple segmentation network on image segmentation <a class="reference external" href="https://www.robots.ox.ac.uk/~vgg/data/iseg/">dataset</a>.
+In <code class="docutils literal notranslate"><span class="pre">gperc</span></code> you need to define configuration as follows:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gperc</span> <span class="kn">import</span> <span class="n">ImageConfig</span>
+
+<span class="n">config</span> <span class="o">=</span> <span class="n">ImageConfig</span><span class="p">(</span>
+  <span class="n">image_shape</span><span class="o">=</span><span class="p">(</span><span class="mi">224</span><span class="p">,</span> <span class="mi">224</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
+  <span class="n">latent_len</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
+  <span class="n">latent_dim</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
+  <span class="n">num_layers</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span>
+  <span class="n">n_classes</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+  <span class="n">task</span><span class="o">=</span><span class="s2">"segmentation"</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</li>
+<li><dl>
+<dt>[<a class="reference external" href="https://github.com/yashbonde/general-perceivers/blob/master/examples/train_lm.py">link</a>] <strong>Grokking:</strong> (Testing)</dt><dd><p>Grokking is the phenomenon of model snapping into place and learn the rule as you keep on training,
+from <a class="reference external" href="https://mathai-iclr.github.io/papers/papers/MATHAI_29_paper.pdf">this</a> paper.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gperc</span> <span class="kn">import</span> <span class="n">TextConfig</span>
+
+<span class="n">config</span> <span class="o">=</span> <span class="n">TextConfig</span><span class="p">(</span>
+  <span class="n">latent_dim</span> <span class="o">=</span> <span class="mi">8</span><span class="p">,</span>
+  <span class="n">vocab_size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">vocabulary</span><span class="p">),</span>
+  <span class="n">max_len</span> <span class="o">=</span> <span class="n">tensor_target</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+  <span class="n">latent_frac</span> <span class="o">=</span> <span class="mf">0.15</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</li>
+<li><p><strong>Reinforcement Learning:</strong> (WIP) Training a perceiver to train cartpole problem.</p></li>
 <li><p>More 🍰 on the way</p></li>
 </ol>
 </section>

@@ -161,6 +161,7 @@
 <li class="toctree-l2"><a class="reference internal" href="stories.2.html">2. Using CLIs (WIP)</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="remote.html">YoCo (Remote Execution)</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
 <ul class="current">
@@ -265,7 +266,7 @@ classification</p></li>
 </dd></dl>
 <dl class="py class">
 <dt class="sig sig-object py" id="gperc.configs.ImageConfig">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">gperc.configs.</span></span><span class="sig-name descname"><span class="pre">ImageConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image_shape</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Tuple</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">latent_len</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">latent_dim</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'classification'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gperc.configs.ImageConfig" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">gperc.configs.</span></span><span class="sig-name descname"><span class="pre">ImageConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image_shape</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Tuple</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">latent_len</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">latent_dim</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_classes</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'classification'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gperc.configs.ImageConfig" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#gperc.configs.PerceiverConfig" title="gperc.configs.PerceiverConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">gperc.configs.PerceiverConfig</span></code></a></p>
 <p>Config class to specially deal with the image modality cases</p>
 <dl class="field-list simple">
@@ -274,6 +275,7 @@ classification</p></li>
 <li><p><strong>image_shape</strong> (<em>Tuple</em>) – The shape of the image in [H, W, C]</p></li>
 <li><p><strong>latent_len</strong> (<em>int</em>) – The length of the latent space</p></li>
 <li><p><strong>latent_dim</strong> (<em>int</em>) – The dimension of the latent space</p></li>
+<li><p><strong>n_classes</strong> (<em>int</em>) – The number of classes after the output space</p></li>
 <li><p><strong>task</strong> (<em>str</em><em>, </em><em>optional</em>) – The task to be performed, can be one of <code class="docutils literal notranslate"><span class="pre">classification</span></code>,
 and <code class="docutils literal notranslate"><span class="pre">segmentation</span></code></p></li>
 </ul>

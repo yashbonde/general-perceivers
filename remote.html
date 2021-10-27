@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="YoCo (Remote Execution)" href="remote.html" /><link rel="prev" title="1. Quick Dopamine" href="stories.1.html" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="gperc CLI" href="gperc.cli.html" /><link rel="prev" title="2. Using CLIs (WIP)" href="stories.2.html" />
 
     <meta name="generator" content="sphinx-4.2.0, furo 2021.10.09"/>
-        <title>2. Using CLIs (WIP) - gperc 0.2 documentation</title>
+        <title>YoCo (Remote Execution) - gperc 0.2 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?digest=16fb25fabf47304eee183a5e9af80b1ba98259b1" />
@@ -156,12 +156,12 @@
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <p class="caption" role="heading"><span class="caption-text">Stories</span></p>
 <ul class="current">
-<li class="toctree-l1 current has-children"><a class="reference internal" href="stories.html">Stories</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l1 has-children"><a class="reference internal" href="stories.html">Stories</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="stories.1.html">1. Quick Dopamine</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">2. Using CLIs (WIP)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="stories.2.html">2. Using CLIs (WIP)</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="remote.html">YoCo (Remote Execution)</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">YoCo (Remote Execution)</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
 <ul>
@@ -197,9 +197,49 @@
           </label>
         </div>
         <article role="main">
-          <section id="using-clis-wip">
-<h1>2. Using CLIs (WIP)<a class="headerlink" href="#using-clis-wip" title="Permalink to this headline">¶</a></h1>
-<p>In this section we will see how to use CLI to create orchestration pipelines for your use cases.</p>
+          <section id="yoco-remote-execution">
+<h1>YoCo (Remote Execution)<a class="headerlink" href="#yoco-remote-execution" title="Permalink to this headline">¶</a></h1>
+<p>Code: <a class="reference external" href="https://github.com/yashbonde/general-perceivers/tree/master/remote">github</a>, will eventually
+be merged into the master of <code class="docutils literal notranslate"><span class="pre">gperc</span></code>.</p>
+<p>This is a new kind of programming concept I have been experimenting with. The way code is written
+for networking systems, is very shallow and does not have a class (metaphorically). It is way too
+complicated to use and build really cool apps. Current code has the following problems:</p>
+<ol class="arabic simple">
+<li><p>There is a big lag in getting feedback of why something failed on networks. In order to see why
+my code did not work I need to go through a maze of tabs (yes Kubernetes, pointing at you),
+that then tells me why something did not work.</p></li>
+<li><p>Often there is a simple typo that leads to the crash, it takes in 0.5 seconds to fix it, but
+it took me over 40 seconds to figure out why. This latency is very bad, and outright biggest
+reason for slowdown of process.</p></li>
+<li><p>Someone smart told me “In order to process something, you must control it, and to control it,
+you must measure it”. Lately I have been obsessed with golang’s function handling which forces
+returning the error. If you are writing things that talk to each other then they must be written
+in such a way the error is clearly conveyed.</p></li>
+<li><p>Businesses and individuals alike will in near future have large amounts of compute at their
+disposal. This amount will be much much larger than what we have today and that will mostly be
+satisfied by server farms. Network businesses (facebook, netflix, etc.) will continue becoming
+more and more common replacing already failing desktop app market.</p></li>
+<li><p>There needs to be an easy way to manage such machines and softwares running this. Testing will
+become more important and we all know how easy it currently is.</p></li>
+</ol>
+<p>I use Python the most and it is the simplest, so taking inspiration from python module structure, we
+can expose the methods over the internet as well. That is the application can be turned into a server
+with a command. The same code can be used as an application (‘client mode’) and can be testes
+(‘local mode’) and can be served.</p>
+<p>When we write client server applications there is a mismatch between the server functionalities (API
+endpoints) and their actual location (codefile location in repo). This asymmetry means that you always
+need to write client code and server code in two different ways. There are reasons why this is approach
+works eg. apps that logically need only few endpoints (Instagram?), where interaction with the server
+is low. But then there are other where the interaction with server is so high that it requires very
+fast, reliable way to use it locally and on cloud with any noticeable difference.</p>
+<p><strong>This means the behaviour of the code written must be the same cross format.</strong></p>
+<p>For this I have written a simple decorator in python that takes in the path, return types, defaults and
+reads annotation from python spec. This new approach is language agnostic because it’s core objective
+is not to tell syntax but the idea that cross format performance must be pre-tested and part of the
+next generation of systems languages.</p>
+<p>Not everything that shines if gold. What is that one problem that can be made into a business. As far
+as I go, I think this suits perfectly to the applications that require precision control in high
+compute environments, like orchestration of systems.</p>
 </section>
 
         </article>
@@ -207,23 +247,23 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="remote.html">
+          <a class="next-page" href="gperc.cli.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">YoCo (Remote Execution)</div>
+                <div class="title">gperc CLI</div>
               </div>
               <svg><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="stories.1.html">
+          <a class="prev-page" href="stories.2.html">
               <svg><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">1. Quick Dopamine</div>
+                <div class="title">2. Using CLIs (WIP)</div>
                 
               </div>
             </a>
@@ -235,7 +275,7 @@
               and
               <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
               <a href="https://github.com/pradyunsg/furo">Furo theme</a>. |
-            <a class="muted-link" href="_sources/stories.2.rst.txt"
+            <a class="muted-link" href="_sources/remote.rst.txt"
                rel="nofollow">
               Show Source
             </a>

@@ -161,6 +161,7 @@
 <li class="toctree-l2"><a class="reference internal" href="stories.2.html">2. Using CLIs (WIP)</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="remote.html">YoCo (Remote Execution)</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
 <ul class="current">
@@ -275,8 +276,8 @@ traits as <a class="reference external" href="https://nimbleboxai.github.io/nbox
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># define the consumer object</span>
 <span class="n">my_kewl_dataset</span> <span class="o">=</span> <span class="n">Consumer</span><span class="p">(</span>
     <span class="n">fps</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">"cat"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"img0.png"</span><span class="p">,</span> <span class="s2">"/tmp/ssg3hng.png"</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span>
-    <span class="s2">"dog"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"img1.png"</span><span class="p">,</span> <span class="s2">"/tmp/uo35523.png"</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span>
+        <span class="s2">"cat"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"img0.png"</span><span class="p">,</span> <span class="s2">"/tmp/ssg3hng.png"</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span>
+        <span class="s2">"dog"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"img1.png"</span><span class="p">,</span> <span class="s2">"/tmp/uo35523.png"</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span>
     <span class="p">},</span>
     <span class="n">seed</span> <span class="o">=</span> <span class="mi">4</span>
 <span class="p">)</span>
@@ -288,11 +289,11 @@ traits as <a class="reference external" href="https://nimbleboxai.github.io/nbox
 <span class="n">out</span> <span class="o">=</span> <span class="n">my_kewl_dataset</span><span class="p">[{</span>
     <span class="s2">"cat"</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
     <span class="s2">"dog"</span><span class="p">:</span> <span class="mi">4</span>
-<span class="p">}]</span>                          <span class="c1"># return random batches of 10 samples from class cat and 4 samples from class dog</span>
+<span class="p">}]</span> <span class="c1"># return random batches of 10 samples from class cat and 4 samples from class dog</span>
 <span class="n">out</span> <span class="o">=</span> <span class="n">my_kewl_dataset</span><span class="p">[{</span>
     <span class="s2">"cat"</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span>
     <span class="s2">"dog"</span><span class="p">:</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">]</span>
-<span class="p">}]</span>                          <span class="c1"># return the batches at indices [0...4] and [5...9] from class cat and class dog respectively</span>
+<span class="p">}]</span> <span class="c1"># return the batches at indices [0...4] and [5...9] from class cat and class dog respectively</span>
 </pre></div>
 </div>
 </dd></dl>

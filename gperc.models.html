@@ -161,6 +161,7 @@
 <li class="toctree-l2"><a class="reference internal" href="stories.2.html">2. Using CLIs (WIP)</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="remote.html">YoCo (Remote Execution)</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
 <ul class="current">
@@ -200,17 +201,18 @@
 <span id="gperc-architecture"></span><h1>gperc Architecture<a class="headerlink" href="#module-gperc.models" title="Permalink to this headline">¶</a></h1>
 <section id="perceiver-model">
 <h2>Perceiver Model<a class="headerlink" href="#perceiver-model" title="Permalink to this headline">¶</a></h2>
-<p>This file has code on the neural network of the pervceiver architecture. <code class="docutils literal notranslate"><span class="pre">gperc.models.Perceiver</span></code> sits at     the heart of this operation.</p>
+<p>This file has code on the neural network of the pervceiver architecture. <code class="docutils literal notranslate"><span class="pre">gperc.models.Perceiver</span></code> sits at
+the heart of this project.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="gperc.models.build_position_encoding">
-<span class="sig-prename descclassname"><span class="pre">gperc.models.</span></span><span class="sig-name descname"><span class="pre">build_position_encoding</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">position_encoding_type</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_index_items</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">emb_dim</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gperc.models.build_position_encoding" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">gperc.models.</span></span><span class="sig-name descname"><span class="pre">build_position_encoding</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">position_encoding_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_index_items</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">emb_dim</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gperc.models.build_position_encoding" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the positional encoding matrix. If <code class="docutils literal notranslate"><span class="pre">position_encoding_type</span> <span class="pre">==</span> <span class="pre">"trainable"</span></code> then a random normal
 matrix is returned, if it is “sinusoid” then</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>position_encoding_type</strong> (<em>str</em>) – [description]</p></li>
-<li><p><strong>config</strong> – Config</p></li>
+<li><p><strong>position_encoding_type</strong> (<em>str</em>) – type of embedding, should be one of “trainable”, “sinusoid”</p></li>
+<li><p><strong>config</strong> – <code class="docutils literal notranslate"><span class="pre">gperc.PerceiverConfig</span></code></p></li>
 <li><p><strong>num_index_items</strong> (<em>int</em>) – number of items in the embedding, eg. <code class="docutils literal notranslate"><span class="pre">vocab_size</span></code></p></li>
 <li><p><strong>emb_dim</strong> (<em>int</em>) – embedding dimension</p></li>
 </ul>
@@ -242,7 +244,7 @@ matrix is returned, if it is “sinusoid” then</p>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="gperc.models.Block.forward">
-<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kv</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">q</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">torch.Tensor</span><span class="p"><span class="pre">,</span> </span><span class="pre">torch.Tensor</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#gperc.models.Block.forward" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kv</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">q</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gperc.models.Block.forward" title="Permalink to this definition">¶</a></dt>
 <dd><p>Forward pass of the block that taken in a a key-value tensor and a query tensor and performs
 the attention and mlp layers. Since it consumes <code class="docutils literal notranslate"><span class="pre">kv</span></code> and <code class="docutils literal notranslate"><span class="pre">q</span></code> seperately, the blocks are responisble
 for cross attention like features. Returns a</p>
@@ -277,7 +279,7 @@ for cross attention like features. Returns a</p>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="gperc.models.Encoder.forward">
-<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">latent_query</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">torch.Tensor</span><span class="p"><span class="pre">,</span> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">torch.Tensor</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#gperc.models.Encoder.forward" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">latent_query</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gperc.models.Encoder.forward" title="Permalink to this definition">¶</a></dt>
 <dd><p>Performs the forward pass of the encoder block.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -307,7 +309,7 @@ for cross attention like features. Returns a</p>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="gperc.models.Processor.forward">
-<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">torch.Tensor</span><span class="p"><span class="pre">,</span> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">torch.Tensor</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#gperc.models.Processor.forward" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gperc.models.Processor.forward" title="Permalink to this definition">¶</a></dt>
 <dd><p>Performs the forward pass of the processor block.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -337,7 +339,7 @@ for cross attention like features. Returns a</p>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="gperc.models.Decoder.forward">
-<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">latents</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decoder_query</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">torch.Tensor</span><span class="p"><span class="pre">,</span> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">torch.Tensor</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#gperc.models.Decoder.forward" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">latents</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decoder_query</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gperc.models.Decoder.forward" title="Permalink to this definition">¶</a></dt>
 <dd><p>Performs the forward pass of the decoder block.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -409,6 +411,32 @@ for cross attention like features. Returns a</p>
 </dd>
 </dl>
 </dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="gperc.models.PerceiverMLM">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">gperc.models.</span></span><span class="sig-name descname"><span class="pre">PerceiverMLM</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gperc.models.PerceiverMLM" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="gperc.models.PerceiverMLM.num_parameters">
+<span class="sig-name descname"><span class="pre">num_parameters</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gperc.models.PerceiverMLM.num_parameters" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gperc.models.PerceiverMLM.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gperc.models.PerceiverMLM.forward" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="gperc.models.PerceiverImage">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">gperc.models.</span></span><span class="sig-name descname"><span class="pre">PerceiverImage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gperc.models.PerceiverImage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="gperc.models.PerceiverImage.num_parameters">
+<span class="sig-name descname"><span class="pre">num_parameters</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gperc.models.PerceiverImage.num_parameters" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gperc.models.PerceiverImage.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gperc.models.PerceiverImage.forward" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 </dd></dl>
 </section>
 </section>

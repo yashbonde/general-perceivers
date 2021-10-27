@@ -56,6 +56,7 @@ Indices and tables
    :caption: Stories
 
    stories
+   remote
 
 
 .. toctree::
