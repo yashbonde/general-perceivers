@@ -10,8 +10,9 @@ import torch
 import torch.nn as nn
 
 from gperc.utils import set_seed
-from gperc import ImageConfig, Perceiver
-from gperc.models import build_position_encoding
+from gperc import PerceiverConfig, Perceiver
+
+import matplotlib.pyplot as plt
 
 ACTIONS_DIM = 2
 OBSERVATIONS_DIM = 4
@@ -29,19 +30,27 @@ MINIBATCH_SIZE = 32
 RANDOM_ACTION_DECAY = 0.99
 INITIAL_RANDOM_ACTION = 1
 
+xvalues=[]
+yvalues=[]
+
+config = PerceiverConfig(
+    input_len  = 1,
+    input_dim = 4,
+    latent_len = 16,
+    latent_dim = 16,
+    output_len = 1,
+    output_dim = 2,
+    decoder_cross_attention=True,
+    decoder_projection=False
+)
+print(config)
 
 class CartpoleSolver():
 
   def __init__(self, max_size):
     self.max_size = max_size
     self.transitions = deque()
-    self.model = nn.Sequential(
-            nn.Linear(OBSERVATIONS_DIM,16),
-            nn.ReLU(),
-            nn.Linear(16,16),
-            nn.ReLU(),
-            nn.Linear(16,2)
-        )
+    self.model = Perceiver(config)
     self.optimizer = torch.optim.Adam(self.model.parameters(),lr=LEARNING_RATE)
     self.criterion = nn.MSELoss()
 
@@ -58,12 +67,12 @@ class CartpoleSolver():
     return len(self.transitions)
 
   def get_q(self, observation):
-    np_obs = np.reshape(observation, [-1, OBSERVATIONS_DIM])
+    np_obs = np.reshape(observation, [-1, 1, OBSERVATIONS_DIM])
     return self.model(torch.from_numpy(np_obs))
 
   def train(self, observations, targets):
-    obs_tensor = torch.reshape(torch.Tensor(observations), (-1, OBSERVATIONS_DIM))
-    targets_tensor = torch.reshape(torch.stack(targets), (-1, ACTIONS_DIM))
+    obs_tensor = torch.reshape(torch.Tensor(observations), (-1, 1, OBSERVATIONS_DIM))
+    targets_tensor = torch.reshape(torch.stack(targets), (-1, 1, ACTIONS_DIM))
     targets_pred = self.model(obs_tensor)
     loss = self.criterion(targets_pred, targets_tensor)
     self.optimizer.zero_grad()
@@ -71,7 +80,7 @@ class CartpoleSolver():
     self.optimizer.step()
 
   def predict(self, observation):
-    np_obs = np.reshape(observation, [-1, OBSERVATIONS_DIM])
+    np_obs = np.reshape(observation, [-1, 1, OBSERVATIONS_DIM])
     return self.model(torch.from_numpy(np_obs))
 
   def update_action(self, sample_transitions):
@@ -86,7 +95,7 @@ class CartpoleSolver():
       if observation is not None:
         predictions = self.predict(observation)
         new_action = torch.argmax(predictions).item()
-        targets[action] += GAMMA * predictions[0, new_action]
+        targets[action] += GAMMA * predictions[0, 0, new_action]
 
       batch_observations.append(old_observation)
       batch_targets.append(targets)
@@ -118,7 +127,8 @@ class CartpoleSolver():
             episode,
             iteration,
             sum(reward_list[-100:])/100))
-
+          xvalues.append(episode)
+          yvalues.append(sum(reward_list[-100:])/100)
           reward = -200
           self.add(old_observation, action, reward, None)
           break
@@ -138,3 +148,5 @@ class CartpoleSolver():
 set_seed(4)
 agent = CartpoleSolver(REPLAY_MEMORY_SIZE)
 agent.run()
+plt.plot(xvalues, yvalues)
+plt.show()
