@@ -1,0 +1,600 @@
+<!doctype html>
+<html class="no-js">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
+
+    <meta name="generator" content="sphinx-4.2.0, furo 2021.10.09"/>
+        <title>gperc.models - gperc 0.2 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?digest=16fb25fabf47304eee183a5e9af80b1ba98259b1" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  body[data-theme="dark"] {
+    --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+  }
+  @media (prefers-color-scheme: dark) {
+    body:not([data-theme="light"]) {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+  }
+</style></head>
+  <body>
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path stroke="none" d="M0 0h24v24H0z" />
+      <line x1="4" y1="6" x2="20" y2="6" />
+      <line x1="10" y1="12" x2="20" y2="12" />
+      <line x1="6" y1="18" x2="20" y2="18" />
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../index.html"><div class="brand">gperc 0.2 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
+  
+  
+  <span class="sidebar-brand-text">gperc 0.2 documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
+  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Stories</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../stories.html">Stories</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../stories.1.html">1. Quick Dopamine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../stories.2.html">2. Using CLIs (WIP)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../remote.html">YoCo (Remote Execution)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../gperc.cli.html">gperc CLI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gperc.configs.html">gperc Configurations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gperc.data.html">gperc Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gperc.models.html">gperc Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gperc.utils.html">Utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../testing.html">Tests</a></li>
+</ul>
+
+</div>
+</div>
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <div class="content-icon-container">
+          <div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <h1>Source code for gperc.models</h1><div class="highlight"><pre>
+<span></span><span class="sa">r</span><span class="sd">"""</span>
+<span class="sd">Perceiver Model</span>
+<span class="sd">===============</span>
+
+<span class="sd">This file has code on the neural network of the pervceiver architecture. ``gperc.models.Perceiver`` sits at</span>
+<span class="sd">the heart of this project.</span>
+<span class="sd">"""</span>
+
+
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">from</span> <span class="nn">torch</span> <span class="k">import</span> <span class="n">nn</span>
+
+
+<div class="viewcode-block" id="build_position_encoding"><a class="viewcode-back" href="../../gperc.models.html#gperc.models.build_position_encoding">[docs]</a><span class="k">def</span> <span class="nf">build_position_encoding</span><span class="p">(</span><span class="n">position_encoding_type</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">num_index_items</span><span class="p">,</span> <span class="n">emb_dim</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">"""Get the positional encoding matrix. If ``position_encoding_type == "trainable"`` then a random normal</span>
+<span class="sd">    matrix is returned, if it is "sinusoid" then</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        position_encoding_type (str): type of embedding, should be one of "trainable", "sinusoid"</span>
+<span class="sd">        config: ``gperc.PerceiverConfig``</span>
+<span class="sd">        num_index_items (int): number of items in the embedding, eg. ``vocab_size``</span>
+<span class="sd">        emb_dim (int): embedding dimension</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        ``torch.nn.Parameter``: Item that can be used as a parameter in a ``torch.nn.Embedding``</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">position_encoding_type</span> <span class="o">==</span> <span class="s2">"trainable"</span><span class="p">:</span>
+        <span class="c1"># first define the positional encodings</span>
+        <span class="n">latent_pos_emb</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">mean</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">std</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">pos_init_std</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">num_index_items</span><span class="p">,</span> <span class="n">emb_dim</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="n">latent_pos_emb</span>
+    <span class="k">elif</span> <span class="n">position_encoding_type</span> <span class="o">==</span> <span class="s2">"sinusoid"</span><span class="p">:</span>
+        <span class="c1"># then define the positional encodings</span>
+        <span class="k">def</span> <span class="nf">get_pos_encoding</span><span class="p">(</span><span class="n">position</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">position</span> <span class="o">/</span> <span class="p">(</span><span class="mi">10000</span> <span class="o">**</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">position</span> <span class="o">/</span> <span class="n">num_index_items</span><span class="p">))))</span>
+
+        <span class="k">return</span> <span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">get_pos_encoding</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_index_items</span><span class="p">)])</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="Block"><a class="viewcode-back" href="../../gperc.models.html#gperc.models.Block">[docs]</a><span class="k">class</span> <span class="nc">Block</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kv_dim</span><span class="p">,</span> <span class="n">q_dim</span><span class="p">,</span> <span class="n">num_heads</span><span class="p">,</span> <span class="n">ffw_dim</span><span class="p">,</span> <span class="n">dropout</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">add_residual</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">"""Generic block with Attention and MLP layers</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            kv_dim (int): dimension of the key-value embeddings</span>
+<span class="sd">            q_dim (int): dimension of the query embeddings</span>
+<span class="sd">            num_heads (int): number of heads in the multihead attention</span>
+<span class="sd">            ffw_dim (int): dimension of the feed-forward layer</span>
+<span class="sd">            dropout (float, optional): dropout rate</span>
+<span class="sd">            add_residual (bool, optional): whether to add residual to the query</span>
+<span class="sd">        """</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="n">q_dim</span> <span class="o">%</span> <span class="n">num_heads</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">"Latent Dimension must be divisible by number of heads"</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">kv_dim</span> <span class="o">=</span> <span class="n">kv_dim</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">q_dim</span> <span class="o">=</span> <span class="n">q_dim</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dim</span> <span class="o">=</span> <span class="n">q_dim</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_heads</span> <span class="o">=</span> <span class="n">num_heads</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ffw_dim</span> <span class="o">=</span> <span class="n">ffw_dim</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_residual</span> <span class="o">=</span> <span class="n">add_residual</span>
+
+        <span class="c1"># layer norm the inputs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lnkv</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">LayerNorm</span><span class="p">(</span><span class="n">kv_dim</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lnq</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">LayerNorm</span><span class="p">(</span><span class="n">q_dim</span><span class="p">)</span>
+
+        <span class="c1"># items for attention</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fv</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">kv_dim</span><span class="p">,</span> <span class="n">q_dim</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fk</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">kv_dim</span><span class="p">,</span> <span class="n">q_dim</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fq</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">q_dim</span><span class="p">,</span> <span class="n">q_dim</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">drop_att</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">dropout</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fo</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">q_dim</span><span class="p">,</span> <span class="n">q_dim</span><span class="p">)</span>
+
+        <span class="c1"># items for mlp</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lnqkv</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">LayerNorm</span><span class="p">(</span><span class="n">q_dim</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mlp</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">q_dim</span><span class="p">,</span> <span class="n">ffw_dim</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">GELU</span><span class="p">(),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">ffw_dim</span><span class="p">,</span> <span class="n">q_dim</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">drop_mlp</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">dropout</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Block.forward"><a class="viewcode-back" href="../../gperc.models.html#gperc.models.Block.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kv</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">"""Forward pass of the block that taken in a a key-value tensor and a query tensor and performs</span>
+<span class="sd">        the attention and mlp layers. Since it consumes ``kv`` and ``q`` seperately, the blocks are responisble</span>
+<span class="sd">        for cross attention like features. Returns a</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            kv (torch.Tensor): tensor to extract information from</span>
+<span class="sd">            q (torch.Tensor): tensor for querying the information</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Tuple[torch.Tensor, torch.Tensor]: tuple of output Tensor and Attention matrix</span>
+<span class="sd">        """</span>
+        <span class="c1"># first layer norm the inputs</span>
+        <span class="c1"># print("kv", kv.shape)</span>
+        <span class="c1"># print("q", q.shape)</span>
+
+        <span class="n">_q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lnq</span><span class="p">(</span><span class="n">q</span><span class="p">)</span>
+        <span class="n">_kv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lnkv</span><span class="p">(</span><span class="n">kv</span><span class="p">)</span>
+
+        <span class="c1"># print("q:", q.shape)</span>
+        <span class="c1"># print("kv:", kv.shape)</span>
+
+        <span class="c1"># then compute the query, key, value and split for multihead attention</span>
+        <span class="n">Q</span><span class="p">,</span> <span class="n">K</span><span class="p">,</span> <span class="n">V</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fq</span><span class="p">(</span><span class="n">_q</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">fk</span><span class="p">(</span><span class="n">_kv</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">fv</span><span class="p">(</span><span class="n">_kv</span><span class="p">)</span>
+        <span class="c1"># Q = einops(Q, 'b n d -&gt; b h n m', d = self.q_dim, n = self.num_heads, m = self.q_dim // self.num_heads)</span>
+        <span class="c1"># K = einops.rearrange(K, 'b n d -&gt; b h n m', d = self.kv_dim, n = self.num_heads, m = self.kv_dim // self.num_heads)</span>
+        <span class="c1"># V = einops.rearrange(V, 'b n d -&gt; b h n m', d = self.kv_dim, n = self.num_heads, m = self.kv_dim // self.num_heads)</span>
+        <span class="n">Q</span><span class="p">,</span> <span class="n">K</span><span class="p">,</span> <span class="n">V</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_heads</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">//</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_heads</span><span class="p">),</span> <span class="p">(</span><span class="n">Q</span><span class="p">,</span> <span class="n">K</span><span class="p">,</span> <span class="n">V</span><span class="p">)))</span>
+        <span class="c1"># print("Q:", Q.shape)</span>
+        <span class="c1"># print("K:", K.shape)</span>
+        <span class="c1"># print("V:", V.shape)</span>
+        <span class="c1"># print(K.permute(0, 1, 3, 2).shape)</span>
+        <span class="n">A</span> <span class="o">=</span> <span class="n">Q</span> <span class="o">@</span> <span class="n">K</span><span class="o">.</span><span class="n">permute</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dim</span> <span class="o">**</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">)</span>  <span class="c1"># [b, h, n, e/h] @ [b, h, e/h, m] -&gt; [b, h, n, m]</span>
+        <span class="n">A</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">drop_att</span><span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">))</span>  <span class="c1"># [b, h, n, m]</span>
+        <span class="c1"># print("A:", A.shape)</span>
+        <span class="c1"># print((A @ V).shape)</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="p">(</span><span class="n">A</span> <span class="o">@</span> <span class="n">V</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">q</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">q_dim</span><span class="p">))</span>  <span class="c1"># [b, h, n, m] @ [b, h, m, e/h] -&gt; [b, h, n, e/h] -&gt; [b, n, e]</span>
+        <span class="c1"># print("out:", out.shape)</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fo</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+        <span class="c1"># print("out:", out.shape)</span>
+
+        <span class="c1"># Optionally include a residual to the query.</span>
+        <span class="c1"># Consider omitting the residual if the semantics of query and output</span>
+        <span class="c1"># are different, e.g. if queries are positions and outputs are pixels.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_residual</span><span class="p">:</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="n">out</span> <span class="o">+</span> <span class="n">q</span>
+
+        <span class="c1"># print("&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;", out.shape)</span>
+
+        <span class="c1"># now we will pass it through the mlp</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mlp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lnqkv</span><span class="p">(</span><span class="n">out</span><span class="p">))</span> <span class="o">+</span> <span class="n">out</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">drop_mlp</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">out</span><span class="p">,</span> <span class="n">A</span></div></div>
+
+
+<div class="viewcode-block" id="Encoder"><a class="viewcode-back" href="../../gperc.models.html#gperc.models.Encoder">[docs]</a><span class="k">class</span> <span class="nc">Encoder</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">"""Generic Encoder Block of the model which takes in ``input_array`` as key-value and \</span>
+<span class="sd">            ``latent_array`` as query.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            config: Config</span>
+<span class="sd">        """</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">encoder_block</span> <span class="o">=</span> <span class="n">Block</span><span class="p">(</span>
+            <span class="n">kv_dim</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">input_dim</span><span class="p">,</span>
+            <span class="n">q_dim</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">latent_dim</span><span class="p">,</span>
+            <span class="n">num_heads</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">num_heads</span><span class="p">,</span>
+            <span class="n">ffw_dim</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">ffw_latent</span><span class="p">,</span>
+            <span class="n">dropout</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">dropout</span><span class="p">,</span>
+            <span class="n">add_residual</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="Encoder.forward"><a class="viewcode-back" href="../../gperc.models.html#gperc.models.Encoder.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_array</span><span class="p">,</span> <span class="n">latent_query</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">"""Performs the forward pass of the encoder block.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            input_array (torch.Tensor): Input array to the Encoder block, read paper for reference</span>
+<span class="sd">            latent_query (torch.Tensor): Latent query to the Encoder block, read paper for reference</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Tuple[torch.Tensor, List[torch.Tensor]]: The output of the encoder block and the attention matrices</span>
+<span class="sd">        """</span>
+        <span class="n">out</span><span class="p">,</span> <span class="n">A</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">encoder_block</span><span class="p">(</span><span class="n">input_array</span><span class="p">,</span> <span class="n">latent_query</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">out</span><span class="p">,</span> <span class="p">[</span><span class="n">A</span><span class="p">]</span></div></div>
+
+
+<div class="viewcode-block" id="Processor"><a class="viewcode-back" href="../../gperc.models.html#gperc.models.Processor">[docs]</a><span class="k">class</span> <span class="nc">Processor</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">"""Generic Processor Block of the model which takes in ``latent_array`` as key-value-query</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            config: Config</span>
+<span class="sd">        """</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">processors</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ModuleList</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="n">Block</span><span class="p">(</span>
+                    <span class="n">kv_dim</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">latent_dim</span><span class="p">,</span>
+                    <span class="n">q_dim</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">latent_dim</span><span class="p">,</span>
+                    <span class="n">num_heads</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">num_heads</span><span class="p">,</span>
+                    <span class="n">ffw_dim</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">ffw_latent</span><span class="p">,</span>
+                    <span class="n">dropout</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">dropout</span><span class="p">,</span>
+                    <span class="n">add_residual</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">num_layers</span><span class="p">)</span>
+            <span class="p">]</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="Processor.forward"><a class="viewcode-back" href="../../gperc.models.html#gperc.models.Processor.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">"""Performs the forward pass of the processor block.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            x (torch.Tensor): Input array to the Processor block, this should always be the latent_array</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Tuple[torch.Tensor, List[torch.Tensor]]: The output of the processor block and the attention matrices</span>
+<span class="sd">        """</span>
+        <span class="n">attentions</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">processor</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">processors</span><span class="p">):</span>
+            <span class="n">x</span><span class="p">,</span> <span class="n">A</span> <span class="o">=</span> <span class="n">processor</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+            <span class="n">attentions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">x</span><span class="p">,</span> <span class="n">attentions</span></div></div>
+
+
+<div class="viewcode-block" id="Decoder"><a class="viewcode-back" href="../../gperc.models.html#gperc.models.Decoder">[docs]</a><span class="k">class</span> <span class="nc">Decoder</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">"""Generic Decoder Block of the model which takes in ``latent_array`` as key-value and \</span>
+<span class="sd">            ``output_array`` as query.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            config: Config</span>
+<span class="sd">        """</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="k">def</span> <span class="nf">__check_conditionals</span><span class="p">():</span>
+            <span class="k">assert</span> <span class="n">config</span><span class="o">.</span><span class="n">decoder_cross_attention</span> <span class="ow">or</span> <span class="n">config</span><span class="o">.</span><span class="n">decoder_projection</span><span class="p">,</span> <span class="s2">"Must have either cross attention or projection"</span>
+            <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">decoder_projection</span><span class="p">:</span>
+                <span class="k">assert</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="s2">"n_classes"</span><span class="p">)</span> <span class="ow">and</span> <span class="n">config</span><span class="o">.</span><span class="n">n_classes</span><span class="p">,</span> <span class="s2">"Must have n_classes &gt; 0 if using projection"</span>
+
+        <span class="n">__check_conditionals</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>
+
+        <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">decoder_cross_attention</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">decoder_block</span> <span class="o">=</span> <span class="n">Block</span><span class="p">(</span>
+                <span class="n">kv_dim</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">latent_dim</span><span class="p">,</span>
+                <span class="n">q_dim</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">output_dim</span><span class="p">,</span>
+                <span class="n">num_heads</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">num_heads</span><span class="p">,</span>
+                <span class="n">ffw_dim</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">ffw_latent</span><span class="p">,</span>
+                <span class="n">dropout</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">dropout</span><span class="p">,</span>
+                <span class="n">add_residual</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">decoder_residual</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">decoder_projection</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">projection</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">latent_dim</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">n_classes</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Decoder.forward"><a class="viewcode-back" href="../../gperc.models.html#gperc.models.Decoder.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">latents</span><span class="p">,</span> <span class="n">decoder_query</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">"""Performs the forward pass of the decoder block.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            latents (torch.Tensor): Latent array to the Decoder block, read paper for reference</span>
+<span class="sd">            decoder_query (torch.Tensor): Output array to the Decoder block, read paper for reference</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Tuple[torch.Tensor, List[torch.Tensor]]: The output of the decoder block and the attention matrices</span>
+<span class="sd">        """</span>
+        <span class="n">attentions</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">decoder_cross_attention</span><span class="p">:</span>
+            <span class="n">x</span><span class="p">,</span> <span class="n">A</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">decoder_block</span><span class="p">(</span><span class="n">latents</span><span class="p">,</span> <span class="n">decoder_query</span><span class="p">)</span>
+            <span class="n">attentions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">latents</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"projection"</span><span class="p">):</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">projection</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">x</span><span class="p">,</span> <span class="n">attentions</span></div></div>
+
+
+<div class="viewcode-block" id="Perceiver"><a class="viewcode-back" href="../../gperc.models.html#gperc.models.Perceiver">[docs]</a><span class="k">class</span> <span class="nc">Perceiver</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">input_preprocessing</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output_postprocessing</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">"""Unassuming Perceiver Architecture that sits at the heart of this project.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            config: Config</span>
+<span class="sd">            input_preprocessing (Callable, optional): callable object that takes in ``input_array`` and performs \</span>
+<span class="sd">                operation on it.</span>
+<span class="sd">            output_postprocessing (Callable, optional): callable object that takes in ``output_array`` and performs \</span>
+<span class="sd">                operation on it.</span>
+<span class="sd">        """</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_preprocessing</span> <span class="o">=</span> <span class="n">input_preprocessing</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_postprocessing</span> <span class="o">=</span> <span class="n">output_postprocessing</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">pos_emb_latent</span> <span class="o">=</span> <span class="n">build_position_encoding</span><span class="p">(</span><span class="s2">"trainable"</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">latent_len</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">latent_dim</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pos_emb_decoder</span> <span class="o">=</span> <span class="n">build_position_encoding</span><span class="p">(</span><span class="s2">"trainable"</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">output_len</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">output_dim</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">encoder</span> <span class="o">=</span> <span class="n">Encoder</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">processor</span> <span class="o">=</span> <span class="n">Processor</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">decoder</span> <span class="o">=</span> <span class="n">Decoder</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Perceiver.num_parameters"><a class="viewcode-back" href="../../gperc.models.html#gperc.models.Perceiver.num_parameters">[docs]</a>    <span class="k">def</span> <span class="nf">num_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">include_non_trainable</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">"""function that returns the number of parameters in the modle</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            include_non_trainable (bool, optional): If true includes tensors that have ``requires_grad=False`` as well</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            int: number of parameters in the model</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="n">include_non_trainable</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">numel</span><span class="p">()</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">())</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">numel</span><span class="p">()</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">()</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">requires_grad</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Perceiver.forward"><a class="viewcode-back" href="../../gperc.models.html#gperc.models.Perceiver.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_array</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">output_array</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">return_attentions</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">"""Performs the forward pass of the Perceiver.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            input_array (torch.Tensor): Input array to the Perceiver, read paper for reference</span>
+<span class="sd">            output_array (torch.Tensor, optional): Output array to the Perceiver, read paper for reference</span>
+<span class="sd">            return_attentions (bool, optional): If true returns the attention matrices</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Tuple[torch.Tensor, List[torch.Tensor]] if ``return_attentions`` is True else torch.Tensor: \</span>
+<span class="sd">                The output of the Perceiver and the attention matrices</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_preprocessing</span><span class="p">:</span>
+            <span class="n">input_array</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_preprocessing</span><span class="p">(</span><span class="n">input_array</span><span class="p">)</span>
+
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">input_array</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">,</span> <span class="s2">"Input array must be of shape (batch_size, input_len, input_dim)"</span>
+
+        <span class="c1"># enc -&gt; proc -&gt; decode</span>
+        <span class="n">latent_array</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">pos_emb_latent</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">input_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">latents</span><span class="p">,</span> <span class="n">enc_att</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">encoder</span><span class="p">(</span><span class="n">input_array</span><span class="p">,</span> <span class="n">latent_array</span><span class="p">)</span>
+        <span class="n">latents</span><span class="p">,</span> <span class="n">proc_att</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">processor</span><span class="p">(</span><span class="n">latents</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">output_array</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">decoder_query</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">pos_emb_decoder</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">latents</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">decoder_query</span> <span class="o">=</span> <span class="n">output_array</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">pos_emb_decoder</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>  <span class="c1"># add the positional embedding to output array</span>
+        <span class="n">out</span><span class="p">,</span> <span class="n">dec_att</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">decoder</span><span class="p">(</span><span class="n">latents</span><span class="p">,</span> <span class="n">decoder_query</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_postprocessing</span><span class="p">:</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_postprocessing</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">return_attentions</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">out</span><span class="p">,</span> <span class="p">[</span><span class="o">*</span><span class="n">enc_att</span><span class="p">,</span> <span class="o">*</span><span class="n">proc_att</span><span class="p">,</span> <span class="o">*</span><span class="n">dec_att</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">out</span></div></div>
+
+
+<span class="c1"># ====== use case specific models ====== #</span>
+
+<div class="viewcode-block" id="PerceiverMLM"><a class="viewcode-back" href="../../gperc.models.html#gperc.models.PerceiverMLM">[docs]</a><span class="k">class</span> <span class="nc">PerceiverMLM</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">emb</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Embedding</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">vocab_size</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">input_dim</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pos_emb</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">mean</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">std</span><span class="o">=</span><span class="mf">0.02</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">input_len</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">input_dim</span><span class="p">)))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">perc</span> <span class="o">=</span> <span class="n">Perceiver</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+
+<div class="viewcode-block" id="PerceiverMLM.num_parameters"><a class="viewcode-back" href="../../gperc.models.html#gperc.models.PerceiverMLM.num_parameters">[docs]</a>    <span class="k">def</span> <span class="nf">num_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">numel</span><span class="p">()</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">()</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">requires_grad</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PerceiverMLM.forward"><a class="viewcode-back" href="../../gperc.models.html#gperc.models.PerceiverMLM.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="n">pos</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">pos_emb</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">emb</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="n">pos</span>
+        <span class="n">logits</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">perc</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">logits</span></div></div>
+
+
+<div class="viewcode-block" id="PerceiverImage"><a class="viewcode-back" href="../../gperc.models.html#gperc.models.PerceiverImage">[docs]</a><span class="k">class</span> <span class="nc">PerceiverImage</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">emb</span> <span class="o">=</span> <span class="n">build_position_encoding</span><span class="p">(</span><span class="s2">"trainable"</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="mi">1024</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">perceiver</span> <span class="o">=</span> <span class="n">Perceiver</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+
+<div class="viewcode-block" id="PerceiverImage.num_parameters"><a class="viewcode-back" href="../../gperc.models.html#gperc.models.PerceiverImage.num_parameters">[docs]</a>    <span class="k">def</span> <span class="nf">num_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">numel</span><span class="p">()</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">()</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">requires_grad</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PerceiverImage.forward"><a class="viewcode-back" href="../../gperc.models.html#gperc.models.PerceiverImage.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="n">pos_emb</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">emb</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="n">pos_emb</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">perceiver</span><span class="p">(</span><span class="n">out</span><span class="p">)</span></div></div>
+
+</pre></div>
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          
+          
+        </div>
+
+        <div class="related-information">
+              Copyright &#169; 2021, Yash Bonde |
+            Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
+              and
+              <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+              <a href="https://github.com/pradyunsg/furo">Furo theme</a>.
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer no-toc">
+      
+      
+      
+    </aside>
+  </div>
+</div><script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/scripts/main.js"></script>
+    </body>
+</html>

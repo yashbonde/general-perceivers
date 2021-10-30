@@ -1,0 +1,367 @@
+<!doctype html>
+<html class="no-js">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
+
+    <meta name="generator" content="sphinx-4.2.0, furo 2021.10.09"/>
+        <title>gperc.cli - gperc 0.2 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?digest=16fb25fabf47304eee183a5e9af80b1ba98259b1" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  body[data-theme="dark"] {
+    --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+  }
+  @media (prefers-color-scheme: dark) {
+    body:not([data-theme="light"]) {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+  }
+</style></head>
+  <body>
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path stroke="none" d="M0 0h24v24H0z" />
+      <line x1="4" y1="6" x2="20" y2="6" />
+      <line x1="10" y1="12" x2="20" y2="12" />
+      <line x1="6" y1="18" x2="20" y2="18" />
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../index.html"><div class="brand">gperc 0.2 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
+  
+  
+  <span class="sidebar-brand-text">gperc 0.2 documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../../search.html" role="search">
+  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Stories</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../stories.html">Stories</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../stories.1.html">1. Quick Dopamine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../stories.2.html">2. Using CLIs (WIP)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../remote.html">YoCo (Remote Execution)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../gperc.cli.html">gperc CLI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gperc.configs.html">gperc Configurations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gperc.data.html">gperc Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gperc.models.html">gperc Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gperc.utils.html">Utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../testing.html">Tests</a></li>
+</ul>
+
+</div>
+</div>
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <div class="content-icon-container">
+          <div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <h1>Source code for gperc.cli</h1><div class="highlight"><pre>
+<span></span><span class="sa">r</span><span class="sd">"""</span>
+<span class="sd">CLI</span>
+<span class="sd">===</span>
+
+<span class="sd">**DO NOT USE (WIP)**</span>
+
+<span class="sd">This module contains the command line interface for gperc. Is this really needed? I am not sure.</span>
+<span class="sd">But having something along the lines of CLI means that running orchestration jobs would be possible.</span>
+<span class="sd">Add code to your github actions by loading data from one place, dispatch this for training and then</span>
+<span class="sd">testing it out all via CLI.</span>
+
+<span class="sd">I am using ``python-fire`` from google for this, `link &lt;https://github.com/google/python-fire&gt;`_, that</span>
+<span class="sd">can convert any arbitrary python object to a CLI. Normally I would use this with a ``main`` function,</span>
+<span class="sd">but since there has to be configuration in the CLI, I am using a class ``Main`` (yes, I know, weird).</span>
+
+<span class="sd">This is how something like loading a dataset and running a model would look like:</span>
+
+<span class="sd">.. code-block:: bash</span>
+<span class="sd">    </span>
+<span class="sd">    python3 -m gperc --modality "image/class" \</span>
+<span class="sd">        data --dataset_name "cifar10" \</span>
+<span class="sd">        arch --mno [1024,128,1] --ced [3,32,10] \</span>
+<span class="sd">        train --epochs 10 --batch_size 32 --lr 0.001 \</span>
+<span class="sd">        start</span>
+
+<span class="sd">In the first line we have invoked the ``gperc`` module with modality (read below), in the next three</span>
+<span class="sd">lines we have specified the data, the architecture and the training parameters. It ends with the</span>
+<span class="sd">``start`` command, which starts the training.</span>
+<span class="sd">"""</span>
+
+
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">List</span>
+<span class="kn">from</span> <span class="nn">types</span> <span class="k">import</span> <span class="n">SimpleNamespace</span>
+
+
+<div class="viewcode-block" id="Main"><a class="viewcode-back" href="../../gperc.cli.html#gperc.cli.Main">[docs]</a><span class="k">class</span> <span class="nc">Main</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">modality</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">"""This is the main class for running any kind.</span>
+
+<span class="sd">        **DO NOT USE (WIP)**</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            modality (str): what exactly is the purpose of this network</span>
+<span class="sd">            seed (int, optional): seed for randomness. Defaults to 4.</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">modality</span> <span class="o">=</span> <span class="n">modality</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">seed</span> <span class="o">=</span> <span class="n">seed</span>
+
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">"CLI work in progress, please use the pacakge instead"</span><span class="p">)</span>
+
+        <span class="c1"># this is the keys</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__train_is_go</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__data_is_go</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__arch_is_go</span> <span class="o">=</span> <span class="kc">False</span>
+
+<div class="viewcode-block" id="Main.train"><a class="viewcode-back" href="../../gperc.cli.html#gperc.cli.Main.train">[docs]</a>    <span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">num_steps</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">lr</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">"""Config for training</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            batch_size (int): batch size</span>
+<span class="sd">            num_steps (int): number of steps to train the model</span>
+<span class="sd">            lr (float): learning rate</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">train_config</span> <span class="o">=</span> <span class="n">SimpleNamespace</span><span class="p">(</span>
+            <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span>
+            <span class="n">num_steps</span><span class="o">=</span><span class="n">num_steps</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__train_is_go</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="Main.data"><a class="viewcode-back" href="../../gperc.cli.html#gperc.cli.Main.data">[docs]</a>    <span class="k">def</span> <span class="nf">data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">vocab_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">image_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">"""Config for dataset</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            dataset_name (str): name of the dataset to load</span>
+<span class="sd">            vocab_size (int, optional): size of the vocabulary, has to be provided if this has \</span>
+<span class="sd">                ``text`` in modality.</span>
+<span class="sd">            image_size (int, optional): size of the image dim, has to be provided if this has \</span>
+<span class="sd">                ``image`` in the modality</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_config</span> <span class="o">=</span> <span class="n">SimpleNamespace</span><span class="p">(</span>
+            <span class="n">dataset_name</span><span class="o">=</span><span class="n">dataset_name</span><span class="p">,</span>
+            <span class="n">vocab_size</span><span class="o">=</span><span class="n">vocab_size</span><span class="p">,</span>
+            <span class="n">image_size</span><span class="o">=</span><span class="n">image_size</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__data_is_go</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="Main.arch"><a class="viewcode-back" href="../../gperc.cli.html#gperc.cli.Main.arch">[docs]</a>    <span class="k">def</span> <span class="nf">arch</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">mno</span><span class="p">:</span> <span class="n">List</span><span class="p">,</span>
+        <span class="n">ced</span><span class="p">:</span> <span class="n">List</span><span class="p">,</span>
+        <span class="n">ffw_width</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sa">r</span><span class="sd">"""Config for architecture. This is simple and takes in list of ints</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            mno (List): The first dimension of input, latent and output arrays</span>
+<span class="sd">            ced (List): The second dimension of input, latent and output arrays</span>
+<span class="sd">            ffw_width (float, optional): The width of the feed forward layer as ratio of dims</span>
+<span class="sd">        """</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mno</span><span class="p">,</span> <span class="nb">list</span><span class="p">),</span> <span class="s2">"mno must be a list"</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ced</span><span class="p">,</span> <span class="nb">list</span><span class="p">),</span> <span class="s2">"ced must be a list"</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">arch_config</span> <span class="o">=</span> <span class="n">SimpleNamespace</span><span class="p">(</span>
+            <span class="n">input_len</span><span class="o">=</span><span class="n">mno</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="n">input_dim</span><span class="o">=</span><span class="n">ced</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="n">latent_len</span><span class="o">=</span><span class="n">mno</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+            <span class="n">latent_dim</span><span class="o">=</span><span class="n">ced</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+            <span class="n">output_len</span><span class="o">=</span><span class="n">mno</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+            <span class="n">output_dim</span><span class="o">=</span><span class="n">ced</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+            <span class="n">ffw_latent</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">mno</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">ffw_width</span><span class="p">),</span>
+            <span class="n">ffw_output</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">mno</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="n">ffw_width</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__arch_is_go</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="Main.start"><a class="viewcode-back" href="../../gperc.cli.html#gperc.cli.Main.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log_level</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">"""This function triggers the CLI and shut has to be last in the chain</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            log_level (int, optional): log level in the order ``[logging.NOTSET, logging.DEBUG, \</span>
+<span class="sd">                logging.INFO, logging.WARNING, logging.ERROR, logging.CRITICAL]``</span>
+<span class="sd">        """</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">__train_is_go</span><span class="p">,</span> <span class="s2">"You need to add train config, do gperc train --help"</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">__data_is_go</span><span class="p">,</span> <span class="s2">"You need to add data config, do gperc data --help"</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">__arch_is_go</span><span class="p">,</span> <span class="s2">"You need to add arch config, do gperc arch --help"</span>
+
+        <span class="n">level</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">NOTSET</span><span class="p">,</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">,</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">,</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">,</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">CRITICAL</span><span class="p">,</span>
+        <span class="p">][</span><span class="n">log_level</span><span class="p">]</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"running this code"</span><span class="p">)</span></div></div>
+</pre></div>
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          
+          
+        </div>
+
+        <div class="related-information">
+              Copyright &#169; 2021, Yash Bonde |
+            Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
+              and
+              <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+              <a href="https://github.com/pradyunsg/furo">Furo theme</a>.
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer no-toc">
+      
+      
+      
+    </aside>
+  </div>
+</div><script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/scripts/main.js"></script>
+    </body>
+</html>

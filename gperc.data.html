@@ -221,12 +221,86 @@ structured way to represent and fetch the information. This is done as follows:<
 <li><p><code class="docutils literal notranslate"><span class="pre">P</span></code> are the basic data types that are used in the data. This is the actual data     you want your model to process.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">S</span></code> are the structures that are used to represent the data. This is how data is organised.</p></li>
 </ol>
-<p>In our day to day life, we call data is nothing but an interplay of <code class="docutils literal notranslate"><span class="pre">P</span></code> and <code class="docutils literal notranslate"><span class="pre">S</span></code>.</p>
+<p>In our day to day life, what we call data is nothing but an interplay of one <code class="docutils literal notranslate"><span class="pre">P</span></code> and many <code class="docutils literal notranslate"><span class="pre">S</span></code>.</p>
+<section id="raw-bytes-tokenization">
+<h3>Raw Bytes Tokenization<a class="headerlink" href="#raw-bytes-tokenization" title="Permalink to this headline">¶</a></h3>
+<p>I am choosing to read binary instead of tokenizing text, this is similar to how computer programs
+like to work.</p>
+<ol class="arabic simple">
+<li><p>A good way to measure the amount of information processed per sample is     <code class="docutils literal notranslate"><span class="pre">bytes_processed</span> <span class="pre">=</span> <span class="pre">n_bytes</span> <span class="pre">*</span> <span class="pre">seqlen</span></code>, eg. <code class="docutils literal notranslate"><span class="pre">8192</span> <span class="pre">*</span> <span class="pre">2</span> <span class="pre">=</span> <span class="pre">16KB</span></code>. <code class="docutils literal notranslate"><span class="pre">n_bytes</span></code> defines the total     number of tokens as <code class="docutils literal notranslate"><span class="pre">n_tokens</span> <span class="pre">=</span> <span class="pre">2</span> <span class="pre">**</span> <span class="pre">(nbytes</span> <span class="pre">*</span> <span class="pre">8)</span> <span class="pre">=&gt;</span> <span class="pre">(256,</span> <span class="pre">65536,</span> <span class="pre">16777216,</span> <span class="pre">...)</span></code>, which is         total number of permutations with 2 bits.</p></li>
+<li><p>This is should not be confused with memory footprint since that is going to be larger as each     <code class="docutils literal notranslate"><span class="pre">int</span></code> is 64-bits (<code class="docutils literal notranslate"><span class="pre">i64</span></code> in Rust).</p></li>
+<li><p>In the above sample with <code class="docutils literal notranslate"><span class="pre">batch_size</span> <span class="pre">=</span> <span class="pre">20</span></code>, we have processed <code class="docutils literal notranslate"><span class="pre">320KB</span></code> same as the total     cache on <a class="reference external" href="https://en.wikipedia.org/wiki/Apple_M1#CPU">Apple M1</a>, which has 192 KB of L1     instruction cache and 128 KB of L1 data cache.</p></li>
+<li><p>Total tokens processed would be <code class="docutils literal notranslate"><span class="pre">20</span> <span class="pre">*</span> <span class="pre">8192</span> <span class="pre">=</span> <span class="pre">163840</span></code> in each batch and with <code class="docutils literal notranslate"><span class="pre">i64</span></code> that means     memory footprint of <code class="docutils literal notranslate"><span class="pre">163840</span> <span class="pre">*</span> <span class="pre">64</span> <span class="pre">~</span> <span class="pre">1.25MB</span></code>.</p></li>
+<li><p>Wrapping up that means we are processing 320KB of data in a 1.25MB memory footprint (which is a     <code class="docutils literal notranslate"><span class="pre">4x</span></code> memory requirement).</p></li>
+</ol>
+</section>
+<section id="internal-representation">
+<h3>Internal Representation<a class="headerlink" href="#internal-representation" title="Permalink to this headline">¶</a></h3>
+<p>This is what we have we have to do, <code class="docutils literal notranslate"><span class="pre">full_meta</span></code> is a not a good way access individual elements
+in the batch, so we need to convert it to a more convenient internal representation. Consider
+<code class="docutils literal notranslate"><span class="pre">full_meta</span></code> like a table so this is what it would look like:</p>
+<div class="table-wrapper"><table class="docutils align-default" id="id2">
+<caption><span class="caption-text">Full Meta as a Table</span><a class="headerlink" href="#id2" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col style="width: 33%"/>
+<col style="width: 33%"/>
+<col style="width: 33%"/>
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>class</p></th>
+<th class="head"><p>filepath</p></th>
+<th class="head"><p>size (in bytes)</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>cat</p></td>
+<td><p>f1</p></td>
+<td><p>137</p></td>
+</tr>
+<tr class="row-odd"><td><p>cat</p></td>
+<td><p>f2</p></td>
+<td><p>417</p></td>
+</tr>
+<tr class="row-even"><td><p>cat</p></td>
+<td><p>f3</p></td>
+<td><p>139</p></td>
+</tr>
+<tr class="row-odd"><td><p>dog</p></td>
+<td><p>f4</p></td>
+<td><p>123</p></td>
+</tr>
+<tr class="row-even"><td><p>dog</p></td>
+<td><p>f5</p></td>
+<td><p>52</p></td>
+</tr>
+<tr class="row-odd"><td><p>dog</p></td>
+<td><p>f6</p></td>
+<td><p>390</p></td>
+</tr>
+</tbody>
+</table></div>
+<p>The batches with <code class="docutils literal notranslate"><span class="pre">seqlen</span> <span class="pre">=</span> <span class="pre">128</span></code> and <code class="docutils literal notranslate"><span class="pre">n_bytes=1</span></code> would look like a flat array with items like this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">batches</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">([</span><span class="n">f1</span><span class="p">,</span>   <span class="mi">0</span><span class="p">,</span> <span class="mi">128</span><span class="p">],),</span>
+    <span class="p">([</span><span class="n">f1</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">137</span><span class="p">],</span>
+     <span class="p">[</span><span class="n">f2</span><span class="p">,</span>   <span class="mi">0</span><span class="p">,</span> <span class="mi">119</span><span class="p">],),</span>
+    <span class="p">([</span><span class="n">f2</span><span class="p">,</span> <span class="mi">119</span><span class="p">,</span> <span class="mi">347</span><span class="p">],),</span>
+    <span class="p">([</span><span class="n">f2</span><span class="p">,</span> <span class="mi">347</span><span class="p">,</span> <span class="mi">417</span><span class="p">],</span>
+     <span class="p">[</span><span class="n">f3</span><span class="p">,</span>   <span class="mi">0</span><span class="p">,</span>  <span class="mi">58</span><span class="p">],),</span>
+    <span class="o">...</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+</section>
 <section id="documentation">
 <h3>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="gperc.data.get_vocab">
+<span class="sig-prename descclassname"><span class="pre">gperc.data.</span></span><span class="sig-name descname"><span class="pre">get_vocab</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_bytes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gperc/data.html#get_vocab"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gperc.data.get_vocab" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 <dl class="py class">
 <dt class="sig sig-object py" id="gperc.data.Consumer">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">gperc.data.</span></span><span class="sig-name descname"><span class="pre">Consumer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fps</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tokenizer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seqlen</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">512</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gperc.data.Consumer" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">gperc.data.</span></span><span class="sig-name descname"><span class="pre">Consumer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fps</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_bytes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seqlen</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1024</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">class_to_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_unittesting</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gperc/data.html#Consumer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gperc.data.Consumer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Consumer takes in list of files along with it’s meta data and becomes a callable generator.
 When calling you can tell it what kind of data that you want. It is a full fledged data engine in itself.
@@ -245,34 +319,99 @@ traits as <a class="reference external" href="https://nimbleboxai.github.io/nbox
 <li><p><strong>(F0)</strong> list of strings: <code class="docutils literal notranslate"><span class="pre">["file1.txt",</span> <span class="pre">"file2.txt",</span> <span class="pre">...]</span></code></p></li>
 <li><p><strong>(F1)</strong> list of dicts: <code class="docutils literal notranslate"><span class="pre">[{"file1.txt":</span> <span class="pre">"cat1"},</span> <span class="pre">{"file2.txt":</span> <span class="pre">"cat2"},</span> <span class="pre">...]</span></code></p></li>
 <li><p><strong>(F2)</strong> dict of strings: <code class="docutils literal notranslate"><span class="pre">{"file1.txt":</span> <span class="pre">"cat1",</span> <span class="pre">"file2.txt":</span> <span class="pre">"cat2",</span> <span class="pre">...}</span></code></p></li>
-<li><p><strong>(F3)</strong> dict of categories: <code class="docutils literal notranslate"><span class="pre">{"cat1":</span> <span class="pre">["file1.txt",</span> <span class="pre">"file2.txt",</span> <span class="pre">...],</span> <span class="pre">"cat2":</span> <span class="pre">["file3.txt",</span> <span class="pre">"file4.txt",</span> <span class="pre">...]}</span></code></p></li>
+<li><p><strong>(F3)</strong> dict of categories (IR): <code class="docutils literal notranslate"><span class="pre">{"cat1":</span> <span class="pre">["file1.txt",</span> <span class="pre">"file2.txt",</span> <span class="pre">...],</span> <span class="pre">"cat2":</span> <span class="pre">["file3.txt",</span> <span class="pre">"file4.txt",</span> <span class="pre">...]}</span></code></p></li>
 </ol>
 </p></li>
-<li><p><strong>tokenizer</strong> (<em>TokenizerObject</em>) – Object of the Tokenizer</p></li>
-<li><p><strong>seqlen</strong> (<em>int</em><em>, </em><em>optional</em>) – Length of the Sequence. Defaults to 512.</p></li>
-<li><p><strong>batch_size</strong> (<em>int</em><em>, </em><em>optional</em>) – Size of the Batches. Defaults to 1.</p></li>
-<li><p><strong>seed</strong> (<em>int</em><em>, </em><em>optional</em>) – Seed value for randomness used to determine the batches</p></li>
+<li><p><strong>batch_size</strong> (<em>int</em><em>, </em><em>optional</em>) – The batch size of the data</p></li>
+<li><p><strong>n_bytes</strong> (<em>int</em><em>, </em><em>optional</em>) – number of bytes that make one token, 2 is a good number.</p></li>
+<li><p><strong>seqlen</strong> (<em>int</em><em>, </em><em>optional</em>) – the total number of tokens for each sample</p></li>
+<li><p><strong>verbose</strong> (<em>bool</em><em>, </em><em>optional</em>) – if True, prints out the progress of the data</p></li>
+<li><p><strong>class_to_id</strong> (<em>dict</em><em>, </em><em>optional</em>) – if not None, this is a dictionary that maps the class names to the integer ids.</p></li>
+<li><p><strong>_unittesting</strong> (<em>bool</em>) – This is a private variable that is used to test the data reader. Keep at False</p></li>
 </ul>
 </dd>
 </dl>
 <dl class="py method">
+<dt class="sig sig-object py" id="gperc.data.Consumer.get_dict">
+<span class="sig-name descname"><span class="pre">get_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gperc/data.html#Consumer.get_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gperc.data.Consumer.get_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gperc.data.Consumer.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gperc/data.html#Consumer.to_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gperc.data.Consumer.to_json" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
 <dt class="sig sig-object py" id="gperc.data.Consumer.__getitem__">
-<span class="sig-name descname"><span class="pre">__getitem__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><span class="pre">torch.Tensor</span></span></span><a class="headerlink" href="#gperc.data.Consumer.__getitem__" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
+<span class="sig-name descname"><span class="pre">__getitem__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gperc/data.html#Consumer.__getitem__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gperc.data.Consumer.__getitem__" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is the heart of this code, it takes in user requests and returns the data according to it. This is slightly
+technical and so we will explain it in detail. I find similarities between databases in CRUD and datasets for machine
+learning, CRUD has amazing performance and interaction tools like SQL. Datasets in ML are more like a collection of
+data, and they are not designed to be used in friendly way. Everyone’s writing their own thing there but good UX requires
+satisfying the user in some kind of formula and then let them be.</p>
+<p>Any SQL query has the following grammar <code class="docutils literal notranslate"><span class="pre">SELECT</span> <span class="pre">[columns]</span> <span class="pre">FROM</span> <span class="pre">[table]</span> <span class="pre">WHERE</span> <span class="pre">[condition]</span></code>. This is something everyone
+understands, it’s very simple. In our case <code class="docutils literal notranslate"><span class="pre">[table]</span> <span class="pre">==</span> <span class="pre">self</span></code>, i.e. the table is the dataset itself, this is no RDMS.
+The condition is very clearly desctibed in the documentation of <code class="docutils literal notranslate"><span class="pre">x</span></code>. But <code class="docutils literal notranslate"><span class="pre">[columns]</span></code> (here calling it <code class="docutils literal notranslate"><span class="pre">query</span></code>) is
+something hard, ie. user needs something in a particular format, and with random user logic is hard to give guarantees.
+I will come back to this later.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">condition</span></code>, has two parts, the <code class="docutils literal notranslate"><span class="pre">primitive</span></code> and <code class="docutils literal notranslate"><span class="pre">structure</span></code>. With this version of the code, the <code class="docutils literal notranslate"><span class="pre">structure</span></code>
+and <code class="docutils literal notranslate"><span class="pre">primitive</span></code> are implemented in pythonic way. Read the documentation of <code class="docutils literal notranslate"><span class="pre">x</span></code> for more details. After getting the data
+we convert it to an intermediate format, which is a list of tuples, each tuple is a sample. The intermediate format has the
+can be one of the following:</p>
+<ol class="arabic simple">
+<li><p>dict like this:</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s1">'data'</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s1">'some/file/1'</span><span class="p">,</span> <span class="n">seek_location</span><span class="p">,</span> <span class="n">end_bytes</span><span class="p">),</span>
+        <span class="c1"># &gt;= 1 sample of the above tuple</span>
+<span class="p">],</span>
+    <span class="s1">'class'</span><span class="p">:</span> <span class="s1">'tinker'</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="2">
+<li><p>list with dict in it, in which case the samples are batched together.</p></li>
+</ol>
+<p>The intermediate format is then converted to the desired format i.e. <code class="docutils literal notranslate"><span class="pre">query</span></code>, currently I have added functionality that
+can return one of the following formats:</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">supervised</span></code>, in which input is the input tensor and output is the class tensor, from <code class="docutils literal notranslate"><span class="pre">self.class_to_id</span></code> dict.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">unsupervised</span></code>, in which input is the input tensor and output is clone of it.</p></li>
+</ol>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>x</strong> (<em>Any</em>) – <p>There is only one input since this is a special method. We take in this input item and process it accordingly based on following rules:</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>Any</em>) – <p>There is only one input since this is a special method. We take in this input item and process it accordingly
+based on following rules:</p>
 <ol class="arabic simple">
 <li><p><strong>(I0)</strong> <code class="docutils literal notranslate"><span class="pre">None</span></code>: when x is None we have an internal idx that is incremented and the next batch is returned</p></li>
 <li><p><strong>(I1)</strong> <code class="docutils literal notranslate"><span class="pre">int</span></code>: when x is an int we return the batch at that index</p></li>
 <li><p><strong>(I2)</strong> <code class="docutils literal notranslate"><span class="pre">slice</span></code>: when x is a slice we return the batches in the slice</p></li>
-<li><p><strong>(I3)</strong> <code class="docutils literal notranslate"><span class="pre">list/tuple</span></code>: when x is a list we return the batches in the list containing the indices (<code class="docutils literal notranslate"><span class="pre">int</span></code>)</p></li>
+<li><p><strong>(I3)</strong> <code class="docutils literal notranslate"><span class="pre">list</span></code>: when x is a list we return the batches in the list containing the indices (<code class="docutils literal notranslate"><span class="pre">int</span></code>)</p></li>
 <li><p><strong>(I4)</strong> <code class="docutils literal notranslate"><span class="pre">dict</span> <span class="pre">-&gt;</span> <span class="pre">ints</span></code>: when values of x are ints we return the batches in the list containing the indices (<code class="docutils literal notranslate"><span class="pre">int</span></code>)</p></li>
 <li><p><strong>(I5)</strong> <code class="docutils literal notranslate"><span class="pre">dict</span> <span class="pre">-&gt;</span> <span class="pre">list</span></code>: when values of x are lists we return the batches in the list containing the indices (<code class="docutils literal notranslate"><span class="pre">list</span></code>)</p></li>
+<li><p><strong>(I6)</strong> <code class="docutils literal notranslate"><span class="pre">tuple</span></code>: Read below.</p></li>
 </ol>
-</p>
+</p></li>
+<li><p><strong>x_tuple</strong> (<em>Tuple</em>) – <p>When x is a tuple you can use it like a function, meaning it can run certain hardcoded logic. It should
+have  <code class="docutils literal notranslate"><span class="pre">condition</span></code> as above and <code class="docutils literal notranslate"><span class="pre">query</span></code>. This is not a real input, added seperately for documentation convinience.
+The object <code class="docutils literal notranslate"><span class="pre">query</span></code> can be one of the following</p>
+<ol class="arabic simple">
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">None</span></code>: returns just <code class="docutils literal notranslate"><span class="pre">{"input_tensor":</span> <span class="pre">tensor}</span></code> dict</dt><dd><ol class="arabic simple" start="2">
+<li><p><code class="docutils literal notranslate"><span class="pre">'supervised'</span></code>: <code class="docutils literal notranslate"><span class="pre">{"input_tensor":</span> <span class="pre">tensor,</span> <span class="pre">"class":</span> <span class="pre">tensor}</span></code>, this will fail if incorrect <code class="docutils literal notranslate"><span class="pre">self.class_to_id</span></code></p></li>
+</ol>
 </dd>
 </dl>
-<p>Using this is very simple. T</p>
+</li>
+</ol>
+<ol class="arabic simple" start="3">
+<li><p><code class="docutils literal notranslate"><span class="pre">'unsupervised'</span></code>: <code class="docutils literal notranslate"><span class="pre">{"input_tensor":</span> <span class="pre">tensor,</span> <span class="pre">"output_tensor":</span> <span class="pre">tensor}</span></code></p></li>
+</ol>
+</p></li>
+</ul>
+</dd>
+</dl>
+<p>Using this is very simple.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># define the consumer object</span>
 <span class="n">my_kewl_dataset</span> <span class="o">=</span> <span class="n">Consumer</span><span class="p">(</span>
     <span class="n">fps</span> <span class="o">=</span> <span class="p">{</span>
@@ -357,6 +496,8 @@ traits as <a class="reference external" href="https://nimbleboxai.github.io/nbox
             <ul>
 <li><a class="reference internal" href="#">gperc Data</a><ul>
 <li><a class="reference internal" href="#data-reader">Data Reader</a><ul>
+<li><a class="reference internal" href="#raw-bytes-tokenization">Raw Bytes Tokenization</a></li>
+<li><a class="reference internal" href="#internal-representation">Internal Representation</a></li>
 <li><a class="reference internal" href="#documentation">Documentation</a></li>
 </ul>
 </li>
