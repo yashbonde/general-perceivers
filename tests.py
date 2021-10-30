@@ -5,10 +5,26 @@ from gperc import Perceiver, PerceiverConfig
 from gperc.data import Consumer
 from gperc.utils import set_seed
 
+from nbox.utils import folder, join
+
 import random
 import unittest
 
 from tqdm import trange
+
+from pprint import pprint as peepee
+
+
+def get_files_in_folder(folder, ext = [".txt"], sort = True):
+  # this method is faster than glob
+  import os
+  all_paths = []
+  for root,_,files in os.walk(folder):
+    for f in files:
+      for e in ext:
+        if f.endswith(e):
+          all_paths.append(os.path.join(root,f))
+  return sorted(all_paths) if sort else all_paths
 
 
 class TestModel(unittest.TestCase):
@@ -80,22 +96,22 @@ class TestDataset(unittest.TestCase):
     # read more about data here: https://yashbonde.github.io/general-perceivers/gperc.data.html
     def test_dataset_f0_mode(self):
         data = [f"file{i}" for i in range(10)]
-        data = Consumer(data)
+        data = Consumer(data, _unittesting = True)
         assert data._mode == "F0"
 
     def test_dataset_f1_mode(self):
         data = [{'file0_0': 'cat0'}, {'file1_0': 'cat0'}, {'file2_0': 'cat0'}, {'file3_0': 'cat0'}, {'file0_1': 'cat1'}, {'file1_1': 'cat1'}, {'file2_1': 'cat1'}, {'file3_1': 'cat1'}]
-        data = Consumer(data)
+        data = Consumer(data, _unittesting = True)
         assert data._mode == "F1"
 
     def test_dataset_f2_mode(self):
         data = {'file0': 'cat3', 'file1': 'cat3', 'file2': 'cat2', 'file3': 'cat3', 'file4': 'cat1', 'file5': 'cat0'}
-        data = Consumer(data)
+        data = Consumer(data, _unittesting = True)
         assert data._mode == "F2"
 
     def test_dataset_f3_mode(self):
         data = {f"cat{j}":[f"file{i}" for i in range(4)] for j in range(3)}
-        data = Consumer(data)
+        data = Consumer(data, _unittesting = True)
         assert data._mode == "F3"
 
     @unittest.expectedFailure
@@ -107,7 +123,7 @@ class TestDataset(unittest.TestCase):
 
     def test_dataset_f0_getitem(self):
         data = [f"file{i}" for i in range(10)]
-        data = Consumer(data)
+        data = Consumer(data, _unittesting = True)
 
         out = data[None] # "file1.txt"                  # I0
         out = data[1] # "file2.txt"                     # I1
@@ -120,7 +136,7 @@ class TestDataset(unittest.TestCase):
 
     def test_dataset_f1_getitem(self):
         data = [{'file0_0': 'cat0'}, {'file1_0': 'cat0'}, {'file2_0': 'cat0'}, {'file3_0': 'cat0'}, {'file0_1': 'cat1'}, {'file1_1': 'cat1'}, {'file2_1': 'cat1'}, {'file3_1': 'cat1'}]
-        data = Consumer(data)
+        data = Consumer(data, _unittesting = True)
 
         out = data[None] # "file1.txt"                  # I0
         out = data[1] # "file2.txt"                     # I1
@@ -131,7 +147,7 @@ class TestDataset(unittest.TestCase):
 
     def test_dataset_f2_getitem(self):
         data = {'file0': 'cat3', 'file1': 'cat3', 'file2': 'cat2', 'file3': 'cat3', 'file4': 'cat1', 'file5': 'cat0'}
-        data = Consumer(data)
+        data = Consumer(data, _unittesting = True)
 
         out = data[None] # "file1.txt"                  # I0
         out = data[1] # "file2.txt"                     # I1
@@ -139,15 +155,90 @@ class TestDataset(unittest.TestCase):
         out = data[[0, 1]] # ["file1.txt", "file2.txt"] # I3
         out = data[{"cat3": 2}]                         # I4
         out = data[{"cat3": [0, 1]}]                    # I5
-        
+
 
     def test_dataset_f3_getitem(self):
         data = {f"cat{j}":[f"file{i}" for i in range(4)] for j in range(3)}
-        data = Consumer(data)
-        
+        data = Consumer(data, _unittesting = True)
+
         out = data[None] # "file1.txt"                  # I0
         out = data[1] # "file2.txt"                     # I1
         out = data[:1] # ["file1.txt"]                  # I2
         out = data[[0, 1]] # ["file1.txt", "file2.txt"] # I3
         out = data[{"cat1": 2}]                         # I4
         out = data[{"cat2": [0, 1]}]                    # I5
+
+    def test_dataset_full(self):
+        # this method tests the Consumer on itself, going to docs
+        folder_path = join(folder(__file__), "docs", "source")
+        labels = ["tinker", "tailor", "soldier", "spy"] # some labels
+        dataset = {}
+        for i, f in enumerate(get_files_in_folder(folder_path, [".rst"])):
+            dataset[f] = labels[i % len(labels)]
+        
+        # create the dataset
+        data = Consumer(
+            dataset, seqlen = 128, verbose = True,
+            class_to_id={'tinker': 0, 'tailor': 1, 'soldier': 2, 'spy': 3}
+        )
+
+        # check the shapes and all
+        out = data[None]
+        self.assertTrue(set(out.keys())== {"input_tensor"})
+        self.assertEqual(out["input_tensor"].shape, (1, 128)) # I0
+        
+        out = data[random.choice(range(len(data)))]
+        self.assertTrue(set(out.keys())== {"input_tensor"})
+        self.assertEqual(out["input_tensor"].shape, (1, 128)) # I1
+        
+        out = data[4:5]
+        self.assertTrue(set(out.keys())== {"input_tensor"})
+        self.assertEqual(out["input_tensor"].shape, (1, 128)) # I2 - A
+        
+        out = data[0:5]
+        self.assertTrue(set(out.keys())== {"input_tensor"})
+        self.assertEqual(out["input_tensor"].shape, (5, 128)) # I2 - B
+        
+        out = data[(1, 2, 3, 4, 5)]
+        self.assertTrue(set(out.keys())== {"input_tensor"})
+        self.assertEqual(out["input_tensor"].shape, (5, 128)) # 
+        
+        out = data[{
+            "tinker": 1,
+            "tailor": 2,
+            "soldier": 1,
+            "spy": 1
+        }]
+        self.assertTrue(set(out.keys())== {"input_tensor"})
+        self.assertEqual(out["input_tensor"].shape, (5, 128)) # I4
+
+        out = data[{
+            "tinker": [1, 2],
+            "tailor": [0, 1],
+            "soldier": [0],
+            "spy": [1]
+        }]
+        self.assertTrue(set(out.keys())== {"input_tensor"})
+        self.assertEqual(out["input_tensor"].shape, (6, 128)) # I5
+
+        out = data[{
+            "tinker": 1,
+            "tailor": 2,
+            "soldier": 1,
+            "spy": 1
+        }, "supervised"]
+        self.assertTrue(set(out.keys())== {"input_tensor", "class"})
+        self.assertEqual(out["input_tensor"].shape, (5, 128)) # I4
+        self.assertEqual(out["class"].shape, (5,)) # I4
+
+        out = data[{
+            "tinker": [1, 2],
+            "tailor": [0, 1],
+            "soldier": [0],
+            "spy": [1]
+        }, "unsupervised"]
+        self.assertTrue(set(out.keys())== {"input_tensor", "output_tensor"})
+        self.assertEqual(out["input_tensor"].shape, (6, 128)) # I5
+        self.assertEqual(out["output_tensor"].shape, (6, 128)) # I5
+
+
