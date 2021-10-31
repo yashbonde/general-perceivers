@@ -199,8 +199,8 @@
         <article role="main">
           <section id="quick-dopamine">
 <h1>1. Quick Dopamine<a class="headerlink" href="#quick-dopamine" title="Permalink to this headline">¶</a></h1>
-<p>Perceiver can consume any kind of data that you give to this, we have added exmaples to test that hypothesis
-out. I have added code for the following:</p>
+<p>Perceiver can consume any kind of data that you give to this, the examples added here demonstrate how powerful
+this approach can be. I have added code for the following:</p>
 <ol class="arabic">
 <li><dl>
 <dt>[<a class="reference external" href="https://github.com/yashbonde/general-perceivers/blob/master/examples/train_cifar.py">link</a>] <strong>Image classification:</strong></dt><dd><p>Training a CIFAR10 model, the input image is flattened to a 2D array with shape <code class="docutils literal notranslate"><span class="pre">[1024,3]</span></code> and
@@ -253,7 +253,7 @@ In <code class="docutils literal notranslate"><span class="pre">gperc</span></co
 </dl>
 </li>
 <li><dl>
-<dt>[<a class="reference external" href="https://github.com/yashbonde/general-perceivers/blob/master/examples/train_lm.py">link</a>] <strong>Grokking:</strong> (Testing)</dt><dd><p>Grokking is the phenomenon of model snapping into place and learn the rule as you keep on training,
+<dt>[<a class="reference external" href="https://github.com/yashbonde/general-perceivers/blob/master/examples/train_lm.py">link</a>] <strong>Grokking:</strong></dt><dd><p>Grokking is the phenomenon of model snapping into place and learn the rule as you keep on training,
 from <a class="reference external" href="https://mathai-iclr.github.io/papers/papers/MATHAI_29_paper.pdf">this</a> paper.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gperc</span> <span class="kn">import</span> <span class="n">TextConfig</span>
 
@@ -268,7 +268,20 @@ from <a class="reference external" href="https://mathai-iclr.github.io/papers/pa
 </dd>
 </dl>
 </li>
-<li><p><strong>Reinforcement Learning:</strong> (WIP) Training a perceiver to train cartpole problem.</p></li>
+<li><dl class="simple">
+<dt>[<a class="reference external" href="https://github.com/yashbonde/general-perceivers/blob/master/examples/train_rl.py">link</a>] <strong>Reinforcement Learning:</strong></dt><dd><p>Train a simple model to solve Cart Pole gym environment.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>[<a class="reference external" href="https://github.com/yashbonde/general-perceivers/blob/master/examples/train_transfer.py">link</a>] <strong>Transfer Learning: (WIP)</strong></dt><dd><p>The real power of transformer encoder model comes from the fact that unsupervised training and transfering that to
+downstream task for classification helps build really powerful models. I want to have this functionality built into
+<code class="docutils literal notranslate"><span class="pre">gperc</span></code> directly. For this I have added a custom built from scratch <code class="docutils literal notranslate"><span class="pre">gperc.Consumer</span></code> object that manages your data.
+(WIP) finetuning also requires changing the architecture a little bit, this is also being added as first class in
+<code class="docutils literal notranslate"><span class="pre">gperc.Perceiver</span></code> object.</p>
+</dd>
+</dl>
+</li>
 <li><p>More 🍰 on the way</p></li>
 </ol>
 </section>

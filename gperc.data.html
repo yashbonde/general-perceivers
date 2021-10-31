@@ -322,7 +322,6 @@ traits as <a class="reference external" href="https://nimbleboxai.github.io/nbox
 <li><p><strong>(F3)</strong> dict of categories (IR): <code class="docutils literal notranslate"><span class="pre">{"cat1":</span> <span class="pre">["file1.txt",</span> <span class="pre">"file2.txt",</span> <span class="pre">...],</span> <span class="pre">"cat2":</span> <span class="pre">["file3.txt",</span> <span class="pre">"file4.txt",</span> <span class="pre">...]}</span></code></p></li>
 </ol>
 </p></li>
-<li><p><strong>batch_size</strong> (<em>int</em><em>, </em><em>optional</em>) – The batch size of the data</p></li>
 <li><p><strong>n_bytes</strong> (<em>int</em><em>, </em><em>optional</em>) – number of bytes that make one token, 2 is a good number.</p></li>
 <li><p><strong>seqlen</strong> (<em>int</em><em>, </em><em>optional</em>) – the total number of tokens for each sample</p></li>
 <li><p><strong>verbose</strong> (<em>bool</em><em>, </em><em>optional</em>) – if True, prints out the progress of the data</p></li>
@@ -337,8 +336,23 @@ traits as <a class="reference external" href="https://nimbleboxai.github.io/nbox
 <dd></dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="gperc.data.Consumer.to_json">
-<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gperc/data.html#Consumer.to_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gperc.data.Consumer.to_json" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gperc/data.html#Consumer.to_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gperc.data.Consumer.to_json" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gperc.data.Consumer.set_unsupervised_mode">
+<span class="sig-name descname"><span class="pre">set_unsupervised_mode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mask_frequency</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.15</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gperc/data.html#Consumer.set_unsupervised_mode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gperc.data.Consumer.set_unsupervised_mode" title="Permalink to this definition">¶</a></dt>
+<dd><p>set variables required for unsupervised query mode</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>mask_frequency</strong> (<em>float</em>) – frequency of masking of input tensor</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gperc.data.Consumer.set_supervised_mode">
+<span class="sig-name descname"><span class="pre">set_supervised_mode</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gperc/data.html#Consumer.set_supervised_mode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gperc.data.Consumer.set_supervised_mode" title="Permalink to this definition">¶</a></dt>
+<dd><p>set variables required for supervised query mode. Currently takes nothing.</p>
+</dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="gperc.data.Consumer.__getitem__">
 <span class="sig-name descname"><span class="pre">__getitem__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gperc/data.html#Consumer.__getitem__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gperc.data.Consumer.__getitem__" title="Permalink to this definition">¶</a></dt>
@@ -396,15 +410,8 @@ based on following rules:</p>
 have  <code class="docutils literal notranslate"><span class="pre">condition</span></code> as above and <code class="docutils literal notranslate"><span class="pre">query</span></code>. This is not a real input, added seperately for documentation convinience.
 The object <code class="docutils literal notranslate"><span class="pre">query</span></code> can be one of the following</p>
 <ol class="arabic simple">
-<li><dl class="simple">
-<dt><code class="docutils literal notranslate"><span class="pre">None</span></code>: returns just <code class="docutils literal notranslate"><span class="pre">{"input_tensor":</span> <span class="pre">tensor}</span></code> dict</dt><dd><ol class="arabic simple" start="2">
+<li><p><code class="docutils literal notranslate"><span class="pre">None</span></code>: returns just <code class="docutils literal notranslate"><span class="pre">{"input_tensor":</span> <span class="pre">tensor}</span></code> dict</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">'supervised'</span></code>: <code class="docutils literal notranslate"><span class="pre">{"input_tensor":</span> <span class="pre">tensor,</span> <span class="pre">"class":</span> <span class="pre">tensor}</span></code>, this will fail if incorrect <code class="docutils literal notranslate"><span class="pre">self.class_to_id</span></code></p></li>
-</ol>
-</dd>
-</dl>
-</li>
-</ol>
-<ol class="arabic simple" start="3">
 <li><p><code class="docutils literal notranslate"><span class="pre">'unsupervised'</span></code>: <code class="docutils literal notranslate"><span class="pre">{"input_tensor":</span> <span class="pre">tensor,</span> <span class="pre">"output_tensor":</span> <span class="pre">tensor}</span></code></p></li>
 </ol>
 </p></li>
@@ -433,9 +440,27 @@ The object <code class="docutils literal notranslate"><span class="pre">query</s
     <span class="s2">"cat"</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span>
     <span class="s2">"dog"</span><span class="p">:</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">]</span>
 <span class="p">}]</span> <span class="c1"># return the batches at indices [0...4] and [5...9] from class cat and class dog respectively</span>
+
+<span class="c1"># in all cases above out is a dict with key "input_array" because we have not provided a query</span>
+<span class="c1"># if you want to force this behaviour</span>
+<span class="n">out</span> <span class="o">=</span> <span class="n">my_kewl_dataset</span><span class="p">[</span><span class="mi">5</span><span class="p">:</span><span class="mi">10</span><span class="p">,</span> <span class="bp">None</span><span class="p">]</span>
+
+<span class="c1"># when you want supervised</span>
+<span class="nb">set</span><span class="p">(</span><span class="n">my_kewl_dataset</span><span class="p">[</span><span class="mi">5</span><span class="p">:</span><span class="mi">10</span><span class="p">,</span> <span class="s2">"supervised"</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">==</span> <span class="p">{</span><span class="s2">"input_array"</span><span class="p">,</span> <span class="s2">"class"</span><span class="p">}</span>
+
+<span class="c1"># when you want unsupervised</span>
+<span class="nb">set</span><span class="p">(</span><span class="n">my_kewl_dataset</span><span class="p">[</span><span class="mi">5</span><span class="p">:</span><span class="mi">10</span><span class="p">,</span> <span class="s2">"unsupervised"</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">==</span> <span class="p">{</span><span class="s2">"input_array"</span><span class="p">,</span> <span class="s2">"output_tensor"</span><span class="p">}</span>
 </pre></div>
 </div>
 </dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gperc.data.Consumer.create_batches">
+<span class="sig-name descname"><span class="pre">create_batches</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drop_last</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gperc/data.html#Consumer.create_batches"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gperc.data.Consumer.create_batches" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gperc.data.Consumer.get_next_batch">
+<span class="sig-name descname"><span class="pre">get_next_batch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gperc/data.html#Consumer.get_next_batch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gperc.data.Consumer.get_next_batch" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 </dd></dl>
 </section>
 </section>
