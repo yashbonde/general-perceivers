@@ -105,12 +105,17 @@ Documentation
 import os
 import math
 import json
+import random
 
 import torch
 import numpy as np
 
 from functools import lru_cache
 from itertools import product
+
+from torch.nn.functional import hardswish
+
+from .utils import set_seed
 
 
 @lru_cache()
@@ -141,7 +146,6 @@ class Consumer:
               #. **(F2)** dict of strings: ``{"file1.txt": "cat1", "file2.txt": "cat2", ...}``
               #. **(F3)** dict of categories (IR): ``{"cat1": ["file1.txt", "file2.txt", ...], "cat2": ["file3.txt", "file4.txt", ...]}``
 
-          batch_size (int, optional): The batch size of the data
           n_bytes (int, optional): number of bytes that make one token, 2 is a good number.
           seqlen (int, optional): the total number of tokens for each sample
           verbose (bool, optional): if True, prints out the progress of the data
@@ -308,20 +312,28 @@ class Consumer:
                 print(f"  {k}: {len(v)} ({len(v)/self._total_samples * 100:.3f}%)")
             print("=" * 50)
 
+
+        self.__unsupervised_mode = False
+        self.__supervised_mode = False
+        self.__batch_mode = False
+
     # ----- functions for pretty printing and handling of dataset object.
 
     def get_dict(self):
         _d = {
             "total_samples": self._total_samples,
-            "batch_size": self.config["batch_size"],
             "mode": self._mode,
             "n_classes": self.__n_classes,
+            "n_bytes": self.n_bytes,
+            "seqlen": self.seqlen,
         }
-        if _d["batch_size"] != None:
-            _d["total_batches"] = math.ceil(self._total_samples / _d["batch_size"])
+        if hasattr(self, "batch_size"):
+            _d["batch_size"] = self.batch_size
+        if self.__batch_mode:
+            _d["total_batches"] = len(self._batches)
         return _d
 
-    def to_json(self, *args):
+    def to_json(self):
         return json.dumps(self.get_dict(), indent=2)
 
     def __repr__(self):
@@ -329,6 +341,21 @@ class Consumer:
 
     def __len__(self):
         return self._total_samples
+
+    def set_unsupervised_mode(self, mask_frequency = 0.15):
+        r"""set variables required for unsupervised query mode
+        
+        Args:
+
+            mask_frequency (float): frequency of masking of input tensor
+        """
+        self.mask_frequency = mask_frequency
+        self.__unsupervised_mode = True
+
+    def set_supervised_mode(self):
+        r"""set variables required for supervised query mode. Currently takes nothing."""
+        self.mask_frequency = None
+        self.__supervised_mode = True
 
     # ----- the most important function
 
@@ -389,7 +416,7 @@ class Consumer:
                 The object ``query`` can be one of the following
                 
                 1. ``None``: returns just ``{"input_tensor": tensor}`` dict
-                    2. ``'supervised'``: ``{"input_tensor": tensor, "class": tensor}``, this will fail if incorrect ``self.class_to_id``
+                2. ``'supervised'``: ``{"input_tensor": tensor, "class": tensor}``, this will fail if incorrect ``self.class_to_id``
                 3. ``'unsupervised'``: ``{"input_tensor": tensor, "output_tensor": tensor}``
 
         Using this is very simple.
@@ -417,23 +444,33 @@ class Consumer:
                 "cat": [0, 1, 2, 3, 4],
                 "dog": [5, 6, 7, 8, 9]
             }] # return the batches at indices [0...4] and [5...9] from class cat and class dog respectively
+
+            # in all cases above out is a dict with key "input_array" because we have not provided a query
+            # if you want to force this behaviour
+            out = my_kewl_dataset[5:10, None]
+
+            # when you want supervised
+            set(my_kewl_dataset[5:10, "supervised"].keys()) == {"input_array", "class"}
+
+            # when you want unsupervised
+            set(my_kewl_dataset[5:10, "unsupervised"].keys()) == {"input_array", "output_tensor"}
         """
         # check if case I6 and create necessary variables
-        data_dict = {"input_tensor": None}
+        query = None
         if isinstance(x, tuple):
             if len(x) == 1:
                 x = x[0]
             elif len(x) == 2:
-                if x[1] == None:
-                    x = x[0]
-                else:
-                    assert isinstance(x[1], str) and x[1] in ["supervised", "unsupervised"], \
-                        "case I6: second argument must be None or 'supervised' or 'unsupervised'"
-                    if x[1] == "supervised":
-                        data_dict.update({"class": None})
-                    else:
-                        data_dict.update({"output_tensor": None})
+                assert x[1] in ["supervised", "unsupervised", None], \
+                    "case I6: second argument must be None or 'supervised' or 'unsupervised'"
+                query = x[1]
+                if query == "supervised":
+                    assert self.__supervised_mode, "case I6: supervised mode is not enabled data.set_supervised_mode()"
+                elif query == "unsupervised":
+                    assert self.__unsupervised_mode, "case I6: unsupervised mode is not enabled data.set_unsupervised_mode()"
                 x = x[0]
+            else:
+                raise ValueError("case I6: tuple must have either 1 or 2 elements")
 
         # testing requires conditional data
         if self._unittesting:
@@ -442,7 +479,6 @@ class Consumer:
         else:
             all_samples = self.all_samples
             sample_by_class = self.samples_by_class
-
 
         # fetching based on a bunch of different indexing methods
         if x == None:  # i0
@@ -475,6 +511,9 @@ class Consumer:
                     batch_data.extend([samples[i] for i in v])
         else:
             raise KeyError(f"Invalid input type: {type(x)}")
+        
+        vocab = get_vocab(self.n_bytes)
+        pad = vocab[tuple(0 for _ in range(self.n_bytes))]
 
         # if testing return
         if self._unittesting:
@@ -491,37 +530,76 @@ class Consumer:
                     bytes = fp.read(e - s)
                     sample.extend(bytes)
 
-            sample = [(x, y) for x, y in zip(sample[::2], sample[1::2])]
-            vocab = get_vocab(self.n_bytes)
-            seq = [vocab[x] for x in sample]
+            zip_items = []
+            for i in range(self.n_bytes):
+                zip_items.append(sample[i::self.n_bytes])
+            samples = list(zip(*zip_items))
+            seq = [vocab[x] for x in samples]
+            labels = seq.copy() # this is exclusively for unsupervised
 
             if len(seq) != self.seqlen:
-                seq += [vocab[(0, 0)] for _ in range(self.seqlen - len(seq))]
+                seq += [pad for _ in range(self.seqlen - len(seq))]
+
+                # -100 because torch does not calculate loss for -100 value
+                labels += [-100 for _ in range(self.seqlen - len(labels))]
             
-            return seq, _class
+            return seq, labels, _class
 
         if isinstance(batch_data, list):
             data = [__get_one_sample(x) for x in batch_data]
             seq = [x[0] for x in data]
             labels = [x[1] for x in data]
+            classes = [x[2] for x in data]
         else:
             x = __get_one_sample(batch_data)
             seq = [x[0]]
             labels = [x[1]]
+            classes = [x[2]]
 
         out = torch.tensor(seq, dtype=torch.long)
 
         # now we take the data structure it according to the user's request
-        for k, v in data_dict.items():
-            if k == "input_tensor":
-                data_dict[k] = out
-            elif k == "output_tensor":
-                data_dict[k] = out.clone()
-            elif k == "class":
-                if isinstance(self.class_to_id, dict):
-                    class_tensor = [self.class_to_id[x] for x in labels]
-                else:
-                    raise ValueError("class_to_id dict must be a provided")
-                data_dict[k] = torch.tensor(class_tensor).long()
+        _dc = {"input_array": out}
+        if query == "supervised":
+            if isinstance(self.class_to_id, dict):
+                class_tensor = torch.tensor([self.class_to_id[x] for x in classes]).long()
+            else:
+                raise ValueError("class_to_id dict must be a provided")
+            _dc.update({"class": class_tensor})
+        
+        elif query == "unsupervised":
+            mask = np.random.uniform(0, 1, tuple(out.shape)) < self.mask_frequency
+            out[torch.tensor(mask)] = pad
+            labels = torch.tensor(labels, dtype=torch.long)
+            _dc.update({"input_array": out, "output_tensor": labels})
+        
+        return _dc
 
-        return data_dict
+    def create_batches(self, batch_size, drop_last = False, seed = 4):
+        set_seed(seed)
+        samples = list(range(len(self.all_samples)))
+        random.shuffle(samples)
+        batches = [samples[i:i+batch_size] for i in range(0, len(samples), batch_size)]
+        if len(batches[-1]) != batch_size and drop_last:
+            batches = batches[:-1]
+
+        # define so can be used later
+        self.batch_size = batch_size
+        self.drop_last = drop_last
+        self.seed = seed
+
+        # define the data points
+        self._batches = batches
+        self._iter_batches = iter(batches)
+        self.__batch_mode = True
+
+    def get_next_batch(self, query = None):
+        assert self.__batch_mode, "You must create batches first data.create_batches()"
+        try:
+            x = next(self._iter_batches)
+        except StopIteration:
+            self.create_batches(self.batch_size, self.drop_last, self.seed + 1)
+            x = next(self._iter_batches)
+        
+        return self[x, query]
+

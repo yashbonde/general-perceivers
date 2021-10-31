@@ -1,30 +1,15 @@
+import random
+import unittest
+from tqdm import trange
+
 import torch
 from torch.nn import functional as F
 
-from gperc import Perceiver, PerceiverConfig
-from gperc.data import Consumer
-from gperc.utils import set_seed
-
 from nbox.utils import folder, join
 
-import random
-import unittest
-
-from tqdm import trange
-
-from pprint import pprint as peepee
-
-
-def get_files_in_folder(folder, ext = [".txt"], sort = True):
-  # this method is faster than glob
-  import os
-  all_paths = []
-  for root,_,files in os.walk(folder):
-    for f in files:
-      for e in ext:
-        if f.endswith(e):
-          all_paths.append(os.path.join(root,f))
-  return sorted(all_paths) if sort else all_paths
+from gperc import Perceiver, PerceiverConfig
+from gperc.data import Consumer
+from gperc.utils import set_seed, get_files_in_folder
 
 
 class TestModel(unittest.TestCase):
@@ -54,43 +39,44 @@ class TestModel(unittest.TestCase):
             else:
                 self.assertEqual(a.shape, (1, config.num_heads, config.latent_len, config.latent_len))
 
-    def test_image_overfit(self):
-        config = PerceiverConfig(
-            input_len=9 * 9,
-            input_dim=3,
-            latent_len=16,
-            latent_dim=4,
-            num_layers=2,
-            output_len=1,
-            output_dim=4,
-            decoder_len=1,
-            decoder_cross_attention=True,
-            decoder_projection=False,
-            output_pos_enc=False,
-            decoder_residual=False,
-            seed=4,
-        )
-        print(config)
-        set_seed(config.seed)
-        model = Perceiver(config)
+    # def test_image_overfit(self):
+    #     config = PerceiverConfig(
+    #         input_len=9 * 9,
+    #         input_dim=3,
+    #         latent_len=16,
+    #         latent_dim=4,
+    #         num_layers=2,
+    #         output_len=1,
+    #         output_dim=4,
+    #         decoder_len=1,
+    #         decoder_cross_attention=True,
+    #         decoder_projection=False,
+    #         output_pos_enc=False,
+    #         decoder_residual=False,
+    #         seed=4,
+    #     )
+    #     print(config)
+    #     set_seed(config.seed)
+    #     model = Perceiver(config)
 
-        optim = torch.optim.Adam(model.parameters(), lr=3e-4)
+    #     optim = torch.optim.Adam(model.parameters(), lr=3e-4)
 
-        x = torch.randn(3, config.input_len, config.input_dim)
-        y = torch.randint(low=0, high=config.output_dim, size=(3,))
+    #     x = torch.randn(3, config.input_len, config.input_dim)
+    #     y = torch.randint(low=0, high=config.output_dim, size=(3,))
 
-        pbar = trange(4000)
-        all_loss = []
-        for i in pbar:
-            _y = model(x)[:, 0, :]
-            loss = F.cross_entropy(_y, y)
-            all_loss.append(loss.item())
-            pbar.set_description(f"loss: {loss.item():.4f} | max: {max(all_loss):.4f}")
-            loss.backward()
-            optim.step()
+    #     pbar = trange(4000)
+    #     all_loss = []
+    #     for i in pbar:
+    #         _y = model(x)[:, 0, :]
+    #         loss = F.cross_entropy(_y, y)
+    #         all_loss.append(loss.item())
+    #         pbar.set_description(f"loss: {loss.item():.4f} | max: {max(all_loss):.4f}")
+    #         loss.backward()
+    #         optim.step()
 
-            if loss < 1e-4:
-                break
+    #         if loss < 1e-4:
+    #             break
+
 
 class TestDataset(unittest.TestCase):
     # read more about data here: https://yashbonde.github.io/general-perceivers/gperc.data.html

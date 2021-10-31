@@ -1,8 +1,8 @@
 1. Quick Dopamine
 =================
 
-Perceiver can consume any kind of data that you give to this, we have added exmaples to test that hypothesis
-out. I have added code for the following:
+Perceiver can consume any kind of data that you give to this, the examples added here demonstrate how powerful
+this approach can be. I have added code for the following:
 
 #. [`link <https://github.com/yashbonde/general-perceivers/blob/master/examples/train_cifar.py>`_] **Image classification:**
     Training a CIFAR10 model, the input image is flattened to a 2D array with shape ``[1024,3]`` and
@@ -51,7 +51,7 @@ out. I have added code for the following:
         task="segmentation",
       )
 
-#. [`link <https://github.com/yashbonde/general-perceivers/blob/master/examples/train_lm.py>`_] **Grokking:** (Testing)
+#. [`link <https://github.com/yashbonde/general-perceivers/blob/master/examples/train_lm.py>`_] **Grokking:**
     Grokking is the phenomenon of model snapping into place and learn the rule as you keep on training,
     from `this <https://mathai-iclr.github.io/papers/papers/MATHAI_29_paper.pdf>`_ paper.
 
@@ -66,6 +66,15 @@ out. I have added code for the following:
         latent_frac = 0.15
       )
 
-#. **Reinforcement Learning:** (WIP) Training a perceiver to train cartpole problem.
+#. [`link <https://github.com/yashbonde/general-perceivers/blob/master/examples/train_rl.py>`_] **Reinforcement Learning:**
+    Train a simple model to solve Cart Pole gym environment.
+
+
+#. [`link <https://github.com/yashbonde/general-perceivers/blob/master/examples/train_transfer.py>`_] **Transfer Learning: (WIP)**
+    The real power of transformer encoder model comes from the fact that unsupervised training and transfering that to
+    downstream task for classification helps build really powerful models. I want to have this functionality built into
+    ``gperc`` directly. For this I have added a custom built from scratch ``gperc.Consumer`` object that manages your data.
+    (WIP) finetuning also requires changing the architecture a little bit, this is also being added as first class in
+    ``gperc.Perceiver`` object.
 
 #. More 🍰 on the way

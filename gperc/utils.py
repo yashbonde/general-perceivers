@@ -11,3 +11,15 @@ def set_seed(s=4):
     torch.cuda.manual_seed(s)
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
+
+
+def get_files_in_folder(folder, ext = [".txt"], sort = True):
+  # this method is faster than glob
+  import os
+  all_paths = []
+  for root,_,files in os.walk(folder):
+    for f in files:
+      for e in ext:
+        if f.endswith(e):
+          all_paths.append(os.path.join(root,f))
+  return sorted(all_paths) if sort else all_paths
