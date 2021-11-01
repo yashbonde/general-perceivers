@@ -180,3 +180,33 @@ class ImageConfig(PerceiverConfig):
             self.decoder_residual = False
             self.decoder_projection = True
             self.output_len = image_shape[0] * image_shape[1]
+
+
+class AudioConfig(PerceiverConfig):
+    def __init__(self, num_mfcc: int, num_segments:int, num_channels:int, latent_len: int, latent_dim: int, n_classes: int, **kwargs):
+        r"""Config class to specially deal with the audio modality cases
+
+        Args:
+            num_mfcc (int):   The number of MFCC (Mel-frequency cepstral coefficients) values considered
+            num_segments (int): The number of segments the audio is divided into 
+            num_channels (int) : The number of channels in the audio sample (mono or stereo)
+            latent_len (int): The length of the latent space
+            latent_dim (int): The dimension of the latent space
+            n_classes (int):  The number of classes after the output space
+
+        """
+
+        super().__init__(**kwargs)
+        self.image_shape = image_shape
+        self.input_len = num_mfcc * num_segments  # image if flattened to a fix shape
+        self.input_dim = num_channels
+        self.latent_len = latent_len
+        self.latent_dim = latent_dim
+        self.output_len = 1
+        self.output_dim = latent_dim
+        self.n_classes = n_classes
+
+        self.decoder_cross_attention = False
+        self.decoder_residual = False
+        self.decoder_projection = True
+
