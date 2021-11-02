@@ -11,6 +11,9 @@ from torch.utils.data import DataLoader
 from torch.optim import Adam
 from torch.utils.data import random_split
 
+from scipy.signal import savgol_filter
+import matplotlib.pyplot as plt
+
 # -----
 from gperc.utils import set_seed
 from gperc import AudioConfig, Perceiver
@@ -135,3 +138,12 @@ for i in pbar:
                 _all_acc.append((_y.argmax(-1) == y).sum().item() / len(y))
             print(f"Test Loss: {sum(_all_loss)} | Test Acc: {sum(_all_acc)/len(_all_acc)}")
         model.train()
+
+plt.figure(figsize=(20,10))
+plt.subplot(1, 2, 1)
+plt.plot(savgol_filter(all_acc, window_length = 51, polyorder = 3))
+plt.title("Training Accuracy")
+plt.subplot(1, 2, 2)
+plt.plot(all_loss)
+plt.title("Training Loss")
+plt.show()
