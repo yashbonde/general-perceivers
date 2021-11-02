@@ -290,6 +290,27 @@ and <code class="docutils literal notranslate"><span class="pre">segmentation</s
 </dd>
 </dl>
 </dd></dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="gperc.configs.AudioConfig">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">gperc.configs.</span></span><span class="sig-name descname"><span class="pre">AudioConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sample_rate</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duration</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hop_length</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_mfcc</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_segments</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_channels</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">latent_len</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">latent_dim</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_classes</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gperc/configs.html#AudioConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gperc.configs.AudioConfig" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gperc.configs.PerceiverConfig" title="gperc.configs.PerceiverConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">gperc.configs.PerceiverConfig</span></code></a></p>
+<p>Config class to specially deal with the audio modality cases</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sample_rate</strong> (<em>int</em>) – Sampling Rate of the audio in Hertz</p></li>
+<li><p><strong>duration</strong> (<em>int</em>) – Duration of the audio in seconds</p></li>
+<li><p><strong>hop_length</strong> (<em>int</em>) – Hop-length of sliding window for FFT in number of samples</p></li>
+<li><p><strong>num_mfcc</strong> (<em>int</em>) – The number of MFCC (Mel-frequency cepstral coefficients) values considered</p></li>
+<li><p><strong>num_segments</strong> (<em>int</em>) – The number of segments the audio is divided into</p></li>
+<li><p><strong>num_channels</strong> (<em>int</em>) – The number of channels in the audio sample (mono or stereo)</p></li>
+<li><p><strong>latent_len</strong> (<em>int</em>) – The length of the latent space</p></li>
+<li><p><strong>latent_dim</strong> (<em>int</em>) – The dimension of the latent space</p></li>
+<li><p><strong>n_classes</strong> (<em>int</em>) – The number of classes after the output space</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 </section>
 </section>
 </section>

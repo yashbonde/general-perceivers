@@ -273,6 +273,28 @@ from <a class="reference external" href="https://mathai-iclr.github.io/papers/pa
 </dd>
 </dl>
 </li>
+<li><dl>
+<dt>[<a class="reference external" href="https://github.com/yashbonde/general-perceivers/blob/master/examples/train_gtzan.py">link</a>] <strong>Audio Classificaton:</strong></dt><dd><p>Training a audio classification network on <a class="reference external" href="http://marsyas.info/downloads/datasets.html">GTZAN dataset</a>.
+Audio config in <code class="docutils literal notranslate"><span class="pre">gperc</span></code> can be defined as follows:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gperc</span> <span class="kn">import</span> <span class="n">AudioConfig</span>
+
+<span class="n">config</span> <span class="o">=</span> <span class="n">AudioConfig</span><span class="p">(</span>
+  <span class="n">sample_rate</span><span class="o">=</span><span class="mi">22050</span><span class="p">,</span>
+  <span class="n">duration</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
+  <span class="n">hop_length</span><span class="o">=</span><span class="mi">512</span><span class="p">,</span>
+  <span class="n">num_mfcc</span><span class="o">=</span><span class="mi">13</span><span class="p">,</span>
+  <span class="n">num_segments</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+  <span class="n">num_channels</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+  <span class="n">latent_len</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
+  <span class="n">latent_dim</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
+  <span class="n">num_layers</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+  <span class="n">n_classes</span><span class="o">=</span><span class="mi">10</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</li>
 <li><dl class="simple">
 <dt>[<a class="reference external" href="https://github.com/yashbonde/general-perceivers/blob/master/examples/train_transfer.py">link</a>] <strong>Transfer Learning: (WIP)</strong></dt><dd><p>The real power of transformer encoder model comes from the fact that unsupervised training and transfering that to
 downstream task for classification helps build really powerful models. I want to have this functionality built into
