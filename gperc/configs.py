@@ -191,9 +191,9 @@ class AudioConfig(PerceiverConfig):
             sample_rate (int): Sampling Rate of the audio in Hertz
             duration (int): Duration of the audio in seconds
             hop_length (int): Hop-length of sliding window for FFT in number of samples
-            num_mfcc (int):   The number of MFCC (Mel-frequency cepstral coefficients) values considered
+            num_mfcc (int): The number of MFCC (Mel-frequency cepstral coefficients) values considered
             num_segments (int): The number of segments the audio is divided into
-            num_channels (int) : The number of channels in the audio sample (mono or stereo)
+            num_channels (int): The number of channels in the audio sample (mono or stereo)
             latent_len (int): The length of the latent space
             latent_dim (int): The dimension of the latent space
             n_classes (int):  The number of classes after the output space

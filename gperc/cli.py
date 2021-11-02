@@ -13,11 +13,47 @@ I am using ``python-fire`` from google for this, `link <https://github.com/googl
 can convert any arbitrary python object to a CLI. Normally I would use this with a ``main`` function,
 but since there has to be configuration in the CLI, I am using a class ``Main`` (yes, I know, weird).
 
+The default CLI has the following structure:
+
+.. code-block::
+
+    python3 -m gperc [BEHEVIOUR] [CONFIGS] [TASKS]
+
+    BEHEVIOUR:
+
+        -h, --help: Show this modal and exit.
+
+        main: Run the main orchestration
+        serve (WIP): serve using YoCo
+
+    CONFIGS:
+
+        main: configurations for the main orchestration.
+
+            train: python3 -m gperc main train -h 
+            data: python3 -m gperc main data -h
+            arch: python3 -m gperc main arch -h
+
+        serve (WIP): configurations for the server mode.
+
+            port: python3 -m gperc serve -h
+        
+    TASKS:
+
+        Tasks are specific to behaviour and can raise errors for incorrect configs
+
+        main: tasks for the main orchestration.
+
+            profile: python3 -m gperc main [CONFIGS] profile -h
+            start: python3 -m gperc main [CONFIGS] start -h
+            deploy: deploy model on NimbleBox.ai. python3 -m gperc main [CONFIGS] deploy -h
+
+
 This is how something like loading a dataset and running a model would look like:
 
 .. code-block:: bash
     
-    python3 -m gperc --modality "image/class" \
+    python3 -m gperc main --modality "image/class" \
         data --dataset_name "cifar10" \
         arch --mno [1024,128,1] --ced [3,32,10] \
         train --epochs 10 --batch_size 32 --lr 0.001 \
@@ -31,105 +67,84 @@ lines we have specified the data, the architecture and the training parameters. 
 
 import logging
 from typing import List
-from types import SimpleNamespace
+
+import torch
+from torch.profiler import profile, record_function, ProfilerActivity
+
+from .models import Perceiver
+from .configs import PerceiverConfig
 
 
 class Main:
-    def __init__(self, modality: str, seed: int = 4):
-        r"""This is the main class for running any kind.
-
-        **DO NOT USE (WIP)**
-
-        Args:
-            modality (str): what exactly is the purpose of this network
-            seed (int, optional): seed for randomness. Defaults to 4.
-        """
-        self.modality = modality
-        self.seed = seed
-
-        raise NotImplementedError("CLI work in progress, please use the pacakge instead")
-
-        # this is the keys
-        self.__train_is_go = False
-        self.__data_is_go = False
-        self.__arch_is_go = False
-
-    def train(self, batch_size: int, num_steps: int, lr: float):
-        r"""Config for training
-
-        Args:
-            batch_size (int): batch size
-            num_steps (int): number of steps to train the model
-            lr (float): learning rate
-        """
-        self.train_config = SimpleNamespace(
-            batch_size=batch_size,
-            num_steps=num_steps,
-        )
-        self.__train_is_go = True
-
-    def data(self, dataset_name: str, vocab_size: int = None, image_size: int = None):
-        r"""Config for dataset
-
-        Args:
-            dataset_name (str): name of the dataset to load
-            vocab_size (int, optional): size of the vocabulary, has to be provided if this has \
-                ``text`` in modality.
-            image_size (int, optional): size of the image dim, has to be provided if this has \
-                ``image`` in the modality
-        """
-        self.data_config = SimpleNamespace(
-            dataset_name=dataset_name,
-            vocab_size=vocab_size,
-            image_size=image_size,
-        )
-        self.__data_is_go = True
-
-    def arch(
+    def __init__(
         self,
         mno: List,
-        ced: List,
+        cde: List,
         ffw_width: float = 1.0,
+        num_heads: int = 2,
+        num_layers: int = 2,
+        decoder_cross_attention: bool = False,
+        decoder_residual: bool = False,
+        decoder_projection: bool = True,
+        dropout: float = 0.1,
+        n_classes: int = None,
+        output_pos_enc: bool = False
     ):
-        r"""Config for architecture. This is simple and takes in list of ints
+        r"""This is the main class for manging things from CLI. Errors are raised by the gperc.models and not here, so __setup() will
+        throw errors
 
         Args:
             mno (List): The first dimension of input, latent and output arrays
-            ced (List): The second dimension of input, latent and output arrays
+            cde (List): The second dimension of input, latent and output arrays
             ffw_width (float, optional): The width of the feed forward layer as ratio of dims
+            num_heads (int, optional): The number of attention heads
+            num_layers (int, optional): The number of (latent) layers
+            decoder_cross_attention (bool, optional): Whether output array performs causal attention with the latent array
+            decoder_residual (bool, optional): Whether output array performs residual connection with the latent array
+            decoder_projection (bool, optional): Is decoder output projected to a certain size
+            dropout (float, optional): The dropout rate
+            n_classes (int, optional): The number of classes in the output array, must be set if decoder_projection
+            output_pos_enc (bool, optional): Whether to use position encoding in the decoder
         """
         assert isinstance(mno, list), "mno must be a list"
-        assert isinstance(ced, list), "ced must be a list"
-        self.arch_config = SimpleNamespace(
+        assert isinstance(cde, list), "cde must be a list"
+        config = PerceiverConfig(
             input_len=mno[0],
-            input_dim=ced[0],
+            input_dim=cde[0],
             latent_len=mno[1],
-            latent_dim=ced[1],
+            latent_dim=cde[1],
             output_len=mno[2],
-            output_dim=ced[2],
+            output_dim=cde[2],
             ffw_latent=int(mno[1] * ffw_width),
             ffw_output=int(mno[2] * ffw_width),
+            num_heads = num_heads,
+            num_layers = num_layers,
+            decoder_cross_attention = decoder_cross_attention,
+            decoder_residual = decoder_residual,
+            decoder_projection = decoder_projection,
+            dropout = dropout,
+            n_classes = n_classes,
+            output_pos_enc = output_pos_enc,
+            pos_init_std = 0.02,
         )
-        self.__arch_is_go = True
+        self._model = Perceiver(config)
 
-    def start(self, log_level: int = 0):
-        r"""This function triggers the CLI and shut has to be last in the chain
 
+    def profile(self, input_shape: List, sort_by: str = "cpu_time"):
+        r"""Profile the input based on the configurations given above.
+        
         Args:
-            log_level (int, optional): log level in the order ``[logging.NOTSET, logging.DEBUG, \
-                logging.INFO, logging.WARNING, logging.ERROR, logging.CRITICAL]``
+
+            input_shape (List): what should be the input shape of the tensor
+            sort_by (str): one of ``cpu_time, cuda_time, cpu_time_total, cuda_time_total, cpu_memory_usage, cuda_memory_usage, self_cpu_memory_usage, self_cuda_memory_usage, count``
         """
-        assert self.__train_is_go, "You need to add train config, do gperc train --help"
-        assert self.__data_is_go, "You need to add data config, do gperc data --help"
-        assert self.__arch_is_go, "You need to add arch config, do gperc arch --help"
+        sample_input = torch.randn(*input_shape)
+        with profile(activities=[ProfilerActivity.CPU], record_shapes=True, profile_memory = True, with_stack=True,) as prof:
+            with record_function("gperc_inference"):
+                self._model(sample_input)
 
-        level = [
-            logging.NOTSET,
-            logging.DEBUG,
-            logging.INFO,
-            logging.WARNING,
-            logging.ERROR,
-            logging.CRITICAL,
-        ][log_level]
+        print(prof.key_averages(group_by_input_shape=True).table(sort_by=sort_by))
+        prof.export_chrome_trace("trace.json")
 
-        print("running this code")
+class Serve():
+    pass
