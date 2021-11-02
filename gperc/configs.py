@@ -184,7 +184,19 @@ class ImageConfig(PerceiverConfig):
 
 
 class AudioConfig(PerceiverConfig):
-    def __init__(self, sample_rate: int, duration: int, hop_length: int, num_mfcc: int, num_segments:int, num_channels:int, latent_len: int, latent_dim: int, n_classes: int, **kwargs):
+    def __init__(
+        self,
+        sample_rate: int,
+        duration: int,
+        hop_length: int,
+        num_mfcc: int,
+        num_segments: int,
+        num_channels: int,
+        latent_len: int,
+        latent_dim: int,
+        n_classes: int,
+        **kwargs
+    ):
         r"""Config class to specially deal with the audio modality cases
 
         Args:
@@ -202,8 +214,8 @@ class AudioConfig(PerceiverConfig):
 
         super().__init__(**kwargs)
         self.samples_per_track = sample_rate * duration
-        self.samples_per_segment = int(self.samples_per_track/num_segments)
-        self.input_len = math.ceil(self.samples_per_segment/hop_length)*num_mfcc
+        self.samples_per_segment = int(self.samples_per_track / num_segments)
+        self.input_len = math.ceil(self.samples_per_segment / hop_length) * num_mfcc
         self.input_dim = num_channels
         self.latent_len = latent_len
         self.latent_dim = latent_dim

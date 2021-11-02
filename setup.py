@@ -1,11 +1,13 @@
 import setuptools
+import os
 
-with open("README.md", "r", encoding="utf-8") as fh:
+readme = os.path.join(os.path.split(os.path.abspath(__file__))[0], "README.md")
+with open(readme, "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setuptools.setup(
     name="gperc",
-    version="0.3",
+    version="0.4",
     author="Yash Bonde",
     author_email="bonde.yash97@gmail.com",
     description="General purpose perceiver architectures!",

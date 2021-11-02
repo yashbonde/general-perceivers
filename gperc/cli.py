@@ -88,7 +88,7 @@ class Main:
         decoder_projection: bool = True,
         dropout: float = 0.1,
         n_classes: int = None,
-        output_pos_enc: bool = False
+        output_pos_enc: bool = False,
     ):
         r"""This is the main class for manging things from CLI. Errors are raised by the gperc.models and not here, so __setup() will
         throw errors
@@ -117,34 +117,39 @@ class Main:
             output_dim=cde[2],
             ffw_latent=int(mno[1] * ffw_width),
             ffw_output=int(mno[2] * ffw_width),
-            num_heads = num_heads,
-            num_layers = num_layers,
-            decoder_cross_attention = decoder_cross_attention,
-            decoder_residual = decoder_residual,
-            decoder_projection = decoder_projection,
-            dropout = dropout,
-            n_classes = n_classes,
-            output_pos_enc = output_pos_enc,
-            pos_init_std = 0.02,
+            num_heads=num_heads,
+            num_layers=num_layers,
+            decoder_cross_attention=decoder_cross_attention,
+            decoder_residual=decoder_residual,
+            decoder_projection=decoder_projection,
+            dropout=dropout,
+            n_classes=n_classes,
+            output_pos_enc=output_pos_enc,
+            pos_init_std=0.02,
         )
         self._model = Perceiver(config)
 
-
     def profile(self, input_shape: List, sort_by: str = "cpu_time"):
         r"""Profile the input based on the configurations given above.
-        
+
         Args:
 
             input_shape (List): what should be the input shape of the tensor
             sort_by (str): one of ``cpu_time, cuda_time, cpu_time_total, cuda_time_total, cpu_memory_usage, cuda_memory_usage, self_cpu_memory_usage, self_cuda_memory_usage, count``
         """
         sample_input = torch.randn(*input_shape)
-        with profile(activities=[ProfilerActivity.CPU], record_shapes=True, profile_memory = True, with_stack=True,) as prof:
+        with profile(
+            activities=[ProfilerActivity.CPU],
+            record_shapes=True,
+            profile_memory=True,
+            with_stack=True,
+        ) as prof:
             with record_function("gperc_inference"):
                 self._model(sample_input)
 
         print(prof.key_averages(group_by_input_shape=True).table(sort_by=sort_by))
         prof.export_chrome_trace("trace.json")
 
-class Serve():
+
+class Serve:
     pass
