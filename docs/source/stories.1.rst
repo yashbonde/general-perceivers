@@ -69,6 +69,26 @@ this approach can be. I have added code for the following:
 #. [`link <https://github.com/yashbonde/general-perceivers/blob/master/examples/train_rl.py>`_] **Reinforcement Learning:**
     Train a simple model to solve Cart Pole gym environment.
 
+#. [`link <https://github.com/yashbonde/general-perceivers/blob/master/examples/train_gtzan.py>`_] **Audio Classificaton:**
+    Training a audio classification network on `GTZAN dataset  <http://marsyas.info/downloads/datasets.html>`_.
+    Audio config in ``gperc`` can be defined as follows:
+
+    .. code-block:: python
+
+      from gperc import AudioConfig
+
+      config = AudioConfig(
+        sample_rate=22050,
+        duration=30,
+        hop_length=512,
+        num_mfcc=13,
+        num_segments=10,
+        num_channels=1,
+        latent_len=32,
+        latent_dim=32,
+        num_layers=4,
+        n_classes=10
+      )
 
 #. [`link <https://github.com/yashbonde/general-perceivers/blob/master/examples/train_transfer.py>`_] **Transfer Learning: (WIP)**
     The real power of transformer encoder model comes from the fact that unsupervised training and transfering that to
