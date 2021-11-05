@@ -83,7 +83,7 @@ class Main:
         ffw_width: float = 1.0,
         num_heads: int = 2,
         num_layers: int = 2,
-        decoder_cross_attention: bool = False,
+        decoder_reduction: str = "mean",
         decoder_residual: bool = False,
         decoder_projection: bool = True,
         dropout: float = 0.1,
@@ -99,7 +99,7 @@ class Main:
             ffw_width (float, optional): The width of the feed forward layer as ratio of dims
             num_heads (int, optional): The number of attention heads
             num_layers (int, optional): The number of (latent) layers
-            decoder_cross_attention (bool, optional): Whether output array performs causal attention with the latent array
+            decoder_reduction (str, optional): After the decoder, how should the output be reduced, should be one of gperc.models.VALID_REDUCTIONS
             decoder_residual (bool, optional): Whether output array performs residual connection with the latent array
             decoder_projection (bool, optional): Is decoder output projected to a certain size
             dropout (float, optional): The dropout rate
@@ -119,7 +119,7 @@ class Main:
             ffw_output=int(mno[2] * ffw_width),
             num_heads=num_heads,
             num_layers=num_layers,
-            decoder_cross_attention=decoder_cross_attention,
+            decoder_reduction=decoder_reduction,
             decoder_residual=decoder_residual,
             decoder_projection=decoder_projection,
             dropout=dropout,

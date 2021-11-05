@@ -9,6 +9,14 @@ some simpler configs that are more convenient to use in some cases. They are:
 * ``TextConfig``: A config that is used for text classification tasks.
 * ``ImageConfig``: A config that is used for image tasks, supports ``classification`` and ``segmentation``.
 
+Discussion
+----------
+
+At it's core the model processes either signals (image, audio, time-series) or it consumes discrete inputs
+(tokens) that gets converted to signals by using embeddings. This simplicity and abstraction has to be
+brought to ``config`` as well, currently each use case has it's own config.
+
+
 Documentation
 -------------
 """
@@ -22,6 +30,7 @@ from typing import Callable, Tuple
 class PerceiverConfig:
     def __init__(
         self,
+        # first set of parameters are for the architecture numbers
         input_len: int = 64,
         input_dim: int = 8,
         latent_len: int = 4,
@@ -29,17 +38,24 @@ class PerceiverConfig:
         output_len: int = 1,
         output_dim: int = 10,
         ffw_latent: int = 32,
-        pos_init_std: float = 0.02,
+        ffw_output: int = 32,
         num_heads: int = 2,
         num_layers: int = 2,
-        dropout: float = 0.1,
-        decoder_cross_attention: bool = False,
+
+        # second set of parameters are specially for encoder and decoder behavior
+        input_type: str = "raw",
+        input_num_tokens: int = None,
+        decoder_reduction: str = "mean",
         decoder_residual: bool = False,
         decoder_projection: bool = True,
-        output_pos_enc: bool = False,
+        n_classes: int = None,
+
+        # third set of parameters are for the initialiaations and dropouts
+        pos_init_std: float = 0.02,
+        dropout: float = 0.1,
         seed: int = 4,
-        pre_processing: Callable = None,
-        post_processing: Callable = None,
+
+        # user can send in kwargs if it wants to store any value
         **kwargs
     ):
         r"""Since perciever is such a powerful and versatile model, we need a good config for this.
@@ -57,27 +73,24 @@ class PerceiverConfig:
             output_len (int, optional): (``o``) The length of the output space
             output_dim (int, optional): (``e``) The dimension of the output space
             ffw_latent (int, optional): The dimension of the latent space in the feed-forward
-
-            pos_init_std (float, optional): The standard deviation of the position encoding
+            ffw_output (int, optional): The dimension of the output space in the feed-forward
             num_heads (int, optional): The number of heads in the multi-head attention
             num_layers (int, optional): The number of layers in the encoder and decoder
-            dropout (float, optional): The dropout rate
-
-            decoder_cross_attention (bool, optional): Whether to use cross attention in the decoder. If true
-                the output shape will be ``[batch_size, o, e]`` otherwise it will take ``mean`` over the
-                input ``latent_array`` and return ``[batch_size, e]``.
+            input_type (str, optional): The type of the input space. Can be either ``raw`` or ``tokens``
+            input_num_tokens (int, optional): If the ``input_type == 'tokens'`` what is the number of tokens
+            decoder_reduction (str, optional): After the decoder, how should the output be reduced, should be one of
+                ``"mean", "max", "sum", "min", "last", "first", None``
             decoder_residual (bool, optional): Whether ``output_array`` combines with ``latent_array``
-            decoder_projection (bool, optional): Whether to use a projection layer in the decoder, used for
-                classification
-            output_pos_enc (bool, optional): Whether to use position encoding in the decoder
-
+            decoder_projection (bool, optional): Whether apply projection on ``output_array``
+            n_classes (int, optional): The number of classes in the classification task, must be set if
+                ``decoder_projection == True``
+            pos_init_std (float, optional): The standard deviation of the position encoding
+            dropout (float, optional): The dropout rate
             seed (int, optional): The seed for the random number generator
-            pre_processing (Callable, optional): A function that takes processes the ``input_array`` tensor
-            post_processing (Callable, optional): A function that takes processes the ``output_array`` tensor
-
             **kwargs: Any other arguments to be stored in the config
         """
 
+        # first set of parameters are for the architecture numbers
         self.input_len = input_len
         self.input_dim = input_dim
         self.latent_len = latent_len
@@ -85,17 +98,18 @@ class PerceiverConfig:
         self.output_len = output_len
         self.output_dim = output_dim
         self.ffw_latent = ffw_latent
-        self.pos_init_std = pos_init_std
+        self.ffw_output = ffw_output
         self.num_heads = num_heads
         self.num_layers = num_layers
-        self.dropout = dropout
-        self.decoder_cross_attention = decoder_cross_attention
+        self.input_type = input_type
+        self.input_num_tokens = input_num_tokens
+        self.decoder_reduction = decoder_reduction
         self.decoder_residual = decoder_residual
         self.decoder_projection = decoder_projection
-        self.output_pos_enc = output_pos_enc
+        self.n_classes = n_classes
+        self.pos_init_std = pos_init_std
+        self.dropout = dropout
         self.seed = seed
-        self.pre_processing = pre_processing
-        self.post_processing = post_processing
 
         for k, v in kwargs.items():
             setattr(self, k, v)
@@ -113,7 +127,15 @@ class PerceiverConfig:
 
 
 class TextConfig(PerceiverConfig):
-    def __init__(self, latent_dim: int, vocab_size: int, max_len: int, latent_frac: float, **kwargs):
+    def __init__(
+        self,
+        latent_dim,
+        vocab_size,
+        max_len,
+        latent_frac = 0.25,
+        ffw_ratio = 1.0,
+        **kwargs
+    ):
         r"""Config class to specially deal with the text modality cases
 
         Args:
@@ -121,6 +143,7 @@ class TextConfig(PerceiverConfig):
             vocab_size (int): The size of the vocabulary
             max_len (int): The maximum length of the input sequence
             latent_frac (float): ``latent_len`` will be this multiplied by ``max_len``
+            ffw_ratio (float, optional): The ratio of the feed-forward layer in Block to input dimension
         """
         super().__init__(**kwargs)
         self.vocab_size = vocab_size
@@ -132,15 +155,28 @@ class TextConfig(PerceiverConfig):
         self.latent_dim = latent_dim
         self.output_len = max_len
         self.output_dim = latent_dim
-
-        self.decoder_cross_attention = True
+        self.ffw_latent = int(self.latent_dim * ffw_ratio)
+        self.ffw_output = int(self.output_dim * ffw_ratio)
+        self.input_type = "tokens"
+        self.input_num_tokens = self.vocab_size
+        self.decoder_reduction = None
         self.decoder_residual = True
         self.decoder_projection = True
-        self.n_classes = vocab_size
+        self.n_classes = self.vocab_size
 
 
 class ImageConfig(PerceiverConfig):
-    def __init__(self, image_shape: Tuple, latent_len: int, latent_dim: int, n_classes: int, task: str = "classification", **kwargs):
+    def __init__(
+        self,
+        image_shape: Tuple,
+        latent_len: int,
+        latent_dim: int,
+        n_classes: int,
+        decoder_reduction: str = "mean",
+        ffw_ratio: float = 1.0,
+        task: str = "classification",
+        **kwargs
+    ):
         r"""Config class to specially deal with the image modality cases
 
         Args:
@@ -148,38 +184,41 @@ class ImageConfig(PerceiverConfig):
             latent_len (int): The length of the latent space
             latent_dim (int): The dimension of the latent space
             n_classes (int): The number of classes after the output space
-            task (str, optional): The task to be performed, can be one of ``classification``,
-                and ``segmentation``
-
+            decoder_reduction (str, optional): Read more in the ``PerceiverConfig`` documentation above
+            ffw_ratio (float, optional): The ratio of the feed-forward layer in Block to input dimension
+            task (str, optional): The task to be performed, can be one of ``classification`` and ``segmentation``
         """
         assert task in ["classification", "segmentation"], "task must be one of 'classification' or 'segmentation'"
 
         super().__init__(**kwargs)
         self.image_shape = image_shape
-        self.input_len = image_shape[0] * image_shape[1]  # image if flattened to a fix shape
+        self.task = task
+
+        self.input_len = image_shape[0] * image_shape[1]  # image is flattened to a fix shape
         self.input_dim = image_shape[2]
         self.latent_len = latent_len
         self.latent_dim = latent_dim
         self.output_len = 1
         self.output_dim = latent_dim
         self.n_classes = n_classes
-        self.task = task
+        self.ffw_latent = int(ffw_ratio * self.latent_dim)
+        self.ffw_output = int(ffw_ratio * self.output_dim)
+        self.input_type = "raw"
+        self.decoder_reduction = decoder_reduction
+        self.decoder_projection = True
 
         if task == "classification":
             """When performing a classification task, we do not need to query from the output_array
             meaning that there is no need for cross_attention or residual connection, but there
             needs to be a projection layer to the number of classes."""
-            self.decoder_cross_attention = False
             self.decoder_residual = False
-            self.decoder_projection = True
+
 
         elif task == "segmentation":
             """When performing segmentation task, the output_array will query the latent but we
             should not use the residual connection, and we should use a projection layer to the
             number of classes. Avoiding residual connection is recommended in the paper."""
-            self.decoder_cross_attention = True
             self.decoder_residual = False
-            self.decoder_projection = True
             self.output_len = image_shape[0] * image_shape[1]
 
 

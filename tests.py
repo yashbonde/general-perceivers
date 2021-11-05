@@ -33,6 +33,8 @@ class TestModel(unittest.TestCase):
         for i, a in enumerate(attentions):
             if not i:
                 self.assertEqual(a.shape, (1, config.num_heads, config.latent_len, config.input_len))
+            elif i == len(attentions) - 1:
+                self.assertEqual(a.shape, (1, config.num_heads, config.output_len, config.latent_len))
             else:
                 self.assertEqual(a.shape, (1, config.num_heads, config.latent_len, config.latent_len))
 
@@ -46,16 +48,16 @@ class TestModel(unittest.TestCase):
             output_len=1,
             output_dim=4,
             decoder_len=1,
-            decoder_cross_attention=True,
-            decoder_projection=False,
-            output_pos_enc=False,
+            decoder_reduction="mean",
+            decoder_projection=True,
+            n_classes=10,
             decoder_residual=False,
             seed=4,
         )
         set_seed(config.seed)
         model = Perceiver(config)
 
-        optim = torch.optim.Adam(model.parameters(), lr=3e-4)
+        optim = torch.optim.SGD(model.parameters(), lr=3e-4, momentum=0.1)
 
         x = torch.randn(2, config.input_len, config.input_dim)
         y = torch.randint(low=0, high=config.output_dim, size=(2,))
@@ -67,10 +69,10 @@ class TestModel(unittest.TestCase):
         all_loss = []
         success = False
         for i in pbar:
-            _y = model(x)[:, 0, :]
+            _y = model(x)
             loss = F.cross_entropy(_y, y)
             all_loss.append(loss.item())
-            pbar.set_description(f"loss: {loss.item():.4f} | max: {max(all_loss):.4f}")
+            pbar.set_description(f"loss: {loss.item():.4f} | max: {max(all_loss):.4f} | min: {min(all_loss):.4f}")
             loss.backward()
             optim.step()
 
@@ -78,7 +80,98 @@ class TestModel(unittest.TestCase):
                 success = True
                 break
 
-        self.assertTrue(success, msg="Failed overfit test. Something is wrong!")
+        self.assertTrue(success, msg="Failed image/classification overfit test. Something is wrong!")
+
+    def test_mlm_forward(self):
+        r"""It is very hasrd to debug if the attention mask is behaving properly or not, please 
+        check the code in gperc.Block for manual inspection."""
+        config = TextConfig(
+            latent_dim = 8,
+            latent_frac=0.5,
+            vocab_size = 100,
+            max_len = 6,
+            num_heads = 1
+        )
+        set_seed(4)
+        lens = random.choices(range(config.max_len // 2, config.max_len), k = 4)
+        sequences = [
+            random.choices(range(1, config.vocab_size), k = l)
+            for l in lens
+        ]
+        attention_masks = []
+        for s in sequences:
+            attention_masks.append(
+                [1] * len(s) + [0] * (config.max_len - len(s))
+            )
+            s.extend([0] * (config.max_len - len(s)))
+
+        sequences = torch.tensor(sequences)
+        attention_masks = torch.tensor(attention_masks)
+
+        model = Perceiver(config)
+
+        out, attentions = model(sequences, attention_masks, return_attentions=True)
+        assert out.shape == (sequences.shape[0], config.max_len, config.vocab_size)
+        for i,a in enumerate(attentions):
+            if not i:
+                assert a.shape == (sequences.shape[0], config.num_heads, config.latent_len, config.max_len)
+            elif i == len(attentions) - 1:
+                assert a.shape == (sequences.shape[0], config.num_heads, config.output_len, config.latent_len)
+            else:
+                assert a.shape == (sequences.shape[0], config.num_heads, config.latent_len, config.latent_len)
+
+    def test_mlm_overfit(self):
+        r"""It is very hasrd to debug if the attention mask is behaving properly or not, please 
+        check the code in gperc.Block for manual inspection."""
+        config = TextConfig(
+            latent_dim = 8,
+            latent_frac = 0.5,
+            vocab_size = 32,
+            max_len = 10,
+        )
+        set_seed(4)
+        lens = random.choices(range(config.max_len // 2, config.max_len), k = 4)
+        sequences = [
+            random.choices(range(1, config.vocab_size), k = l)
+            for l in lens
+        ]
+        attention_masks = []
+        for s in sequences:
+            attention_masks.append(
+                [1] * len(s) + [0] * (config.max_len - len(s))
+            )
+            s.extend([0] * (config.max_len - len(s)))
+
+        sequences = torch.tensor(sequences)
+        attention_masks = torch.tensor(attention_masks)
+
+        model = Perceiver(config)
+        
+        optim = torch.optim.Adam(model.parameters(), lr=3e-4)
+
+        target = sequences.clone().reshape(-1)
+        sequences[torch.randn(*sequences.shape) < 0.15] = 0
+
+        print("input shape:", sequences.shape)
+        print("attention mask shape:", attention_masks.shape)
+
+        pbar = trange(10_000)
+        all_loss = []
+        success = False
+        for i in pbar:
+            optim.zero_grad()
+            _y = model(sequences).reshape(-1, config.vocab_size)
+            loss = F.cross_entropy(_y, target.reshape(-1))
+            all_loss.append(loss.item())
+            pbar.set_description(f"loss: {loss.item():.4f} | max: {max(all_loss):.4f} | min: {min(all_loss):.4f}")
+            loss.backward()
+            optim.step()
+
+            if loss < 0.01:
+                success = True
+                break
+
+        self.assertTrue(success, msg="Failed text/mlm overfit test. Something is wrong!")
 
 
 class TestDataset(unittest.TestCase):
