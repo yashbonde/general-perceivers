@@ -83,26 +83,15 @@ class TestModel(unittest.TestCase):
         self.assertTrue(success, msg="Failed image/classification overfit test. Something is wrong!")
 
     def test_mlm_forward(self):
-        r"""It is very hasrd to debug if the attention mask is behaving properly or not, please 
+        r"""It is very hasrd to debug if the attention mask is behaving properly or not, please
         check the code in gperc.Block for manual inspection."""
-        config = TextConfig(
-            latent_dim = 8,
-            latent_frac=0.5,
-            vocab_size = 100,
-            max_len = 6,
-            num_heads = 1
-        )
+        config = TextConfig(latent_dim=8, latent_frac=0.5, vocab_size=100, max_len=6, num_heads=1)
         set_seed(4)
-        lens = random.choices(range(config.max_len // 2, config.max_len), k = 4)
-        sequences = [
-            random.choices(range(1, config.vocab_size), k = l)
-            for l in lens
-        ]
+        lens = random.choices(range(config.max_len // 2, config.max_len), k=4)
+        sequences = [random.choices(range(1, config.vocab_size), k=l) for l in lens]
         attention_masks = []
         for s in sequences:
-            attention_masks.append(
-                [1] * len(s) + [0] * (config.max_len - len(s))
-            )
+            attention_masks.append([1] * len(s) + [0] * (config.max_len - len(s)))
             s.extend([0] * (config.max_len - len(s)))
 
         sequences = torch.tensor(sequences)
@@ -112,7 +101,7 @@ class TestModel(unittest.TestCase):
 
         out, attentions = model(sequences, attention_masks, return_attentions=True)
         assert out.shape == (sequences.shape[0], config.max_len, config.vocab_size)
-        for i,a in enumerate(attentions):
+        for i, a in enumerate(attentions):
             if not i:
                 assert a.shape == (sequences.shape[0], config.num_heads, config.latent_len, config.max_len)
             elif i == len(attentions) - 1:
@@ -121,32 +110,27 @@ class TestModel(unittest.TestCase):
                 assert a.shape == (sequences.shape[0], config.num_heads, config.latent_len, config.latent_len)
 
     def test_mlm_overfit(self):
-        r"""It is very hasrd to debug if the attention mask is behaving properly or not, please 
+        r"""It is very hasrd to debug if the attention mask is behaving properly or not, please
         check the code in gperc.Block for manual inspection."""
         config = TextConfig(
-            latent_dim = 8,
-            latent_frac = 0.5,
-            vocab_size = 32,
-            max_len = 10,
+            latent_dim=8,
+            latent_frac=0.5,
+            vocab_size=32,
+            max_len=10,
         )
         set_seed(4)
-        lens = random.choices(range(config.max_len // 2, config.max_len), k = 4)
-        sequences = [
-            random.choices(range(1, config.vocab_size), k = l)
-            for l in lens
-        ]
+        lens = random.choices(range(config.max_len // 2, config.max_len), k=4)
+        sequences = [random.choices(range(1, config.vocab_size), k=l) for l in lens]
         attention_masks = []
         for s in sequences:
-            attention_masks.append(
-                [1] * len(s) + [0] * (config.max_len - len(s))
-            )
+            attention_masks.append([1] * len(s) + [0] * (config.max_len - len(s)))
             s.extend([0] * (config.max_len - len(s)))
 
         sequences = torch.tensor(sequences)
         attention_masks = torch.tensor(attention_masks)
 
         model = Perceiver(config)
-        
+
         optim = torch.optim.Adam(model.parameters(), lr=3e-4)
 
         target = sequences.clone().reshape(-1)

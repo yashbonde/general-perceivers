@@ -36,7 +36,7 @@ extensions = [
     "sphinx.ext.autosummary",  # Create neat summary tables
     "sphinx.ext.napoleon",  # Support for NumPy and Google style docstrings
     "sphinx.ext.viewcode",  # Support for viewing source code
-    "sphinx.ext.autosectionlabel", # Support for section labels
+    "sphinx.ext.autosectionlabel",  # Support for section labels
 ]
 autosummary_generate = True  # Turn on sphinx.ext.autosummary
 

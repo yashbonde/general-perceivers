@@ -61,6 +61,7 @@ def build_position_encoding(position_encoding_type, config, num_index_items, emb
 
 # ============= self attention blocks =============== #
 
+
 class Block(nn.Module):
     def __init__(self, kv_dim, q_dim, num_heads, ffw_dim, dropout=0.0, add_residual=False):
         r"""Generic block with Attention and MLP layers
@@ -103,7 +104,7 @@ class Block(nn.Module):
         )
         self.drop_mlp = nn.Dropout(dropout)
 
-    def forward(self, kv, q, attn_mask = None):
+    def forward(self, kv, q, attn_mask=None):
         r"""Forward pass of the block that taken in a a key-value tensor and a query tensor and performs
         the attention and mlp layers. Since it consumes ``kv`` and ``q`` seperately, the blocks are responisble
         for cross attention like features. Returns a
@@ -123,12 +124,12 @@ class Block(nn.Module):
         Q, K, V = self.fq(_q), self.fk(_kv), self.fv(_kv)
         Q, K, V = tuple(map(lambda x: x.view(x.shape[0], self.num_heads, -1, x.shape[-1] // self.num_heads), (Q, K, V)))
         A = Q @ K.permute(0, 1, 3, 2) * (self.dim ** -0.5)  # [b, h, n, e/h] @ [b, h, e/h, m] -> [b, h, n, m]
-        
+
         # though the logic below can be simplified, it is kept for debugging purposes
         if attn_mask != None:
             """
             An atttention mask (attn_mask) looking like this ===>
-            
+
             [[[[    -0.,     -0.,     -0., -10000., -10000., -10000.]]],
              [[[    -0.,     -0.,     -0., -10000., -10000., -10000.]]],
              [[[    -0.,     -0.,     -0.,     -0., -10000., -10000.]]],
@@ -168,8 +169,7 @@ class Block(nn.Module):
             A = A.softmax(dim=-1)  # [b, h, n, m]
         else:
             A = A.softmax(dim=-1)  # [b, h, n, m]
-        
-        
+
         A = self.drop_att(A)
         out = (A @ V).reshape((q.shape[0], -1, self.q_dim))  # [b, h, n, m] @ [b, h, m, e/h] -> [b, h, n, e/h] -> [b, n, e]
         out = self.fo(out)
@@ -185,7 +185,9 @@ class Block(nn.Module):
 
         return out, A
 
+
 # ============= layer blocks =============== #
+
 
 class Embeddings(nn.Module):
     def __init__(self, config):
@@ -197,7 +199,7 @@ class Embeddings(nn.Module):
         __check_conditionals()
         super().__init__()
         self.config = config
-        
+
         if config.input_type == "tokens":
             self.input_embedding = nn.Embedding(config.input_num_tokens, config.input_dim)
 
@@ -205,11 +207,11 @@ class Embeddings(nn.Module):
         self.pos_emb_processor = build_position_encoding("trainable", config, config.latent_len, config.latent_dim)
         self.pos_emb_decoder = build_position_encoding("trainable", config, config.output_len, config.output_dim)
 
-    def forward(self, input_array, attention_mask = None, output_array = None):
+    def forward(self, input_array, attention_mask=None, output_array=None):
         r"""Takes in either the ``input_array`` or tuple with 3 items ``(input_array, attention_mask, output)``
         and returns a tuple with 4 values ``(input_array, attention_mask, latent_array, output_array)``. If configured
         ``input_array`` can have tokens and will be automatically embedded.
-        
+
         .. note::
 
             When using GPipe you need to send in tensors because it will try to send items as microbatches
@@ -227,8 +229,9 @@ class Embeddings(nn.Module):
             if attention_mask.sum() / torch.numel(attention_mask) == -69.0:
                 attention_mask = None
             else:
-                assert attention_mask.shape == input_array.shape[:2], \
-                    f"mask shape ({attention_mask.shape}) != input shape ({input_array.shape[:2]})"
+                assert (
+                    attention_mask.shape == input_array.shape[:2]
+                ), f"mask shape ({attention_mask.shape}) != input shape ({input_array.shape[:2]})"
 
         if output_array != None:
             if output_array.sum() / torch.numel(output_array) == -420.0:
@@ -313,8 +316,9 @@ class DecoderBlock(nn.Module):
                 assert hasattr(config, "n_classes"), "Must have n_classes > 0 if using projection"
             if config.n_classes:
                 assert config.decoder_projection, "Must have decoder_projection if has n_classes"
-            assert config.decoder_reduction in VALID_REDUCTIONS, \
-                f"decoder_reduction must be in {VALID_REDUCTIONS} , got '{config.decoder_reduction}'"
+            assert (
+                config.decoder_reduction in VALID_REDUCTIONS
+            ), f"decoder_reduction must be in {VALID_REDUCTIONS} , got '{config.decoder_reduction}'"
 
         __check_conditionals()
 
@@ -392,7 +396,7 @@ class Perceiver(nn.Module):
         else:
             return sum(p.numel() for p in self.parameters() if p.requires_grad)
 
-    def forward(self, input_array, attention_mask=None, output_array=None, return_attentions = False):
+    def forward(self, input_array, attention_mask=None, output_array=None, return_attentions=False):
         r"""Performs the forward pass of the Perceiver.
 
         Args:
@@ -407,7 +411,7 @@ class Perceiver(nn.Module):
         """
 
         def __check_conditionals():
-            assert len(input_array.shape) in [2,3], "Input array must be of shape [batch_size, input_len, (input_dim)]"
+            assert len(input_array.shape) in [2, 3], "Input array must be of shape [batch_size, input_len, (input_dim)]"
 
             # if isinstance(input_object, torch.tensor):
             #     return input_object, None, None
@@ -423,7 +427,7 @@ class Perceiver(nn.Module):
             #         assert len(input_object) == 3, "The input_object must contain either (input_array, output_array, return_attentions)"
 
         __check_conditionals()
-        
+
         # step 1: pass through the embedding, there is no need to pass attention_mask here
         input_array, attention_mask, latent_array, output_array = self.embd(input_array, attention_mask, output_array)
 
@@ -469,20 +473,23 @@ def get_distributed_model(config):
     """
     import sys
 
-    if sys.platform == 'win32':
-        print('Windows platform is not supported for pipeline parallelism')
+    if sys.platform == "win32":
+        print("Windows platform is not supported for pipeline parallelism")
         sys.exit(0)
     if torch.cuda.device_count() < 2:
-        print('Need at least two GPU devices for this tutorial')
+        print("Need at least two GPU devices for this tutorial")
         sys.exit(0)
 
     from torch.distributed.pipeline.sync import Pipe
-    
+
     num_gpus = torch.cuda.device_count()
     partition_len = ((config.num_layers - 1) // num_gpus) + 1
 
     # Add encoder in the beginning.
-    tmp_list = [Embeddings(config).cuda(0), EncoderBlock(config).cuda(0),]
+    tmp_list = [
+        Embeddings(config).cuda(0),
+        EncoderBlock(config).cuda(0),
+    ]
     module_list = []
 
     # Add all the necessary transformer blocks.

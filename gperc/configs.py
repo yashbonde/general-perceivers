@@ -41,7 +41,6 @@ class PerceiverConfig:
         ffw_output: int = 32,
         num_heads: int = 2,
         num_layers: int = 2,
-
         # second set of parameters are specially for encoder and decoder behavior
         input_type: str = "raw",
         input_num_tokens: int = None,
@@ -49,12 +48,10 @@ class PerceiverConfig:
         decoder_residual: bool = False,
         decoder_projection: bool = True,
         n_classes: int = None,
-
         # third set of parameters are for the initialiaations and dropouts
         pos_init_std: float = 0.02,
         dropout: float = 0.1,
         seed: int = 4,
-
         # user can send in kwargs if it wants to store any value
         **kwargs
     ):
@@ -127,15 +124,7 @@ class PerceiverConfig:
 
 
 class TextConfig(PerceiverConfig):
-    def __init__(
-        self,
-        latent_dim,
-        vocab_size,
-        max_len,
-        latent_frac = 0.25,
-        ffw_ratio = 1.0,
-        **kwargs
-    ):
+    def __init__(self, latent_dim, vocab_size, max_len, latent_frac=0.25, ffw_ratio=1.0, **kwargs):
         r"""Config class to specially deal with the text modality cases
 
         Args:
@@ -212,7 +201,6 @@ class ImageConfig(PerceiverConfig):
             meaning that there is no need for cross_attention or residual connection, but there
             needs to be a projection layer to the number of classes."""
             self.decoder_residual = False
-
 
         elif task == "segmentation":
             """When performing segmentation task, the output_array will query the latent but we
