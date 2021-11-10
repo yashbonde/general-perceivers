@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="gperc Configurations" href="gperc.configs.html" /><link rel="prev" title="YoCo (Remote Execution)" href="remote.html" />
 
     <meta name="generator" content="sphinx-4.2.0, furo 2021.10.09"/>
-        <title>gperc CLI - gperc 0.2 documentation</title>
+        <title>gperc CLI - gperc 0.4 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?digest=16fb25fabf47304eee183a5e9af80b1ba98259b1" />
@@ -123,7 +123,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="index.html"><div class="brand">gperc 0.2 documentation</div></a>
+      <a href="index.html"><div class="brand">gperc 0.4 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -146,7 +146,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
   
   
-  <span class="sidebar-brand-text">gperc 0.2 documentation</span>
+  <span class="sidebar-brand-text">gperc 0.4 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="search.html" role="search">
   <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
@@ -158,7 +158,7 @@
 <ul>
 <li class="toctree-l1 has-children"><a class="reference internal" href="stories.html">Stories</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="stories.1.html">1. Quick Dopamine</a></li>
-<li class="toctree-l2"><a class="reference internal" href="stories.2.html">2. Using CLIs (WIP)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="stories.2.html">2. Distributed Computing</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="remote.html">YoCo (Remote Execution)</a></li>
@@ -209,8 +209,41 @@ testing it out all via CLI.</p>
 <p>I am using <code class="docutils literal notranslate"><span class="pre">python-fire</span></code> from google for this, <a class="reference external" href="https://github.com/google/python-fire">link</a>, that
 can convert any arbitrary python object to a CLI. Normally I would use this with a <code class="docutils literal notranslate"><span class="pre">main</span></code> function,
 but since there has to be configuration in the CLI, I am using a class <code class="docutils literal notranslate"><span class="pre">Main</span></code> (yes, I know, weird).</p>
+<p>The default CLI has the following structure:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python3</span> <span class="o">-</span><span class="n">m</span> <span class="n">gperc</span> <span class="p">[</span><span class="n">BEHEVIOUR</span><span class="p">]</span> <span class="p">[</span><span class="n">CONFIGS</span><span class="p">]</span> <span class="p">[</span><span class="n">TASKS</span><span class="p">]</span>
+
+<span class="n">BEHEVIOUR</span><span class="p">:</span>
+
+    <span class="o">-</span><span class="n">h</span><span class="p">,</span> <span class="o">--</span><span class="n">help</span><span class="p">:</span> <span class="n">Show</span> <span class="n">this</span> <span class="n">modal</span> <span class="ow">and</span> <span class="n">exit</span><span class="o">.</span>
+
+    <span class="n">main</span><span class="p">:</span> <span class="n">Run</span> <span class="n">the</span> <span class="n">main</span> <span class="n">orchestration</span>
+    <span class="n">serve</span> <span class="p">(</span><span class="n">WIP</span><span class="p">):</span> <span class="n">serve</span> <span class="n">using</span> <span class="n">YoCo</span>
+
+<span class="n">CONFIGS</span><span class="p">:</span>
+
+    <span class="n">main</span><span class="p">:</span> <span class="n">configurations</span> <span class="k">for</span> <span class="n">the</span> <span class="n">main</span> <span class="n">orchestration</span><span class="o">.</span>
+
+        <span class="n">train</span><span class="p">:</span> <span class="n">python3</span> <span class="o">-</span><span class="n">m</span> <span class="n">gperc</span> <span class="n">main</span> <span class="n">train</span> <span class="o">-</span><span class="n">h</span>
+        <span class="n">data</span><span class="p">:</span> <span class="n">python3</span> <span class="o">-</span><span class="n">m</span> <span class="n">gperc</span> <span class="n">main</span> <span class="n">data</span> <span class="o">-</span><span class="n">h</span>
+        <span class="n">arch</span><span class="p">:</span> <span class="n">python3</span> <span class="o">-</span><span class="n">m</span> <span class="n">gperc</span> <span class="n">main</span> <span class="n">arch</span> <span class="o">-</span><span class="n">h</span>
+
+    <span class="n">serve</span> <span class="p">(</span><span class="n">WIP</span><span class="p">):</span> <span class="n">configurations</span> <span class="k">for</span> <span class="n">the</span> <span class="n">server</span> <span class="n">mode</span><span class="o">.</span>
+
+        <span class="n">port</span><span class="p">:</span> <span class="n">python3</span> <span class="o">-</span><span class="n">m</span> <span class="n">gperc</span> <span class="n">serve</span> <span class="o">-</span><span class="n">h</span>
+
+<span class="n">TASKS</span><span class="p">:</span>
+
+    <span class="n">Tasks</span> <span class="n">are</span> <span class="n">specific</span> <span class="n">to</span> <span class="n">behaviour</span> <span class="ow">and</span> <span class="n">can</span> <span class="k">raise</span> <span class="n">errors</span> <span class="k">for</span> <span class="n">incorrect</span> <span class="n">configs</span>
+
+    <span class="n">main</span><span class="p">:</span> <span class="n">tasks</span> <span class="k">for</span> <span class="n">the</span> <span class="n">main</span> <span class="n">orchestration</span><span class="o">.</span>
+
+        <span class="n">profile</span><span class="p">:</span> <span class="n">python3</span> <span class="o">-</span><span class="n">m</span> <span class="n">gperc</span> <span class="n">main</span> <span class="p">[</span><span class="n">CONFIGS</span><span class="p">]</span> <span class="n">profile</span> <span class="o">-</span><span class="n">h</span>
+        <span class="n">start</span><span class="p">:</span> <span class="n">python3</span> <span class="o">-</span><span class="n">m</span> <span class="n">gperc</span> <span class="n">main</span> <span class="p">[</span><span class="n">CONFIGS</span><span class="p">]</span> <span class="n">start</span> <span class="o">-</span><span class="n">h</span>
+        <span class="n">deploy</span><span class="p">:</span> <span class="n">deploy</span> <span class="n">model</span> <span class="n">on</span> <span class="n">NimbleBox</span><span class="o">.</span><span class="n">ai</span><span class="o">.</span> <span class="n">python3</span> <span class="o">-</span><span class="n">m</span> <span class="n">gperc</span> <span class="n">main</span> <span class="p">[</span><span class="n">CONFIGS</span><span class="p">]</span> <span class="n">deploy</span> <span class="o">-</span><span class="n">h</span>
+</pre></div>
+</div>
 <p>This is how something like loading a dataset and running a model would look like:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3 -m gperc --modality <span class="s2">"image/class"</span> <span class="se">\</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3 -m gperc main --modality <span class="s2">"image/class"</span> <span class="se">\</span>
     data --dataset_name <span class="s2">"cifar10"</span> <span class="se">\</span>
     arch --mno <span class="o">[</span><span class="m">1024</span>,128,1<span class="o">]</span> --ced <span class="o">[</span><span class="m">3</span>,32,10<span class="o">]</span> <span class="se">\</span>
     train --epochs <span class="m">10</span> --batch_size <span class="m">32</span> --lr <span class="m">0</span>.001 <span class="se">\</span>
@@ -222,71 +255,45 @@ lines we have specified the data, the architecture and the training parameters. 
 <code class="docutils literal notranslate"><span class="pre">start</span></code> command, which starts the training.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="gperc.cli.Main">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">gperc.cli.</span></span><span class="sig-name descname"><span class="pre">Main</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">modality</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">4</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gperc/cli.html#Main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gperc.cli.Main" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">gperc.cli.</span></span><span class="sig-name descname"><span class="pre">Main</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mno</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cde</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ffw_width</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_heads</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_layers</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decoder_reduction</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'mean'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decoder_residual</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decoder_projection</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_classes</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_pos_enc</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gperc/cli.html#Main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gperc.cli.Main" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>This is the main class for running any kind.</p>
-<p><strong>DO NOT USE (WIP)</strong></p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>modality</strong> (<em>str</em>) – what exactly is the purpose of this network</p></li>
-<li><p><strong>seed</strong> (<em>int</em><em>, </em><em>optional</em>) – seed for randomness. Defaults to 4.</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="gperc.cli.Main.train">
-<span class="sig-name descname"><span class="pre">train</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_steps</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gperc/cli.html#Main.train"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gperc.cli.Main.train" title="Permalink to this definition">¶</a></dt>
-<dd><p>Config for training</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>batch_size</strong> (<em>int</em>) – batch size</p></li>
-<li><p><strong>num_steps</strong> (<em>int</em>) – number of steps to train the model</p></li>
-<li><p><strong>lr</strong> (<em>float</em>) – learning rate</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="gperc.cli.Main.data">
-<span class="sig-name descname"><span class="pre">data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vocab_size</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_size</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gperc/cli.html#Main.data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gperc.cli.Main.data" title="Permalink to this definition">¶</a></dt>
-<dd><p>Config for dataset</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>dataset_name</strong> (<em>str</em>) – name of the dataset to load</p></li>
-<li><p><strong>vocab_size</strong> (<em>int</em><em>, </em><em>optional</em>) – size of the vocabulary, has to be provided if this has <code class="docutils literal notranslate"><span class="pre">text</span></code> in modality.</p></li>
-<li><p><strong>image_size</strong> (<em>int</em><em>, </em><em>optional</em>) – size of the image dim, has to be provided if this has <code class="docutils literal notranslate"><span class="pre">image</span></code> in the modality</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="gperc.cli.Main.arch">
-<span class="sig-name descname"><span class="pre">arch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mno</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ced</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ffw_width</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gperc/cli.html#Main.arch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gperc.cli.Main.arch" title="Permalink to this definition">¶</a></dt>
-<dd><p>Config for architecture. This is simple and takes in list of ints</p>
+<p>This is the main class for manging things from CLI. Errors are raised by the gperc.models and not here, so __setup() will
+throw errors</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>mno</strong> (<em>List</em>) – The first dimension of input, latent and output arrays</p></li>
-<li><p><strong>ced</strong> (<em>List</em>) – The second dimension of input, latent and output arrays</p></li>
+<li><p><strong>cde</strong> (<em>List</em>) – The second dimension of input, latent and output arrays</p></li>
 <li><p><strong>ffw_width</strong> (<em>float</em><em>, </em><em>optional</em>) – The width of the feed forward layer as ratio of dims</p></li>
+<li><p><strong>num_heads</strong> (<em>int</em><em>, </em><em>optional</em>) – The number of attention heads</p></li>
+<li><p><strong>num_layers</strong> (<em>int</em><em>, </em><em>optional</em>) – The number of (latent) layers</p></li>
+<li><p><strong>decoder_reduction</strong> (<em>str</em><em>, </em><em>optional</em>) – After the decoder, how should the output be reduced, should be one of gperc.models.VALID_REDUCTIONS</p></li>
+<li><p><strong>decoder_residual</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether output array performs residual connection with the latent array</p></li>
+<li><p><strong>decoder_projection</strong> (<em>bool</em><em>, </em><em>optional</em>) – Is decoder output projected to a certain size</p></li>
+<li><p><strong>dropout</strong> (<em>float</em><em>, </em><em>optional</em>) – The dropout rate</p></li>
+<li><p><strong>n_classes</strong> (<em>int</em><em>, </em><em>optional</em>) – The number of classes in the output array, must be set if decoder_projection</p></li>
+<li><p><strong>output_pos_enc</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to use position encoding in the decoder</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gperc.cli.Main.profile">
+<span class="sig-name descname"><span class="pre">profile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_shape</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort_by</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'cpu_time'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gperc/cli.html#Main.profile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gperc.cli.Main.profile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Profile the input based on the configurations given above.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input_shape</strong> (<em>List</em>) – what should be the input shape of the tensor</p></li>
+<li><p><strong>sort_by</strong> (<em>str</em>) – one of <code class="docutils literal notranslate"><span class="pre">cpu_time,</span> <span class="pre">cuda_time,</span> <span class="pre">cpu_time_total,</span> <span class="pre">cuda_time_total,</span> <span class="pre">cpu_memory_usage,</span> <span class="pre">cuda_memory_usage,</span> <span class="pre">self_cpu_memory_usage,</span> <span class="pre">self_cuda_memory_usage,</span> <span class="pre">count</span></code></p></li>
 </ul>
 </dd>
 </dl>
 </dd></dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="gperc.cli.Main.start">
-<span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log_level</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gperc/cli.html#Main.start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gperc.cli.Main.start" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function triggers the CLI and shut has to be last in the chain</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>log_level</strong> (<em>int</em><em>, </em><em>optional</em>) – log level in the order <code class="docutils literal notranslate"><span class="pre">[logging.NOTSET,</span> <span class="pre">logging.DEBUG,</span> <span class="pre">\</span>
-<span class="pre">logging.INFO,</span> <span class="pre">logging.WARNING,</span> <span class="pre">logging.ERROR,</span> <span class="pre">logging.CRITICAL]</span></code></p>
-</dd>
-</dl>
 </dd></dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="gperc.cli.Serve">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">gperc.cli.</span></span><span class="sig-name descname"><span class="pre">Serve</span></span><a class="reference internal" href="_modules/gperc/cli.html#Serve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gperc.cli.Serve" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 </dd></dl>
 </section>
 </section>

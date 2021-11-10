@@ -97,4 +97,5 @@ this approach can be. I have added code for the following:
     (WIP) finetuning also requires changing the architecture a little bit, this is also being added as first class in
     ``gperc.Perceiver`` object.
 
-#. More 🍰 on the way
+More 🍰 on the way
+------------------
