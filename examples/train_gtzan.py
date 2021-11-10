@@ -21,13 +21,13 @@ from gperc.models import build_position_encoding
 
 # -----
 
-SAMPLE_RATE = 22050 # in Hertz
-TRACK_DURATION = 30 # in seconds
+SAMPLE_RATE = 22050  # in Hertz
+TRACK_DURATION = 30  # in seconds
 SAMPLES_PER_TRACK = SAMPLE_RATE * TRACK_DURATION
 
 
 class MyGtzanDataset(Dataset):
-  def __init__(self, dataset, num_mfcc=13, n_fft=2048, hop_length=512, num_segments=5):
+    def __init__(self, dataset, num_mfcc=13, n_fft=2048, hop_length=512, num_segments=5):
         super().__init__()
         samples_per_segment = int(SAMPLES_PER_TRACK / num_segments)
         num_mfcc_vectors_per_segment = math.ceil(samples_per_segment / hop_length)
@@ -37,24 +37,26 @@ class MyGtzanDataset(Dataset):
         le = preprocessing.LabelEncoder()
         le.fit(self.signal_labels)
         self.signal_labels = le.transform(self.signal_labels)
-        self.mfcc=[]
-        self.labels=[]
+        self.mfcc = []
+        self.labels = []
         for i in range(len(self.signals)):
-          for segment in range(num_segments):
-            start = samples_per_segment*segment
-            finish = start+samples_per_segment
-            mfcc = librosa.feature.mfcc(self.signals[i][start:finish], self.sample_rates[i], n_mfcc=num_mfcc, n_fft=n_fft, hop_length=hop_length).T
-            if len(mfcc) == num_mfcc_vectors_per_segment:
-              self.mfcc.append(mfcc.tolist())
-              self.labels.append(self.signal_labels[i])
-        self.mfcc=torch.Tensor(self.mfcc)
-        self.labels=torch.LongTensor(self.labels)
+            for segment in range(num_segments):
+                start = samples_per_segment * segment
+                finish = start + samples_per_segment
+                mfcc = librosa.feature.mfcc(
+                    self.signals[i][start:finish], self.sample_rates[i], n_mfcc=num_mfcc, n_fft=n_fft, hop_length=hop_length
+                ).T
+                if len(mfcc) == num_mfcc_vectors_per_segment:
+                    self.mfcc.append(mfcc.tolist())
+                    self.labels.append(self.signal_labels[i])
+        self.mfcc = torch.Tensor(self.mfcc)
+        self.labels = torch.LongTensor(self.labels)
 
-  def __len__(self):
+    def __len__(self):
         return len(self.mfcc)
 
-  def __getitem__(self, i):
-    return self.mfcc[i], self.labels[i]
+    def __getitem__(self, i):
+        return self.mfcc[i], self.labels[i]
 
 
 dataset = GTZAN(root=".", download=True)
@@ -78,8 +80,9 @@ config = AudioConfig(
     latent_len=32,
     latent_dim=32,
     num_layers=4,
-    n_classes=10
+    n_classes=10,
 )
+
 
 class PerceiverGtzanClassifier(torch.nn.Module):
     def __init__(self, config):
@@ -92,10 +95,11 @@ class PerceiverGtzanClassifier(torch.nn.Module):
         return sum(p.numel() for p in self.parameters() if p.requires_grad)
 
     def forward(self, x):
-      x=torch.reshape(x,(x.shape[0],x.shape[1]*x.shape[2],1))
-      pos_emb = torch.cat([self.emb[None, ...] for _ in range(x.shape[0])], dim=0)
-      out = x + pos_emb
-      return self.perceiver(out)
+        x = torch.reshape(x, (x.shape[0], x.shape[1] * x.shape[2], 1))
+        pos_emb = torch.cat([self.emb[None, ...] for _ in range(x.shape[0])], dim=0)
+        out = x + pos_emb
+        return self.perceiver(out)
+
 
 set_seed(config.seed)
 model = PerceiverGtzanClassifier(config)
@@ -103,6 +107,7 @@ print("model parameters:", model.num_parameters())
 
 iter_dl_train = iter(dl_train)
 from tqdm import trange
+
 pbar = trange(10000)
 optim = Adam(model.parameters(), lr=0.001)
 all_loss = []
@@ -139,9 +144,9 @@ for i in pbar:
             print(f"Test Loss: {sum(_all_loss)} | Test Acc: {sum(_all_acc)/len(_all_acc)}")
         model.train()
 
-plt.figure(figsize=(20,10))
+plt.figure(figsize=(20, 10))
 plt.subplot(1, 2, 1)
-plt.plot(savgol_filter(all_acc, window_length = 51, polyorder = 3))
+plt.plot(savgol_filter(all_acc, window_length=51, polyorder=3))
 plt.title("Training Accuracy")
 plt.subplot(1, 2, 2)
 plt.plot(all_loss)

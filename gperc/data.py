@@ -122,13 +122,12 @@ from .utils import set_seed
 def get_vocab(n_bytes):
     B = range(2 ** 8)
     out = product(B, repeat=n_bytes)
-    vocab = {x:i for i,x in enumerate(list(out))}
+    vocab = {x: i for i, x in enumerate(list(out))}
     return vocab
-    
 
 
 class Consumer:
-    def __init__(self, fps, n_bytes = 2, seqlen = 1024, verbose = False, class_to_id = None, _unittesting = False):
+    def __init__(self, fps, n_bytes=2, seqlen=1024, verbose=False, class_to_id=None, _unittesting=False):
         r"""Consumer takes in list of files along with it's meta data and becomes a callable generator.
         When calling you can tell it what kind of data that you want. It is a full fledged data engine in itself.
         This will sit in nbox one day and thus has to be engineered in such a what that it is production grade with
@@ -175,7 +174,7 @@ class Consumer:
             if isinstance(v, str):  # F2
                 assert all([isinstance(_v, str) for _k, _v in fps.items()]), "All values should be a string"
                 _fps = {}
-                for k,v in fps.items():
+                for k, v in fps.items():
                     _fps.setdefault(v, []).append(k)
                 fps = _fps
                 self._mode = "F2"
@@ -244,11 +243,13 @@ class Consumer:
             total_size = _cumm_sizes[-1]
             total_tokens = math.ceil(total_size / n_bytes)
             total_samples = math.ceil(total_tokens / seqlen)
-            meta[_c].update({
-                "cummulative": _cumm_sizes,
-                "total_tokens": total_tokens,
-                "total_samples": total_samples,
-            })
+            meta[_c].update(
+                {
+                    "cummulative": _cumm_sizes,
+                    "total_tokens": total_tokens,
+                    "total_samples": total_samples,
+                }
+            )
 
         # Now we create the samples by reading going over file sizes and creating the samples
         # seqlen_sample_in_bytes = seqlen * n_bytes
@@ -272,7 +273,7 @@ class Consumer:
                         # add data for this sample and then move to next file
                         sample.append((filepath[_f_idx], _curr_seek, _curr_size))
                         _f_idx += 1
-                        total_bytes += (sample[-1][-1] - sample[-1][-2])
+                        total_bytes += sample[-1][-1] - sample[-1][-2]
                         if _f_idx == len(filepath):
                             break
                         _curr_size = sizes[_f_idx]
@@ -280,12 +281,14 @@ class Consumer:
                     else:
                         sample.append((filepath[_f_idx], _curr_seek, _curr_seek + _remaining_bytes_in_sample))
                         _curr_seek += _remaining_bytes_in_sample
-                        total_bytes += (sample[-1][-1] - sample[-1][-2])
-                    
-                all_samples.append({
-                    "data": sample,
-                    "class": _c,
-                })
+                        total_bytes += sample[-1][-1] - sample[-1][-2]
+
+                all_samples.append(
+                    {
+                        "data": sample,
+                        "class": _c,
+                    }
+                )
 
                 if _f_idx == len(filepath):
                     break
@@ -294,10 +297,11 @@ class Consumer:
 
         # For ensuring guarantees, we need to check if the total number of samples is same as from
         # the meta.
-        assert sum([_meta["total_samples"] for _, _meta in meta.items()]) == len(self.all_samples), \
-            "total samples through both approaches are not the same: got {} and {}".format(
-                sum([_meta["total_samples"] for _, _meta in meta.items()]), len(self.all_samples)
-            )
+        assert sum([_meta["total_samples"] for _, _meta in meta.items()]) == len(
+            self.all_samples
+        ), "total samples through both approaches are not the same: got {} and {}".format(
+            sum([_meta["total_samples"] for _, _meta in meta.items()]), len(self.all_samples)
+        )
         self._total_samples = len(self.all_samples)
         self.samples_by_class = {}
         for x in self.all_samples:
@@ -311,7 +315,6 @@ class Consumer:
             for k, v in self.samples_by_class.items():
                 print(f"  {k}: {len(v)} ({len(v)/self._total_samples * 100:.3f}%)")
             print("=" * 50)
-
 
         self.__unsupervised_mode = False
         self.__supervised_mode = False
@@ -342,9 +345,9 @@ class Consumer:
     def __len__(self):
         return self._total_samples
 
-    def set_unsupervised_mode(self, mask_frequency = 0.15):
+    def set_unsupervised_mode(self, mask_frequency=0.15):
         r"""set variables required for unsupervised query mode
-        
+
         Args:
 
             mask_frequency (float): frequency of masking of input tensor
@@ -376,9 +379,9 @@ class Consumer:
         and ``primitive`` are implemented in pythonic way. Read the documentation of ``x`` for more details. After getting the data
         we convert it to an intermediate format, which is a list of tuples, each tuple is a sample. The intermediate format has the
         can be one of the following:
-            
+
         1. dict like this:
-        
+
         .. code-block:: python
 
             {
@@ -388,7 +391,7 @@ class Consumer:
             ],
                 'class': 'tinker'
             }
-    
+
         2.  list with dict in it, in which case the samples are batched together.
 
         The intermediate format is then converted to the desired format i.e. ``query``, currently I have added functionality that
@@ -414,7 +417,7 @@ class Consumer:
             x_tuple(Tuple): When x is a tuple you can use it like a function, meaning it can run certain hardcoded logic. It should
                 have  ``condition`` as above and ``query``. This is not a real input, added seperately for documentation convinience.
                 The object ``query`` can be one of the following
-                
+
                 1. ``None``: returns just ``{"input_tensor": tensor}`` dict
                 2. ``'supervised'``: ``{"input_tensor": tensor, "class": tensor}``, this will fail if incorrect ``self.class_to_id``
                 3. ``'unsupervised'``: ``{"input_tensor": tensor, "output_tensor": tensor}``
@@ -461,8 +464,11 @@ class Consumer:
             if len(x) == 1:
                 x = x[0]
             elif len(x) == 2:
-                assert x[1] in ["supervised", "unsupervised", None], \
-                    "case I6: second argument must be None or 'supervised' or 'unsupervised'"
+                assert x[1] in [
+                    "supervised",
+                    "unsupervised",
+                    None,
+                ], "case I6: second argument must be None or 'supervised' or 'unsupervised'"
                 query = x[1]
                 if query == "supervised":
                     assert self.__supervised_mode, "case I6: supervised mode is not enabled data.set_supervised_mode()"
@@ -494,7 +500,7 @@ class Consumer:
         elif isinstance(x, (list, tuple)):  # i3
             assert isinstance(x[0], int), f"Items in list must be integers"
             batch_data = [all_samples[i] for i in x]
-        
+
         elif isinstance(x, dict):
             if len(self.fps) == 1 and "null" in self.fps:
                 raise ValueError("There is no category provided, so you cannot try to make a batch from a dict")
@@ -511,7 +517,7 @@ class Consumer:
                     batch_data.extend([samples[i] for i in v])
         else:
             raise KeyError(f"Invalid input type: {type(x)}")
-        
+
         vocab = get_vocab(self.n_bytes)
         pad = vocab[tuple(0 for _ in range(self.n_bytes))]
 
@@ -532,17 +538,17 @@ class Consumer:
 
             zip_items = []
             for i in range(self.n_bytes):
-                zip_items.append(sample[i::self.n_bytes])
+                zip_items.append(sample[i :: self.n_bytes])
             samples = list(zip(*zip_items))
             seq = [vocab[x] for x in samples]
-            labels = seq.copy() # this is exclusively for unsupervised
+            labels = seq.copy()  # this is exclusively for unsupervised
 
             if len(seq) != self.seqlen:
                 seq += [pad for _ in range(self.seqlen - len(seq))]
 
                 # -100 because torch does not calculate loss for -100 value
                 labels += [-100 for _ in range(self.seqlen - len(labels))]
-            
+
             return seq, labels, _class
 
         if isinstance(batch_data, list):
@@ -566,20 +572,20 @@ class Consumer:
             else:
                 raise ValueError("class_to_id dict must be a provided")
             _dc.update({"class": class_tensor})
-        
+
         elif query == "unsupervised":
             mask = np.random.uniform(0, 1, tuple(out.shape)) < self.mask_frequency
             out[torch.tensor(mask)] = pad
             labels = torch.tensor(labels, dtype=torch.long)
-            _dc.update({"input_array": out, "output_tensor": labels})
-        
+            _dc.update({"input_array": out, "output_array": labels})
+
         return _dc
 
-    def create_batches(self, batch_size, drop_last = False, seed = 4):
+    def create_batches(self, batch_size, drop_last=False, seed=4):
         set_seed(seed)
         samples = list(range(len(self.all_samples)))
         random.shuffle(samples)
-        batches = [samples[i:i+batch_size] for i in range(0, len(samples), batch_size)]
+        batches = [samples[i : i + batch_size] for i in range(0, len(samples), batch_size)]
         if len(batches[-1]) != batch_size and drop_last:
             batches = batches[:-1]
 
@@ -593,13 +599,12 @@ class Consumer:
         self._iter_batches = iter(batches)
         self.__batch_mode = True
 
-    def get_next_batch(self, query = None):
+    def get_next_batch(self, query=None):
         assert self.__batch_mode, "You must create batches first data.create_batches()"
         try:
             x = next(self._iter_batches)
         except StopIteration:
             self.create_batches(self.batch_size, self.drop_last, self.seed + 1)
             x = next(self._iter_batches)
-        
-        return self[x, query]
 
+        return self[x, query]
