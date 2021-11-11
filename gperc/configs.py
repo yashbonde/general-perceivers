@@ -124,7 +124,18 @@ class PerceiverConfig:
 
 
 class TextConfig(PerceiverConfig):
-    def __init__(self, latent_dim, vocab_size, max_len, latent_frac=0.25, ffw_ratio=1.0, **kwargs):
+    def __init__(
+        self,
+        latent_dim,
+        vocab_size,
+        max_len,
+        latent_frac=0.25,
+        ffw_ratio=1.0,
+        decoder_reduction="first",
+        num_classes = None,
+        task = "classification",
+        **kwargs
+    ):
         r"""Config class to specially deal with the text modality cases
 
         Args:
@@ -134,7 +145,9 @@ class TextConfig(PerceiverConfig):
             latent_frac (float): ``latent_len`` will be this multiplied by ``max_len``
             ffw_ratio (float, optional): The ratio of the feed-forward layer in Block to input dimension
         """
-        super().__init__(**kwargs)
+        assert task in ["classification", "unsupervised"], "task must be either 'classification' or 'unsupervised'"
+
+        super().__init__()
         self.vocab_size = vocab_size
         self.max_len = max_len
 
@@ -148,22 +161,34 @@ class TextConfig(PerceiverConfig):
         self.ffw_output = int(self.output_dim * ffw_ratio)
         self.input_type = "tokens"
         self.input_num_tokens = self.vocab_size
-        self.decoder_reduction = None
-        self.decoder_residual = True
         self.decoder_projection = True
-        self.n_classes = self.vocab_size
+
+        if task == "classification":
+            assert decoder_reduction != None, "decoder_reduction must be set for task classification"
+            assert isinstance(num_classes, int), "num_classes must be set for task classification"
+            self.decoder_reduction = decoder_reduction
+            self.decoder_residual = False
+            self.n_classes = num_classes
+        
+        elif task == "unsupervised":
+            self.decoder_reduction = None
+            self.decoder_residual = True
+            self.n_classes = self.vocab_size
+
+        for k, v in kwargs.items():
+            setattr(self, k, v)
 
 
 class ImageConfig(PerceiverConfig):
     def __init__(
         self,
-        image_shape: Tuple,
-        latent_len: int,
-        latent_dim: int,
-        n_classes: int,
-        decoder_reduction: str = "mean",
-        ffw_ratio: float = 1.0,
-        task: str = "classification",
+        image_shape,
+        latent_len,
+        latent_dim,
+        n_classes,
+        decoder_reduction = "mean",
+        ffw_ratio = 1.0,
+        task = "classification",
         **kwargs
     ):
         r"""Config class to specially deal with the image modality cases
@@ -179,7 +204,7 @@ class ImageConfig(PerceiverConfig):
         """
         assert task in ["classification", "segmentation"], "task must be one of 'classification' or 'segmentation'"
 
-        super().__init__(**kwargs)
+        super().__init__()
         self.image_shape = image_shape
         self.task = task
 
@@ -208,6 +233,9 @@ class ImageConfig(PerceiverConfig):
             number of classes. Avoiding residual connection is recommended in the paper."""
             self.decoder_residual = False
             self.output_len = image_shape[0] * image_shape[1]
+
+        for k,v in kwargs.items():
+            setattr(self, k, v)
 
 
 class AudioConfig(PerceiverConfig):

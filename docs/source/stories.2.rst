@@ -59,7 +59,7 @@ over the coding decisions.
    # number of attentions == number of chunks
    len(attentions) # 16
 
-   # batch size of attention layer is batch_size / chunks
+   # batch size of attention is batch_size / chunks
    attentions[0][0].shape[0] == 2
    
 
