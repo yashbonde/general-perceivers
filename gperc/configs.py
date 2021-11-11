@@ -24,7 +24,6 @@ Documentation
 import json
 import math
 from pprint import pformat
-from typing import Callable, Tuple
 
 
 class PerceiverConfig:
@@ -217,7 +216,7 @@ class ImageConfig(PerceiverConfig):
         self.n_classes = n_classes
         self.ffw_latent = int(ffw_ratio * self.latent_dim)
         self.ffw_output = int(ffw_ratio * self.output_dim)
-        self.input_type = "raw"
+        self.input_type = "raw" # <---- avoid creating tokens embedding matrix
         self.decoder_reduction = decoder_reduction
         self.decoder_projection = True
 
