@@ -190,6 +190,7 @@ class Consumer:
         self.__auto_idx = 0
         self.__n_classes = len(self.fps)
         self.n_bytes = n_bytes
+        self.vocab_size = int(2 ** (8 * self.n_bytes))
         self.seqlen = seqlen
         self.class_to_id = class_to_id
 
@@ -329,6 +330,7 @@ class Consumer:
             "n_classes": self.__n_classes,
             "n_bytes": self.n_bytes,
             "seqlen": self.seqlen,
+            "vocab_size": self.vocab_size,
         }
         if hasattr(self, "batch_size"):
             _d["batch_size"] = self.batch_size
