@@ -4,8 +4,8 @@ from . import utils
 
 from .models import Embeddings, EncoderBlock, ProcessorBlock, DecoderBlock
 from .models import Perceiver, PerceiverMLM, PerceiverImage
-from .configs import PerceiverConfig, TextConfig, ImageConfig, AudioConfig
+from .configs import PerceiverConfig, TextConfig, ImageConfig, AudioConfig, BinaryConfig
 from .utils import set_seed, get_files_in_folder
 from .data import Consumer
 
-__version__ = "0.4"
+__version__ = "0.5"

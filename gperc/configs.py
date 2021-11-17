@@ -177,8 +177,6 @@ class ImageConfig(PerceiverConfig):
             ffw_ratio (float, optional): The ratio of the feed-forward layer in Block to input dimension
             task (str, optional): The task to be performed, can be one of ``classification`` and ``segmentation``
         """
-        assert task in ["classification", "segmentation"], "task must be one of 'classification' or 'segmentation'"
-
         super().__init__(**kwargs)
         self.image_shape = image_shape
         self.task = task
@@ -208,6 +206,9 @@ class ImageConfig(PerceiverConfig):
             number of classes. Avoiding residual connection is recommended in the paper."""
             self.decoder_residual = False
             self.output_len = image_shape[0] * image_shape[1]
+
+        else:
+            raise ValueError(f"task must be one of 'classification' or 'segmentation', got {task}")
 
 
 class AudioConfig(PerceiverConfig):
@@ -249,7 +250,44 @@ class AudioConfig(PerceiverConfig):
         self.output_len = 1
         self.output_dim = latent_dim
         self.n_classes = n_classes
-
+        self.input_type = "raw"
         self.decoder_cross_attention = False
         self.decoder_residual = False
         self.decoder_projection = True
+
+
+class BinaryConfig(PerceiverConfig):
+    def __init__(
+        self,
+        seqlen,
+        vocab_size,
+        latent_dim,
+        latent_frac=0.1,
+        n_classes = None,
+        ffw_ratio = 1.0,
+        task = "classification",
+        **kwargs
+    ):
+        super().__init__(**kwargs)
+
+        self.input_len = seqlen
+        self.input_dim = latent_dim
+        self.latent_len = int(seqlen * latent_frac)
+        self.latent_dim = latent_dim
+        self.output_len = seqlen
+        self.output_dim = latent_dim
+        self.ffw_latent = int(ffw_ratio * self.latent_dim)
+        self.ffw_output = int(ffw_ratio * self.output_dim)
+        self.input_type = "tokens"
+        self.decoder_reduction = "eot" if task == "classification" else None
+        self.decoder_projection = True
+        self.input_num_tokens = vocab_size
+
+        self.decoder_cross_attention = False if task == "classification" else True
+        self.decoder_residual = False if task == "classification" else True
+
+        if task == "classification":
+            assert n_classes is not None, "n_classes must be specified for classification task"
+            self.n_classes = n_classes
+        else:
+            self.n_classes = vocab_size

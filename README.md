@@ -44,6 +44,10 @@ out = model(torch.randn(2, 224 * 224, 3))
 assert out.shape == (2, 100)
 ```
 
+## Todo
+
+1. [[paper](https://arxiv.org/abs/2110.02037)] Autoregressive diffusion modelling for generation. In this case the output from the processor will be cached and only the decoder will be run in an autoregressive pattern.
+
 ## Usecases
 
 Read code in folder: [`examples/`](./examples/)
