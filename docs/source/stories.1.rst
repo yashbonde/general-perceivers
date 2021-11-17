@@ -4,7 +4,7 @@
 Perceiver can consume any kind of data that you give to this, the examples added here demonstrate how powerful
 this approach can be. I have added code for the following:
 
-#. [`link <https://github.com/yashbonde/general-perceivers/blob/master/examples/train_cifar.py>`_] **Image classification:**
+#. [`link00 <https://github.com/yashbonde/general-perceivers/blob/master/examples/train_cifar.py>`_] **Image classification:**
     Training a CIFAR10 model, the input image is flattened to a 2D array with shape ``[1024,3]`` and
     the latents are of shape ``[32,8]`` and finally classification happens on ``n_classes = 10`` after an
     average pooling across ``latent_len``. This is how config is set in ``gperc``
@@ -20,7 +20,7 @@ this approach can be. I have added code for the following:
         n_classes = 10,
       )
 
-#. [`link <https://github.com/yashbonde/general-perceivers/blob/master/examples/train_lm.py>`_] **Masked Language Modeling:**
+#. [`link01 <https://github.com/yashbonde/general-perceivers/blob/master/examples/train_lm.py>`_] **Masked Language Modeling:**
     Training a BERT model on a few articles, this happens using ``gperc``
 
     .. code-block:: python
@@ -34,7 +34,7 @@ this approach can be. I have added code for the following:
         latent_frac = 0.15
       )
 
-#. [`link <https://github.com/yashbonde/general-perceivers/blob/master/examples/train_segnet.py>`_] **Image Segmentation:**
+#. [`link02 <https://github.com/yashbonde/general-perceivers/blob/master/examples/train_segnet.py>`_] **Image Segmentation:**
     Training a simple segmentation network on image segmentation `dataset  <https://www.robots.ox.ac.uk/~vgg/data/iseg/>`_.
     In ``gperc`` you need to define configuration as follows:
 
@@ -51,7 +51,7 @@ this approach can be. I have added code for the following:
         task="segmentation",
       )
 
-#. [`link <https://github.com/yashbonde/general-perceivers/blob/master/examples/train_lm.py>`_] **Grokking:**
+#. [`link03 <https://github.com/yashbonde/general-perceivers/blob/master/examples/train_lm.py>`_] **Grokking:**
     Grokking is the phenomenon of model snapping into place and learn the rule as you keep on training,
     from `this <https://mathai-iclr.github.io/papers/papers/MATHAI_29_paper.pdf>`_ paper.
 
@@ -66,10 +66,10 @@ this approach can be. I have added code for the following:
         latent_frac = 0.15
       )
 
-#. [`link <https://github.com/yashbonde/general-perceivers/blob/master/examples/train_rl.py>`_] **Reinforcement Learning:**
+#. [`link04 <https://github.com/yashbonde/general-perceivers/blob/master/examples/train_rl.py>`_] **Reinforcement Learning:**
     Train a simple model to solve Cart Pole gym environment.
 
-#. [`link <https://github.com/yashbonde/general-perceivers/blob/master/examples/train_gtzan.py>`_] **Audio Classificaton:**
+#. [`link05 <https://github.com/yashbonde/general-perceivers/blob/master/examples/train_gtzan.py>`_] **Audio Classificaton:**
     Training a audio classification network on `GTZAN dataset  <http://marsyas.info/downloads/datasets.html>`_.
     Audio config in ``gperc`` can be defined as follows:
 
@@ -90,7 +90,7 @@ this approach can be. I have added code for the following:
         n_classes=10
       )
 
-#. [`link <https://github.com/yashbonde/general-perceivers/blob/master/examples/train_transfer.py>`_] **Transfer Learning: (WIP)**
+#. [`link06 <https://github.com/yashbonde/general-perceivers/blob/master/examples/train_transfer.py>`_] **Transfer Learning: (WIP)**
     The real power of transformer encoder model comes from the fact that unsupervised training and transfering that to
     downstream task for classification helps build really powerful models. I want to have this functionality built into
     ``gperc`` directly. For this I have added a custom built from scratch ``gperc.Consumer`` object that manages your data.

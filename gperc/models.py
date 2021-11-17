@@ -25,7 +25,7 @@ import torch
 from torch import nn
 from torch.nn import functional as F
 
-VALID_REDUCTIONS = ["mean", "max", "sum", "last", "first", None]
+VALID_REDUCTIONS = ["mean", "max", "sum", "last", "first", "eot", None]
 
 
 def build_position_encoding(position_encoding_type, config, num_index_items, emb_dim):
@@ -166,9 +166,7 @@ class Block(nn.Module):
                [0.3221, 0.3825, 0.2954, 0.0000, 0.0000, 0.0000]]]]
             """
             A = A + attn_mask
-            A = A.softmax(dim=-1)  # [b, h, n, m]
-        else:
-            A = A.softmax(dim=-1)  # [b, h, n, m]
+        A = A.softmax(dim=-1)  # [b, h, n, m]
 
         A = self.drop_att(A)
         out = (A @ V).reshape((q.shape[0], -1, self.q_dim))  # [b, h, n, m] @ [b, h, m, e/h] -> [b, h, n, e/h] -> [b, n, e]
@@ -336,7 +334,7 @@ class DecoderBlock(nn.Module):
         if config.decoder_projection:
             self.projection = nn.Linear(config.output_dim, config.n_classes)
 
-    def forward(self, latent_array, output_array, attentions):
+    def forward(self, input_array, latent_array, output_array, attentions):
         r"""takes in a tuple with 3 values ``(latent_array, output_array, attentions)``
         and returns a tuple with 2 items ``(output_logits, attentions)``"""
         # latent_array, output_array, attentions = x
@@ -354,6 +352,9 @@ class DecoderBlock(nn.Module):
             out = out[:, -1, :]
         elif self.config.decoder_reduction == "first":
             out = out[:, 0, :]
+        elif self.config.decoder_reduction == "eot":
+            # this is CLIP style
+            out = out[torch.arange(out.shape[0]), input_array.argmax(dim=-1)]
         else:  # None
             pass
 
@@ -429,17 +430,17 @@ class Perceiver(nn.Module):
         __check_conditionals()
 
         # step 1: pass through the embedding, there is no need to pass attention_mask here
-        input_array, attention_mask, latent_array, output_array = self.embd(input_array, attention_mask, output_array)
+        input_tensor, attention_mask, latent_array, output_array = self.embd(input_array, attention_mask, output_array)
 
         # step 2: pass through the encoder block
-        latents, output_array, attentions = self.encoder_block(input_array, attention_mask, latent_array, output_array)
+        latents, output_array, attentions = self.encoder_block(input_tensor, attention_mask, latent_array, output_array)
 
         # step 3: pass through the processor blocks
         for i, p_block in enumerate(self.processors):
             latents, _, attentions = p_block(latents, None, attentions)
 
         # step 4: pass through the decoder block
-        logits, attentions = self.decoder_block(latents, output_array, attentions)
+        logits, attentions = self.decoder_block(input_array, latents, output_array, attentions)
 
         # step 5: return the items
         if return_attentions:

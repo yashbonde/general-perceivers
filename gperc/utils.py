@@ -13,7 +13,6 @@ def set_seed(s=4):
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
 
-
 def get_files_in_folder(folder, ext=[".txt"], sort=True):
     # this method is faster than glob
     all_paths = []
@@ -24,11 +23,9 @@ def get_files_in_folder(folder, ext=[".txt"], sort=True):
                     all_paths.append(os.path.join(root, f))
     return sorted(all_paths) if sort else all_paths
 
-
 def folder(x):
     # get the folder of this file path
     return os.path.split(os.path.abspath(x))[0]
-
 
 def join(x, *args):
     return os.path.join(x, *args)

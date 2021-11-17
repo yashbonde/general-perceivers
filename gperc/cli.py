@@ -106,8 +106,6 @@ class Main:
             n_classes (int, optional): The number of classes in the output array, must be set if decoder_projection
             output_pos_enc (bool, optional): Whether to use position encoding in the decoder
         """
-        assert isinstance(mno, list), "mno must be a list"
-        assert isinstance(cde, list), "cde must be a list"
         config = PerceiverConfig(
             input_len=mno[0],
             input_dim=cde[0],

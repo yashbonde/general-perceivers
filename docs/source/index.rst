@@ -22,14 +22,14 @@ given sufficient data.
 
 This is mostly an auto generated documentation and documentation for submodules is in the code files.
 When building such a tool it is very important to know how to use it, so I have added
-`stories <stories.html>`__ where you can read and see how to get the thing working. Since this is a
-very power general structure you must understand `configurations <gperc.configs.html>`__ well.
+`stories <stories.html>`_ where you can read and see how to get the thing working. Since this is a
+very power general structure you must understand `configurations <gperc.configs.html>`_ well.
 
 Samples
 -------
 
 Here is how you can build a classification model using
-`gperc.ImageConfig <gperc.configs.html#gperc.configs.ImageConfig>`__ in just a few lines:
+`gperc.ImageConfig <gperc.configs.html#gperc.configs.ImageConfig>`_ in just a few lines:
 
 .. code-block:: python
 
@@ -66,10 +66,10 @@ Indices and tables
    gperc.cli
    gperc.configs
    gperc.data
+   gperc.arrow
    gperc.models
    gperc.utils
    testing
-   
 
 
 * :ref:`genindex`
