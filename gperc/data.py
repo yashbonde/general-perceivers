@@ -373,6 +373,9 @@ class Consumer:
         # check the style
         assert style in ["concat", "diff"], f"style should be one of 'concat' or 'diff' got: {style}"
 
+        # check the style
+        assert style in ["concat", "diff"], f"style should be one of 'concat' or 'diff' got: {style}"
+
         # values set for ops
         self.__auto_idx = 0
         self.__n_classes = len(self.fps)
@@ -419,6 +422,7 @@ class Consumer:
         # class because of "<EOF>" logic.
         print(f"[{get_time()}] Starting Meta Creation")
         meta = {}
+        print(f"[{get_time()}] Creating metadata")
         for _c, files in self.fps.items():
             _meta_for_class = {
                 "filepath": [],
@@ -538,11 +542,13 @@ class Consumer:
     def __len__(self):
         return self._total_samples
 
-    def set_unsupervised_mode(self, mask_frequency=0.15):
+    def set_unsupervised_mode(self, mask_frequency=0.15, add_cls = False):
         r"""set variables required for unsupervised query mode
 
         Args:
             mask_frequency (float): frequency of masking of input tensor
+            add_cls (bool): whether to prefix the ``<CLS>`` token to data
+
         """
         self.mask_frequency = mask_frequency
         self.__data_mode = "unsupervised"
