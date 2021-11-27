@@ -319,6 +319,7 @@ class TestArrowDataset(unittest.TestCase):
 
         # create the dataset
         data = ArrowConsumer(dataset, seqlen=128, class_to_id={"tinker": 0, "tailor": 1, "soldier": 2, "spy": 3})
+        print(data)
 
         # check the shapes for cases I0-I5
         out = data[None]
@@ -341,29 +342,13 @@ class TestArrowDataset(unittest.TestCase):
         self.assertTrue(set(out.keys()) == {"input_array", "attention_mask", "class"})
         self.assertEqual(out["input_array"].shape, (5, 128))  # I3
 
-        # out = data[{"tinker": 1, "tailor": 2, "soldier": 1, "spy": 1}]
-        # self.assertTrue(set(out.keys()) == {"input_array", "attention_mask", "class"})
-        # self.assertEqual(out["input_array"].shape, (5, 128))  # I4
+        out = data[{"tinker": 1, "tailor": 2, "soldier": 1, "spy": 1}]
+        self.assertTrue(set(out.keys()) == {"input_array", "attention_mask", "class"})
+        self.assertEqual(out["input_array"].shape, (5, 128))  # I4
 
-        # out = data[{"tinker": [1, 2], "tailor": [0, 1], "soldier": [0], "spy": [1]}]
-        # self.assertTrue(set(out.keys()) == {"input_array", "attention_mask", "class"})
-        # self.assertEqual(out["input_array"].shape, (6, 128))  # I5
-
-        # # check the shapes for case I6 -> supervised
-        # data.set_supervised_mode()
-        # out = data[{"tinker": 1, "tailor": 2, "soldier": 1, "spy": 1}, "supervised"]
-        # self.assertTrue(set(out.keys()) == {"input_array", "attention_mask", "class"})
-        # self.assertEqual(out["input_array"].shape, (5, 128))  # I4
-        # print(out["class"].shape)
-        # self.assertEqual(out["class"].shape, (5,))  # I4
-
-        # data.set_unsupervised_mode()
-        # out = data[{"tinker": [1, 2], "tailor": [0, 1], "soldier": [0], "spy": [1]}, "unsupervised"]
-        # self.assertTrue(set(out.keys()) == {"input_array", "attention_mask", "output_array"})
-        # self.assertEqual(out["input_array"].shape, (6, 128))  # I5
-        # print(out["output_array"].shape)
-        # self.assertEqual(out["output_array"].shape, (6, 128))  # I5
-
+        out = data[{"tinker": [1, 2], "tailor": [0, 1], "soldier": [0], "spy": [1]}]
+        self.assertTrue(set(out.keys()) == {"input_array", "attention_mask", "class"})
+        self.assertEqual(out["input_array"].shape, (6, 128))  # I5
 
 class TestTrainer(unittest.TestCase):
     def test_trainer(self):

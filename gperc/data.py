@@ -477,8 +477,6 @@ class Consumer:
             all_samples = diff_sample_generator(meta)
         self.all_samples = all_samples
 
-        # print("6789678967897869879", all_samples)
-
         # For ensuring guarantees, we need to check if the total number of samples is same as from
         # the meta.
         assert sum([_meta["total_samples"] for _, _meta in meta.items()]) == len(
