@@ -12,4 +12,4 @@ from .data import Consumer
 from .arrow import ArrowConsumer
 from .utils import *
 
-__version__ = "0.6"
+__version__ = "0.7"

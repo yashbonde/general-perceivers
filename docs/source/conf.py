@@ -23,7 +23,7 @@ copyright = "2021, Yash Bonde"
 author = "Yash Bonde"
 
 # The full version, including alpha/beta/rc tags
-release = "0.6"
+release = "7"
 
 
 # -- General configuration ---------------------------------------------------
