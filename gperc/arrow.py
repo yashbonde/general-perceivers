@@ -17,7 +17,7 @@ This is much faster than using ``gperc.Consumer`` here are some numbers on M1-Ai
   [100000] 0.036084 ms:   [x for x in open(fp, 'rb').read()] 
   [100000] 0.021213 ms:   list(open(fp, 'rb').read()) 
 
-  # Random read of 10000 samples is ~5.43x faster
+  # Random read of 10000 samples is ~5.4x faster
   [010000] 2.621051 ms:   data[random.choice(range(len(data)))] 
   [010000] 0.482127 ms:   cons_data[random.choice(range(len(data)))] 
 
@@ -115,6 +115,8 @@ class ArrowConsumer():
     however tokenisation etc. still has to be done for each sample when using ``__getitem__``. This method
     exclusively works for classification problems (``style=='diff'``)."""
     self.fps, self._mode = convert_to_gperc_consumer_ir(fps)
+    self.class_to_id = class_to_id
+    self.id_to_class = None
 
     if class_to_id != None:
       try:
@@ -122,18 +124,17 @@ class ArrowConsumer():
         int(next(self.fps))
       except:
         # check that the keys match
-        keys_from_id = class_to_id.keys()
-        keys_from_fps = self.fps.keys()
-        assert keys_from_id == keys_from_fps, f"Mismatch keys: {set(keys_from_id) - set(keys_from_fps)}"
+        keys_from_id = set(class_to_id.keys())
+        keys_from_fps = set(self.fps.keys())
+        assert keys_from_id - keys_from_fps == set(), f"Mismatch keys: {keys_from_id - keys_from_fps}"
         self.fps = {class_to_id[k]: v for k, v in self.fps.items()}
-
-    self.n_bytes = n_bytes
-    self.seqlen = seqlen
+      self.id_to_class = {v: k for k, v in self.class_to_id.items()}
 
     # values set for ops
     vocab_size = int(2 ** (8 * n_bytes))
+    self.vocab = get_vocab(n_bytes)
     self.__auto_idx = 0
-    self.__n_classes = len(self.fps)
+    self.n_classes = len(self.fps)
     self.style = "diff"
     self.n_bytes = n_bytes
     self.seqlen = seqlen
@@ -142,19 +143,14 @@ class ArrowConsumer():
     # vocabulary building process special tokens
     self.EOF_ID = self.vocab_size - 1
     self.EOF_TOKEN = "<EOF>"
+    self.vocab[self.EOF_TOKEN] = self.EOF_ID
 
-    builder_instance = BinaryArrowBuilder(
-      name="my_datasets",
-      data_files=self.fps,
-      hash=hash,
-    )
+    builder_instance = BinaryArrowBuilder(name="my_datasets", data_files=self.fps, hash=hash,)
     builder_instance.download_and_prepare(try_from_hf_gcs = False)
-    data = builder_instance.as_dataset(
-      in_memory=datasets.info_utils.is_small_dataset(builder_instance.info.dataset_size)
-    )
+    data = builder_instance.as_dataset(in_memory=datasets.info_utils.is_small_dataset(builder_instance.info.dataset_size))
 
     # map the data to tokenize the text
-    vocab = get_vocab(self.n_bytes)
+    
     def __tokenize(examples):
       input_array = []
       for b in examples["binary"]:
@@ -162,14 +158,17 @@ class ArrowConsumer():
         tokens += [0,] * (self.n_bytes - (len(tokens) % self.n_bytes))
         zip_items = [tokens[i :: self.n_bytes] for i in range(self.n_bytes)]
         tokens = list(zip(*zip_items))
-        tokens = [vocab[x] for x in tokens]
+        tokens = [self.vocab[x] for x in tokens]
+        if isinstance(self.seqlen, int):
+          tokens = tokens[:self.seqlen-1] # -1 for EOF
         input_array.append(tokens)
       return {"input_array": input_array}
 
-    print("Tokenising the entire datset, this can takes some time (will use all cores) ...")
+    num_proc = min(os.cpu_count(), len(data["train"]))
+    print(f"Tokenising the entire datset, this can takes some time (will use {num_proc} cores) ...")
     data = data.map(
       function = __tokenize,
-      num_proc = min(os.cpu_count(), len(data["train"])),
+      num_proc = num_proc,
       batched = True,
       batch_size = 2 << 8
     )
@@ -183,7 +182,7 @@ class ArrowConsumer():
     _d = {
       "total_samples": len(self),
       "mode": self._mode,
-      "n_classes": self.__n_classes,
+      "n_classes": self.n_classes,
       "n_bytes": self.n_bytes,
       "seqlen": self.seqlen,
       "vocab_size": self.vocab_size,
@@ -262,12 +261,25 @@ class ArrowConsumer():
     self._iter_batches = iter(batches)
     self.__batch_mode = True
 
+  # def batch_analysis(self, batch):
+  #   am = batch["attention_mask"] # studying this gives all the information we need
+  #   total_bytes = am.sum().item() * self.n_bytes
+
+  #   bytes_by_class = {c: 0 for c in range(self.n_classes)}
+  #   for i, c in enumerate(batch["class"].tolist()):
+  #       bytes_by_class[c] += self.n_bytes * am[i].sum().item()
+
+  #   return total_bytes, bytes_by_class
+
   def get_next_batch(self):
+    """If you set this mode, you get extra information in key meta against each batch"""
     assert self.__batch_mode, "You must create batches first data.create_batches()"
     try:
       x = next(self._iter_batches)
     except StopIteration:
+      # shuffle the batches at the end with a new seed
       self.create_batches(self.batch_size, self.drop_last, self.seed + 1)
       x = next(self._iter_batches)
 
-    return self[x]
+    data = self[x]
+    return data

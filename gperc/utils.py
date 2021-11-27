@@ -1,4 +1,5 @@
 import os
+import time
 import torch
 import numpy as np
 import random
@@ -29,3 +30,11 @@ def folder(x):
 
 def join(x, *args):
     return os.path.join(x, *args)
+
+def timeit(fn):
+  def _fn(*args, **kwargs):
+    start = time.time()
+    out = fn(*args, **kwargs)
+    return time.time() - start, out
+  return _fn
+

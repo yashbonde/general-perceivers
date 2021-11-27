@@ -116,9 +116,15 @@ class PerceiverConfig:
     def __repr__(self) -> str:
         return pformat(self.__dict__, indent=2, sort_dicts=True)
 
-    def to_json(self, path):
+    def __getitem__(self, key):
+        return getattr(self, key)
+
+    def to_json(self, path = None):
+        _j = json.dumps(self.__dict__, indent=2, sort_keys=True)
+        if path == None:
+            return _j
         with open(path, "w") as f:
-            json.dump(self.__dict__, f, indent=2, sort_keys=True)
+            f.write(_j)
 
     def from_json(self, path):
         with open(path, "r") as f:
