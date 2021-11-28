@@ -119,8 +119,11 @@ class PerceiverConfig:
     def __getitem__(self, key):
         return getattr(self, key)
 
+    def get_dict(self):
+        return self.__dict__
+
     def to_json(self, path = None):
-        _j = json.dumps(self.__dict__, indent=2, sort_keys=True)
+        _j = json.dumps(self.get_dict(), indent=2, sort_keys=True)
         if path == None:
             return _j
         with open(path, "w") as f:
@@ -291,7 +294,7 @@ class BinaryConfig(PerceiverConfig):
             seqlen (int): The length of the sequence (input_array)
             vocab_size (int): The size of the vocabulary
             latent_dim (int): The dimension of the latent space
-            latent_frac (float, optional): ``latent_len`` will be this multiplied by ``seqlen``
+            latent_frac (float, optional): ``latent_len = latent_frac x seqlen``
             n_classes (int, optional): The number of classes after the output space
             ffw_ratio (float, optional): The ratio of the feed-forward layer in Block to input dimension
             task (str, optional): The task to be performed, can be one of ``classification`` and None

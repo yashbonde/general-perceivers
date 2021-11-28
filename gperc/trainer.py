@@ -123,7 +123,7 @@ class Trainer():
         
         # we need to capture the meta for the test batches since they can be more than one
         metas = []
-        for i in enumerate(pbar):
+        for _ in pbar:
           batch = test_data.get_next_batch()
           batch_meta = self(
             batch = batch,
@@ -146,6 +146,9 @@ class Trainer():
           else:
             test_meta[k] = sum(v)/len(v)
         batch_meta.update(test_meta)
+
+        print("val/loss:", test_meta["val/loss_avg"])
+        print("val/acc:", test_meta["val/acc_avg"])
         
       # log
       if self.client != None:

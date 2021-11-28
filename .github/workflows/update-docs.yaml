@@ -23,7 +23,7 @@ jobs:
         run: |
           # sudo apt-get -y install python3-sphinx
           pip install furo
-          pip install --upgrade --upgrade-strategy eager -r requirements.txt
+          pip install .
 
       - name: switch branch
         uses: actions/checkout@v2

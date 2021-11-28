@@ -123,7 +123,7 @@ class Block(nn.Module):
         # then compute the query, key, value and split for multihead attention
         Q, K, V = self.fq(_q), self.fk(_kv), self.fv(_kv)
         Q, K, V = tuple(map(lambda x: x.view(x.shape[0], self.num_heads, -1, x.shape[-1] // self.num_heads), (Q, K, V)))
-        A = Q @ K.permute(0, 1, 3, 2) * (self.dim ** -0.5)  # [b, h, n, e/h] @ [b, h, e/h, m] -> [b, h, n, m]
+        A = (Q @ K.permute(0, 1, 3, 2)) * (self.dim ** -0.5)  # [b, h, n, e/h] @ [b, h, e/h, m] -> [b, h, n, m]
 
         # though the logic below can be simplified, it is kept for debugging purposes
         if attn_mask != None:
@@ -413,19 +413,6 @@ class Perceiver(nn.Module):
 
         def __check_conditionals():
             assert len(input_array.shape) in [2, 3], "Input array must be of shape [batch_size, input_len, (input_dim)]"
-
-            # if isinstance(input_object, torch.tensor):
-            #     return input_object, None, None
-            # elif isinstance(input_object, tuple):
-            #     if len(input_object) == 2:
-            #         if isinstance(input_object[1], bool):
-            #             return input_object[0], None, input_object[1]
-            #         else:
-            #             assert isinstance(input_object[1], torch.tensor), "The input_object must contain either "\
-            #                 "(input_array, output_array) or (input_array, return_attentions)"
-            #             return input_object[0], input_object[1], None
-            #     else:
-            #         assert len(input_object) == 3, "The input_object must contain either (input_array, output_array, return_attentions)"
 
         __check_conditionals()
 
