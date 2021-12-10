@@ -14,4 +14,4 @@ from .arrow import ArrowConsumer
 from .trainer import Trainer
 from .utils import *
 
-__version__ = "0.7"
+__version__ = "0.8"
