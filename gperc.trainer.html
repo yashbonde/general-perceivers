@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" />
 
     <meta name="generator" content="sphinx-4.3.1, furo 2021.11.23"/>
-        <title>gperc - gperc 0.8 documentation</title>
+        <title>gperc.trainer module - gperc 0.8 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=7f0192ddeb2adecfbaa87ffbcf67d16358b30bc1" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?digest=0af69da206d614734f649b27d4cdc2dd6c31f41d" />
@@ -134,7 +134,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -192,43 +192,77 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
-          <section id="gperc">
-<h1>gperc<a class="headerlink" href="#gperc" title="Permalink to this headline">¶</a></h1>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="gperc.html">gperc package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="gperc.html#submodules">Submodules</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="gperc.arrow.html">gperc Arrow</a></li>
-<li class="toctree-l3"><a class="reference internal" href="gperc.cli.html">gperc CLI</a></li>
-<li class="toctree-l3"><a class="reference internal" href="gperc.configs.html">gperc Configurations</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="gperc.configs.html#configs">Configs</a></li>
+          <section id="module-gperc.trainer">
+<span id="gperc-trainer-module"></span><h1>gperc.trainer module<a class="headerlink" href="#module-gperc.trainer" title="Permalink to this headline">¶</a></h1>
+<section id="trainer">
+<h2>Trainer<a class="headerlink" href="#trainer" title="Permalink to this headline">¶</a></h2>
+<p>This is a generic trainer built for the gperc project. More documentation will be added later.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="gperc.trainer.Trainer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gperc.trainer.</span></span><span class="sig-name descname"><span class="pre">Trainer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_folder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_every</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gperc/trainer.html#Trainer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gperc.trainer.Trainer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Generic trainer for the <code class="docutils literal notranslate"><span class="pre">gperc</span></code> project.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> (<em>torch.nn.Module</em>) – The model to train.</p></li>
+<li><p><strong>client</strong> (<em>function</em>) – A function that takes a dict as input and logs it to a remote server.</p></li>
 </ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="gperc.data.html">gperc Data</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="gperc.data.html#data-reader">Data Reader</a></li>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gperc.trainer.Trainer.save">
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr_scheduler</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gperc/trainer.html#Trainer.save"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gperc.trainer.Trainer.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>save the items to <code class="docutils literal notranslate"><span class="pre">self.save_folder/name/</span></code> folder</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – The name of the save folder</p></li>
+<li><p><strong>optim</strong> (<em>torch.optim.Optimizer</em>) – The optimizer to save</p></li>
+<li><p><strong>lr_scheduler</strong> (<em>torch.optim.lr_scheduler</em>) – The lr scheduler to save</p></li>
 </ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="gperc.models.html">gperc Architecture</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="gperc.models.html#perceiver-model">Perceiver Model</a></li>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gperc.trainer.Trainer.load">
+<span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">save_folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr_scheduler</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gperc/trainer.html#Trainer.load"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gperc.trainer.Trainer.load" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load the model from the given save folder. If any of these fails, you will have to manually check.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>save_folder</strong> (<em>str</em>) – The folder to load from</p></li>
+<li><p><strong>optim</strong> (<em>torch.optim.Optimizer</em>) – The optimizer to load</p></li>
+<li><p><strong>lr_scheduler</strong> (<em>torch.optim.lr_scheduler</em>) – The lr scheduler to load</p></li>
 </ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="gperc.trainer.html">gperc.trainer module</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="gperc.trainer.html#trainer">Trainer</a></li>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gperc.trainer.Trainer.train">
+<span class="sig-name descname"><span class="pre">train</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">optim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">train_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_steps</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_every</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gperc/trainer.html#Trainer.train"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gperc.trainer.Trainer.train" title="Permalink to this definition">¶</a></dt>
+<dd><p>Train model with given optimiser, data and number of steps, optionally provide testing
+material as well.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>optim</strong> (<em>torch.optim.Optimizer</em>) – The optimizer to use</p></li>
+<li><p><strong>train_data</strong> (<code class="docutils literal notranslate"><span class="pre">gperc.Consumer/ArrowConsumer</span></code>) – The training data, batches must be created</p></li>
+<li><p><strong>n_steps</strong> (<em>int</em>) – The number of steps to train for</p></li>
+<li><p><strong>test_every</strong> (<em>int</em>) – The number of steps to train for before testing, defaults to <code class="docutils literal notranslate"><span class="pre">n_steps</span></code></p></li>
+<li><p><strong>test_data</strong> (<code class="docutils literal notranslate"><span class="pre">gperc.Consumer/ArrowConsumer</span></code>) – The testing data, batches must be created</p></li>
 </ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="gperc.utils.html">Utils</a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</div>
+</dd>
+</dl>
+</dd></dl>
+</dd></dl>
+</section>
 </section>
 
         </article>
@@ -244,7 +278,7 @@
               Copyright &#169; 2021, Yash Bonde |
           Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
           <a href="https://github.com/pradyunsg/furo">Furo theme</a>.
-            | <a class="muted-link" href="_sources/modules.rst.txt"
+            | <a class="muted-link" href="_sources/gperc.trainer.rst.txt"
                rel="nofollow">
               Show Source
             </a>
@@ -252,8 +286,27 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            Contents
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">gperc.trainer module</a><ul>
+<li><a class="reference internal" href="#trainer">Trainer</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>

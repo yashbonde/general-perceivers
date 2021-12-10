@@ -5,11 +5,11 @@
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" />
 
-    <meta name="generator" content="sphinx-4.2.0, furo 2021.10.09"/>
-        <title>gperc package - gperc 0.4 documentation</title>
+    <meta name="generator" content="sphinx-4.3.1, furo 2021.11.23"/>
+        <title>gperc package - gperc 0.8 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=0254c309f5cadf746f1a613e7677379ac9c8cdcd" />
-    <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?digest=16fb25fabf47304eee183a5e9af80b1ba98259b1" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=7f0192ddeb2adecfbaa87ffbcf67d16358b30bc1" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?digest=0af69da206d614734f649b27d4cdc2dd6c31f41d" />
     
     
 
@@ -123,7 +123,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="index.html"><div class="brand">gperc 0.4 documentation</div></a>
+      <a href="index.html"><div class="brand">gperc 0.8 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -146,7 +146,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
   
   
-  <span class="sidebar-brand-text">gperc 0.4 documentation</span>
+  <span class="sidebar-brand-text">gperc 0.8 documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="search.html" role="search">
   <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
@@ -168,6 +168,7 @@
 <li class="toctree-l1"><a class="reference internal" href="gperc.cli.html">gperc CLI</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gperc.configs.html">gperc Configurations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gperc.data.html">gperc Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gperc.arrow.html">gperc Arrow</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gperc.models.html">gperc Architecture</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gperc.utils.html">Utils</a></li>
 <li class="toctree-l1"><a class="reference internal" href="testing.html">Tests</a></li>
@@ -197,16 +198,14 @@
           </label>
         </div>
         <article role="main">
-          <section id="module-gperc">
-<span id="gperc-package"></span><h1>gperc package<a class="headerlink" href="#module-gperc" title="Permalink to this headline">¶</a></h1>
+          <section id="gperc-package">
+<h1>gperc package<a class="headerlink" href="#gperc-package" title="Permalink to this headline">¶</a></h1>
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="gperc.cli.html">gperc CLI</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="gperc.cli.html#cli">CLI</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="gperc.arrow.html">gperc Arrow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gperc.cli.html">gperc CLI</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gperc.configs.html">gperc Configurations</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="gperc.configs.html#configs">Configs</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="gperc.configs.html#discussion">Discussion</a></li>
@@ -219,6 +218,7 @@
 <li class="toctree-l2"><a class="reference internal" href="gperc.data.html#data-reader">Data Reader</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="gperc.data.html#raw-bytes-tokenization">Raw Bytes Tokenization</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gperc.data.html#internal-representation">Internal Representation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gperc.data.html#system-footprint">System Footprint</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gperc.data.html#documentation">Documentation</a></li>
 </ul>
 </li>
@@ -230,6 +230,10 @@
 <li class="toctree-l3"><a class="reference internal" href="gperc.models.html#documentation">Documentation</a></li>
 </ul>
 </li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="gperc.trainer.html">gperc.trainer module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="gperc.trainer.html#trainer">Trainer</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="gperc.utils.html">Utils</a></li>
@@ -249,11 +253,9 @@
 
         <div class="related-information">
               Copyright &#169; 2021, Yash Bonde |
-            Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
-              and
-              <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
-              <a href="https://github.com/pradyunsg/furo">Furo theme</a>. |
-            <a class="muted-link" href="_sources/gperc.rst.txt"
+          Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+          <a href="https://github.com/pradyunsg/furo">Furo theme</a>.
+            | <a class="muted-link" href="_sources/gperc.rst.txt"
                rel="nofollow">
               Show Source
             </a>
@@ -290,6 +292,6 @@
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
-    <script src="_static/scripts/main.js"></script>
+    <script src="_static/scripts/furo.js"></script>
     </body>
 </html>
