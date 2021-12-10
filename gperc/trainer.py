@@ -5,13 +5,14 @@ Trainer
 This is a generic trainer built for the gperc project. More documentation will be added later.
 """
 
+import os
 import torch
 from tqdm.auto import trange
 
 from .utils import timeit
 
 class Trainer():
-  def __init__(self, model, client = None):
+  def __init__(self, model, save_folder = None, save_every = 1000, client = None):
     """
     Generic trainer for the ``gperc`` project.
 
@@ -20,9 +21,53 @@ class Trainer():
       client (function): A function that takes a dict as input and logs it to a remote server.
     """
     self.model = model
+    self.save_folder = save_folder
+    self.save_every = save_every
     self.client = client
     self.model_config = model.config
     self.device = next(self.model.parameters()).device
+
+    if save_folder != None:
+      os.makedirs(self.save_folder, exist_ok = True) # create this just in case
+      with open(os.path.join(self.save_folder, "config.json"), "w") as f:
+        f.write(self.model_config.to_json())
+
+  def save(self, name, optim = None, lr_scheduler = None):
+    """save the items to ``self.save_folder/name/`` folder
+
+    Args:
+        name (str): The name of the save folder
+        optim (torch.optim.Optimizer): The optimizer to save
+        lr_scheduler (torch.optim.lr_scheduler): The lr scheduler to save
+    """
+    if self.save_folder == None:
+      print("No save folder specified, skipping saving.")
+      return
+    
+    # create a new folder for current step
+    step_folder = os.path.join(self.save_folder, name)
+    print(f"Saving in folder: {step_folder}")
+    os.makedirs(step_folder, exist_ok = True)
+    torch.save(self.model.state_dict(), os.path.join(step_folder, "model.pt"))
+    if optim != None:
+      torch.save(optim.state_dict(), os.path.join(step_folder, "optim.pt"))
+    if lr_scheduler != None:
+      torch.save(lr_scheduler.state_dict(), os.path.join(step_folder, "lr_scheduler.pt"))
+ 
+  def load(self, save_folder, optim = None, lr_scheduler = None):
+    """
+    Load the model from the given save folder. If any of these fails, you will have to manually check.
+
+    Args:
+      save_folder (str): The folder to load from
+      optim (torch.optim.Optimizer): The optimizer to load
+      lr_scheduler (torch.optim.lr_scheduler): The lr scheduler to load
+    """
+    self.model.load_state_dict(torch.load(os.path.join(save_folder, "model.pt")))
+    if optim != None and os.path.exists(os.path.join(save_folder, "optim.pt")):
+      self.optim.load_state_dict(torch.load(os.path.join(save_folder, "optim.pt")))
+    if lr_scheduler != None and os.path.exists(os.path.join(save_folder, "lr_scheduler.pt")):
+      self.lr_scheduler.load_state_dict(torch.load(os.path.join(save_folder, "lr_scheduler.pt")))
 
   def __call__(self, batch, step, n_bytes, n_classes, pbar, train = True, grad_clip = 1.0, optim = None):
     """
@@ -105,6 +150,8 @@ class Trainer():
       test_data (``gperc.Consumer/ArrowConsumer``): The testing data, batches must be created
     """
     pbar = trange(n_steps)
+    min_loss = float("inf")
+
     for i in pbar:
       batch = train_data.get_next_batch()
       batch_meta = self(
@@ -149,6 +196,10 @@ class Trainer():
 
         print("val/loss:", test_meta["val/loss_avg"])
         print("val/acc:", test_meta["val/acc_avg"])
+
+        if min_loss > test_meta["val/loss_avg"]:
+          min_loss = test_meta["val/loss_avg"]
+          self.save(f"step_{i}", optim, lr_scheduler = None)
         
       # log
       if self.client != None:

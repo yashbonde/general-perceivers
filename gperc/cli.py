@@ -65,7 +65,6 @@ lines we have specified the data, the architecture and the training parameters. 
 """
 
 
-import logging
 from typing import List
 
 import torch

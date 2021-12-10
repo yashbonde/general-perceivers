@@ -23,7 +23,7 @@ copyright = "2021, Yash Bonde"
 author = "Yash Bonde"
 
 # The full version, including alpha/beta/rc tags
-release = "7"
+release = "0.7"
 
 
 # -- General configuration ---------------------------------------------------
@@ -50,7 +50,7 @@ autodoc_default_options = {
 autoclass_content = "both"
 
 # Mock imports so even they are not installed the docs are still generated.
-autodoc_mock_imports = ["torch", "numpy", "numpy.core.multiarray"]
+autodoc_mock_imports = ["torch", "numpy"]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]

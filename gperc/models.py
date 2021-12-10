@@ -397,6 +397,14 @@ class Perceiver(nn.Module):
         else:
             return sum(p.numel() for p in self.parameters() if p.requires_grad)
 
+    def save(self, path: str):
+        r"""saves the model to a file
+
+        Args:
+            path: path to save the model to
+        """
+        torch.save(self.state_dict(), path)
+
     def forward(self, input_array, attention_mask=None, output_array=None, return_attentions=False):
         r"""Performs the forward pass of the Perceiver.
 
