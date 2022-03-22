@@ -11,22 +11,7 @@ This file has the datareaders for the ``gperc`` program. The datareaders work as
     or list. For more information read below.
 
 Though there is some code added below, it does not work. I have added it here because that is
-suppossed to be the general progression towards. The general idea is that the trainer should be
-able to select the kind of data that it wants to use. This means that there needs to be a
-structured way to represent and fetch the information. This is done as follows:
-
-#. The input data ``F`` can be loaded in 4 different styles as given in the documentation below.
-#. The fetching ``I`` can happen in 6 different styles as given in the documentation below.
-
-I am following the same system that I have implemented in
-`nbox.Parsers <https://nimbleboxai.github.io/nbox/nbox.parsers.html>`_. Here is a quick brief on
-**primitives** ``P`` and **structures** ``S``:
-
-#. ``P`` are the basic data types that are used in the data. This is the actual data \
-    you want your model to process.
-#. ``S`` are the structures that are used to represent the data. This is how data is organised.
-
-In our day to day life, what we call data is nothing but an interplay of one ``P`` and many ``S``.
+suppossed to be the general progression towards.
 
 Raw Bytes Tokenization
 ----------------------
@@ -122,19 +107,8 @@ import subprocess
 from tqdm.auto import trange
 from pprint import pprint as peepee
 
-from functools import lru_cache
-from itertools import product
-
+from .arrow import get_vocab, convert_to_gperc_consumer_ir
 from .utils import set_seed
-
-
-@lru_cache()
-def get_vocab(n_bytes):
-    B = range(2 ** 8)
-    out = product(B, repeat=n_bytes)
-    vocab = {x: i for i, x in enumerate(list(out))}
-    return vocab
-
 
 
 def get_time():
@@ -248,44 +222,7 @@ def decode_ids(ids, vocab):
     return out
 
 
-def convert_to_gperc_consumer_ir(fps):
-    mode = None
-    if isinstance(fps, list):
-      if isinstance(fps[0], str):  # F0
-        fps = {"null": fps}  # list of files will start with null category
-        mode = "F0"
-      elif isinstance(fps[0], dict):  # F1
-        _fps = {}
-        for x in fps:
-          k = list(x.keys())[0]
-          v = list(x.values())[0]
-          _fps.setdefault(v, []).append(k)  # list of dicts will start with category as key
-        fps = _fps
-        mode = "F1"
-      else:
-        raise ValueError("fps is not in the correct format")
-    elif isinstance(fps, dict):
-      k = next(iter(fps))
-      v = fps[k]
-      assert isinstance(k, str), f"key has to be a string got: {type(k)}"
-      if isinstance(v, str):  # F2
-        assert all([isinstance(_v, str) for _k, _v in fps.items()]), "All values should be a string"
-        _fps = {}
-        for k, v in fps.items():
-          _fps.setdefault(v, []).append(k)
-        fps = _fps
-        mode = "F2"
-      elif isinstance(v, list):  # F3
-        # this is the format we want so just perform checks
-        assert all([isinstance(_v, list) for _k, _v in fps.items()]), "All values should be a list"
-        mode = "F3"
-    else:
-        raise ValueError(f"fps is not in the correct format: {type(fps)}")
-    
-    # sort fps on values then keys
-    fps = {k: sorted(v) for k, v in fps.items()}
-    fps = dict(sorted(fps.items(), key=lambda x: x[0]))
-    return fps, mode
+
 
 
 
@@ -300,51 +237,7 @@ class Consumer:
         class_to_id=None,
         _unittesting=False
     ):
-        r"""Consumer takes in list of files along with it's meta data and becomes a callable generator.
-        When calling you can tell it what kind of data that you want. It is a full fledged data engine in itself.
-        This will sit in nbox one day and thus has to be engineered in such a what that it is production grade with
-        good documentation. In the nbox hierarchy it sits parallel to nbox.Model thus has to continue the following
-        traits as `nbox.Parsers <https://nimbleboxai.github.io/nbox/nbox.parsers.html>`_:
-
-        #. **primitive** that tells the actual fetching instruction
-        #. **structure** should be same as the source meta data
-
-        This ``Consumer`` object will convert any input to the F3 format as internal representation. Moreover for
-        each file we will extract the token sequence, the target token sequence looks like this:
-
-        .. code-block:: python
-
-            sequence = [tokens,from,meta,data] + [tokens,from,actual,file] + [EOF-tag]
-
-        This will be the input to the model and this is the final version, this provides sufficient context to the
-        model for the given input just like how much information OS has about any given file. The meta data is
-        obtained using ``file`` command on posix systems (`man page <https://linux.die.net/man/1/file>`_).
-
-        Procedure
-        
-        From the IR we extract the internal metadata that helps guide any kind of batching process and it looks like
-        this:
-
-        .. code-block:: python
-
-            metadata = {
-                "cat1": {
-                    "extensions": [".jpg", ".png", ...],
-                    "filepath": [
-                        "/path/to/file/1.jpg",
-                        "/path/to/file/2.png",
-                    ],
-                    "st_size": [780, 782, 779],
-                }
-            }
-
-        Note that in above case ``st_size`` will also include the metadata tokens.        
-
-        .. notes
-
-            `Idempotency <https://en.wikipedia.org/wiki/Idempotence>`_ is a very important so every operation must be the
-            same for a long time to come. Given this I am trying to make it as useful and generic as possible. When the data
-            is read we add 1 bytes more than ``os.stat`` for ``"<EOF>"`` for end of the sequence.
+        r"""
 
         Args:
           fps (Any): The file paths have to be the primary index inside the lists and so filepaths "fps" can look like these:
@@ -561,101 +454,7 @@ class Consumer:
     # ----- the most important function
 
     def __getitem__(self, x=None):
-        r"""This is the heart of this code, it takes in user requests and returns the data according to it. This is slightly
-        technical and so we will explain it in detail. I find similarities between databases in CRUD and datasets for machine
-        learning, CRUD has amazing performance and interaction tools like SQL. Datasets in ML are more like a collection of
-        data, and they are not designed to be used in friendly way. Everyone's writing their own thing there but good UX requires
-        satisfying the user in some kind of formula and then let them be.
-
-        Any SQL query has the following grammar ``SELECT [columns] FROM [table] WHERE [condition]``. This is something everyone
-        understands, it's very simple. In our case ``[table] == self``, i.e. the table is the dataset itself, this is no RDMS.
-        The condition is very clearly described in the documentation of ``x``. But ``[columns]`` (here calling it ``query``) is
-        something hard, ie. user needs something in a particular format, and with random user logic is hard to give guarantees.
-        I will come back to this later.
-
-        The ``condition``, has two parts, the ``primitive`` and ``structure``. With this version of the code, the ``structure``
-        and ``primitive`` are implemented in pythonic way. Read the documentation of ``x`` for more details. After getting the data
-        we convert it to an intermediate format, which is a list of tuples, each tuple is a sample. The intermediate format has the
-        can be one of the following:
-
-        1. dict like this:
-
-        .. code-block:: python
-
-            {
-                'data': [
-                    ('some/file/1', seek_location, end_bytes),
-                    # >= 1 sample of the above tuple
-            ],
-                'class': 'tinker'
-            }
-
-        2.  list with dict in it, in which case the samples are batched together.
-
-        The intermediate format is then converted to the desired format i.e. ``query``, currently I have added functionality that
-        can return one of the following formats:
-
-        1. ``supervised``, in which input is the input tensor and output is the class tensor, from ``self.class_to_id`` dict.
-        2. ``unsupervised``, in which input is the input tensor and output is clone of it.
-
-
-        Args:
-
-            x(Any): There is only one input since this is a special method. We take in this input item and process it accordingly
-                based on following rules:
-
-                1. **(I0)** ``None``: when x is None we have an internal idx that is incremented and the next batch is returned
-                2. **(I1)** ``int``: when x is an int we return the batch at that index
-                3. **(I2)** ``slice``: when x is a slice we return the batches in the slice
-                4. **(I3)** ``list``: when x is a list we return the batches in the list containing the indices (``int``)
-                5. **(I4)** ``dict -> ints``: when values of x are ints we return the batches in the list containing the indices (``int``)
-                6. **(I5)** ``dict -> list``: when values of x are lists we return the batches in the list containing the indices (``list``)
-                7. **(I6)** ``tuple``: Read below.
-
-            x_tuple(Tuple): When x is a tuple you can use it like a function, meaning it can run certain hardcoded logic. It should
-                have  ``condition`` as above and ``query``. This is not a real input, added seperately for documentation convinience.
-                The object ``query`` can be one of the following
-
-                1. ``None``: returns just ``{"input_tensor": tensor}`` dict
-                2. ``'supervised'``: ``{"input_tensor": tensor, "class": tensor}``, this will fail if incorrect ``self.class_to_id``
-                3. ``'unsupervised'``: ``{"input_tensor": tensor, "output_tensor": tensor}``
-
-        Using this is very simple.
-
-        .. code-block:: python
-
-            # define the consumer object
-            my_kewl_dataset = Consumer(
-                fps = {
-                    "cat": ["img0.png", "/tmp/ssg3hng.png", ...],
-                    "dog": ["img1.png", "/tmp/uo35523.png", ...],
-                },
-                seed = 4
-            )
-
-            # output in all cases is a batched tensor of desired shape
-            out = my_kewl_dataset[None] # get whatever is the next batch
-            out = my_kewl_dataset[0]    # get the data at index 0
-            out = my_kewl_dataset[5:10] # get the data at indices 5 to 10
-            out = my_kewl_dataset[{
-                "cat": 10,
-                "dog": 4
-            }] # return random batches of 10 samples from class cat and 4 samples from class dog
-            out = my_kewl_dataset[{
-                "cat": [0, 1, 2, 3, 4],
-                "dog": [5, 6, 7, 8, 9]
-            }] # return the batches at indices [0...4] and [5...9] from class cat and class dog respectively
-
-            # in all cases above out is a dict with key "input_array" because we have not provided a query
-            # if you want to force this behaviour
-            out = my_kewl_dataset[5:10, None]
-
-            # when you want supervised
-            set(my_kewl_dataset[5:10, "supervised"].keys()) == {"input_array", "class"}
-
-            # when you want unsupervised
-            set(my_kewl_dataset[5:10, "unsupervised"].keys()) == {"input_array", "output_tensor"}
-        """
+        
         # check if case I6 and create necessary variables
         query = None
         if isinstance(x, tuple):

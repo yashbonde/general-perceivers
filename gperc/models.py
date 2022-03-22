@@ -24,6 +24,7 @@ import math
 import torch
 from torch import nn
 from torch.nn import functional as F
+import torch_optimizer as toptim
 
 VALID_REDUCTIONS = ["mean", "max", "sum", "last", "first", "eot", None]
 
@@ -441,6 +442,33 @@ class Perceiver(nn.Module):
         if return_attentions:
             return logits, attentions
         return logits
+
+    def get_optimizer(self, name, **kwargs):
+        from inspect import getfullargspec as gfa
+        
+        # create reference to the class to be initialized
+        optim_cls = getattr(torch.optim, name, None) or getattr(toptim, name, None)
+        if optim_cls is None:
+            raise ValueError(f"Unknown optimizer {name}")
+        
+        # checks
+        args, varargs, varkw, defaults, kwonlyargs, kwonlydefaults, _ = gfa(optim_cls)
+        if varargs or varkw:
+            raise ValueError("Variable args/kwargs not supported")    
+        try:
+            args.remove("self")
+        except:
+            pass
+
+        # create a default dict for the kwargs
+        kwargs_to_pass = {a:v for a, v in zip(args[::-1], defaults[::-1])}
+        if kwonlydefaults:
+            kwargs_to_pass.update({k:v for k,v in zip(kwonlyargs, kwonlydefaults)})
+        for arg in args:
+            if arg in kwargs:
+                kwargs_to_pass[arg] = kwargs[arg]
+
+        return optim_cls(self.parameters(), **kwargs_to_pass)
 
 
 def get_distributed_model(config):

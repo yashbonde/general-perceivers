@@ -26,8 +26,9 @@ Documentation
 import json
 import math
 from pprint import pformat
-from typing import Callable, Tuple
+from typing import Tuple
 
+# core_configs/
 
 class PerceiverConfig:
     def __init__(
@@ -133,6 +134,9 @@ class PerceiverConfig:
         with open(path, "r") as f:
             self.__dict__ = json.load(f)
 
+# /core_configs
+
+# stories/
 
 class TextConfig(PerceiverConfig):
     def __init__(self, latent_dim, vocab_size, max_len, latent_frac=0.25, ffw_ratio=1.0, **kwargs):
@@ -325,3 +329,5 @@ class BinaryConfig(PerceiverConfig):
 
         for k, v in kwargs.items():
             setattr(self, k, v)
+
+# /stories

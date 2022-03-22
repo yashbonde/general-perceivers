@@ -6,54 +6,88 @@ This is a generic trainer built for the gperc project. More documentation will b
 """
 
 import os
-import torch
+import tarfile
 from tqdm.auto import trange
+import torch
 
 from .utils import timeit
 
 class Trainer():
-  def __init__(self, model, save_folder = None, save_every = 1000, client = None):
-    """
-    Generic trainer for the ``gperc`` project.
-
-    Args:
-      model (torch.nn.Module): The model to train.
-      client (function): A function that takes a dict as input and logs it to a remote server.
-    """
+  def __init__(
+    self,
+    model,
+    train_data,
+    test_data,
+    optim,
+    save_folder,
+    save_every,
+    logger_client,
+    gpu: int = 0,
+    verbose = False,
+  ):
+    # create model, data and optimizer
     self.model = model
+    self.train_data = train_data
+    self.test_data = test_data
+    self.optim = optim
+    
+    if verbose:
+      print(f"Model params: {self.model.num_parameters()}")
+      print(f"Train data: {self.train_data}")
+      print(f"Test data: {self.test_data}")
+      print(f"Optimizer: {self.optim}")
+
     self.save_folder = save_folder
     self.save_every = save_every
-    self.client = client
-    self.model_config = model.config
-    self.device = next(self.model.parameters()).device
+    self.logger_client = logger_client
 
-    if save_folder != None:
+    self.model_config = model.config
+    self.data_config = train_data.config
+    self.device = "cuda:0" if (gpu and torch.cuda.is_available()) else "cpu"
+    self.model.to(self.device)
+
+    if self.save_folder != None:
       os.makedirs(self.save_folder, exist_ok = True) # create this just in case
       with open(os.path.join(self.save_folder, "config.json"), "w") as f:
         f.write(self.model_config.to_json())
 
-  def save(self, name, optim = None, lr_scheduler = None):
-    """save the items to ``self.save_folder/name/`` folder
-
-    Args:
-        name (str): The name of the save folder
-        optim (torch.optim.Optimizer): The optimizer to save
-        lr_scheduler (torch.optim.lr_scheduler): The lr scheduler to save
-    """
+  def serialise(self, name, optim = None, lr_scheduler = None):
+    # create a new folder for current step
     if self.save_folder == None:
       print("No save folder specified, skipping saving.")
       return
-    
-    # create a new folder for current step
     step_folder = os.path.join(self.save_folder, name)
     print(f"Saving in folder: {step_folder}")
     os.makedirs(step_folder, exist_ok = True)
+    
+    # start saving things -> model, optim, lr_scheduler, (train_data, test_data)
     torch.save(self.model.state_dict(), os.path.join(step_folder, "model.pt"))
     if optim != None:
       torch.save(optim.state_dict(), os.path.join(step_folder, "optim.pt"))
     if lr_scheduler != None:
       torch.save(lr_scheduler.state_dict(), os.path.join(step_folder, "lr_scheduler.pt"))
- 
+
+    # create a tar file of the folder
+    fpath = os.path.join(self.save_folder, f"{name}.tar.gz")
+    with tarfile.open(fpath, "w:gz") as tar:
+      tar.add(step_folder, arcname = name)
+    print(f"Saved to {fpath}")
+    return fpath
+
+  def load_from_tar(self, fpath):
+    with tarfile.open(fpath, "r:gz") as tar:
+      tar.extractall(path = self.save_folder)
+    folder = os.path.join(self.save_folder, fpath.split("/")[-1].split(".")[0])
+    self.model.load_state_dict(torch.load(os.path.join(folder, "model.pt")))
+    if os.path.exists(os.path.join(folder, "optim.pt")):
+      self.optim.load_state_dict(torch.load(os.path.join(folder, "optim.pt")))
+    if os.path.exists(os.path.join(folder, "lr_scheduler.pt")):
+      self.lr_scheduler.load_state_dict(torch.load(os.path.join(folder, "lr_scheduler.pt")))
+
+  @classmethod
+  def deserialise(cls, fpath):
+    pass
+
   def load(self, save_folder, optim = None, lr_scheduler = None):
     """
     Load the model from the given save folder. If any of these fails, you will have to manually check.
@@ -138,7 +172,7 @@ class Trainer():
     pbar.set_description(f"[{prefix}] loss: {_mean_loss.item():.4f} | acc: {acc.item():.4f}")
     return batch_meta
 
-  def train(self, optim, train_data, n_steps, test_every = None, test_data = None):
+  def train(self, n_steps, test_every):
     """Train model with given optimiser, data and number of steps, optionally provide testing
     material as well.
 
@@ -149,8 +183,13 @@ class Trainer():
       test_every (int): The number of steps to train for before testing, defaults to ``n_steps``
       test_data (``gperc.Consumer/ArrowConsumer``): The testing data, batches must be created
     """
+    optim = self.optim
+    train_data = self.train_data
+    test_data = self.test_data
+
     pbar = trange(n_steps)
     min_loss = float("inf")
+    best_model_fpath = None
 
     for i in pbar:
       batch = train_data.get_next_batch()
@@ -186,7 +225,14 @@ class Trainer():
         
         # mean over all batches
         test_meta = {}
-        for k, v in zip(metas[0].keys(), zip(*[m[k] for m in metas])):
+        for k in metas[0].keys():
+          v = [m[k] for m in metas]
+
+          if isinstance(v, list) and isinstance(v[0], dict):
+            v2 = {}
+            for k2 in v[0].keys():
+              v2[k2] = [m[k][k2] for m in metas]
+            v = v2
           if isinstance(v, dict):
             test_meta[k] = {k2: [m[k][k2] for m in metas] for k2 in v.keys()}
             test_meta[k] = {k2: sum(v)/len(v) for k2, v in test_meta[k].items()}
@@ -199,8 +245,11 @@ class Trainer():
 
         if min_loss > test_meta["val/loss_avg"]:
           min_loss = test_meta["val/loss_avg"]
-          self.save(f"step_{i}", optim, lr_scheduler = None)
+          best_model_fpath = self.serialise(f"step_{i}", optim, lr_scheduler = None)
         
       # log
-      if self.client != None:
-        self.client(batch_meta)
+      if self.logger_client != None:
+        self.logger_client(batch_meta)
+    
+    return best_model_fpath
+
