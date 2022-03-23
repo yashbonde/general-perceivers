@@ -1,0 +1,128 @@
+2D | array_to_proto | 0010 | 0000100 | 0.0144s | 0.80KB
+2D | proto_to_array | 0010 | 0000100 | 0.0059s
+2D |   array_to_npz | 0010 | 0000100 | 0.0332s | 1.04KB
+2D |   npz_to_array | 0010 | 0000100 | 0.0233s
+2D | array_to_proto | 0012 | 0000144 | 0.0163s | 1.14KB
+2D | proto_to_array | 0012 | 0000144 | 0.0042s
+2D |   array_to_npz | 0012 | 0000144 | 0.0287s | 1.38KB
+2D |   npz_to_array | 0012 | 0000144 | 0.0153s
+2D | array_to_proto | 0015 | 0000225 | 0.0206s | 1.78KB
+2D | proto_to_array | 0015 | 0000225 | 0.0061s
+2D |   array_to_npz | 0015 | 0000225 | 0.0153s | 2.02KB
+2D |   npz_to_array | 0015 | 0000225 | 0.0149s
+2D | array_to_proto | 0020 | 0000400 | 0.0075s | 3.14KB
+2D | proto_to_array | 0020 | 0000400 | 0.0017s
+2D |   array_to_npz | 0020 | 0000400 | 0.0098s | 3.38KB
+2D |   npz_to_array | 0020 | 0000400 | 0.0142s
+2D | array_to_proto | 0025 | 0000625 | 0.0070s | 4.90KB
+2D | proto_to_array | 0025 | 0000625 | 0.0016s
+2D |   array_to_npz | 0025 | 0000625 | 0.0090s | 5.14KB
+2D |   npz_to_array | 0025 | 0000625 | 0.0143s
+2D | array_to_proto | 0050 | 0002500 | 0.0067s | 19.55KB
+2D | proto_to_array | 0050 | 0002500 | 0.0019s
+2D |   array_to_npz | 0050 | 0002500 | 0.0091s | 19.79KB
+2D |   npz_to_array | 0050 | 0002500 | 0.0147s
+2D | array_to_proto | 0075 | 0005625 | 0.0067s | 43.97KB
+2D | proto_to_array | 0075 | 0005625 | 0.0023s
+2D |   array_to_npz | 0075 | 0005625 | 0.0100s | 44.20KB
+2D |   npz_to_array | 0075 | 0005625 | 0.0150s
+2D | array_to_proto | 0100 | 0010000 | 0.0127s | 78.15KB
+2D | proto_to_array | 0100 | 0010000 | 0.0026s
+2D |   array_to_npz | 0100 | 0010000 | 0.0112s | 78.38KB
+2D |   npz_to_array | 0100 | 0010000 | 0.0157s
+2D | array_to_proto | 0150 | 0022500 | 0.0269s | 175.80KB
+2D | proto_to_array | 0150 | 0022500 | 0.0027s
+2D |   array_to_npz | 0150 | 0022500 | 0.0197s | 176.04KB
+2D |   npz_to_array | 0150 | 0022500 | 0.0166s
+2D | array_to_proto | 0200 | 0040000 | 0.0166s | 312.52KB
+2D | proto_to_array | 0200 | 0040000 | 0.0036s
+2D |   array_to_npz | 0200 | 0040000 | 0.0202s | 312.76KB
+2D |   npz_to_array | 0200 | 0040000 | 0.0184s
+2D | array_to_proto | 0300 | 0090000 | 0.0395s | 703.15KB
+2D | proto_to_array | 0300 | 0090000 | 0.0063s
+2D |   array_to_npz | 0300 | 0090000 | 0.0567s | 703.38KB
+2D |   npz_to_array | 0300 | 0090000 | 0.0220s
+2D | array_to_proto | 0400 | 0160000 | 0.0854s | 1250.02KB
+2D | proto_to_array | 0400 | 0160000 | 0.0106s
+2D |   array_to_npz | 0400 | 0160000 | 0.0886s | 1250.26KB
+2D |   npz_to_array | 0400 | 0160000 | 0.0305s
+2D | array_to_proto | 0500 | 0250000 | 0.1995s | 1953.15KB
+2D | proto_to_array | 0500 | 0250000 | 0.0373s
+2D |   array_to_npz | 0500 | 0250000 | 0.2540s | 1953.38KB
+2D |   npz_to_array | 0500 | 0250000 | 0.0424s
+2D | array_to_proto | 0600 | 0360000 | 0.3476s | 2812.52KB
+2D | proto_to_array | 0600 | 0360000 | 0.0584s
+2D |   array_to_npz | 0600 | 0360000 | 0.1471s | 2812.76KB
+2D |   npz_to_array | 0600 | 0360000 | 0.0560s
+2D | array_to_proto | 0700 | 0490000 | 0.2587s | 3828.15KB
+2D | proto_to_array | 0700 | 0490000 | 0.0813s
+2D |   array_to_npz | 0700 | 0490000 | 0.3848s | 3828.38KB
+2D |   npz_to_array | 0700 | 0490000 | 0.0726s
+2D | array_to_proto | 0800 | 0640000 | 0.2555s | 5000.02KB
+2D | proto_to_array | 0800 | 0640000 | 0.1128s
+2D |   array_to_npz | 0800 | 0640000 | 0.4394s | 5000.26KB
+2D |   npz_to_array | 0800 | 0640000 | 0.0986s
+2D | array_to_proto | 0900 | 0810000 | 0.3124s | 6328.15KB
+2D | proto_to_array | 0900 | 0810000 | 0.1519s
+2D |   array_to_npz | 0900 | 0810000 | 0.5348s | 6328.38KB
+2D |   npz_to_array | 0900 | 0810000 | 0.1225s
+2D | array_to_proto | 1000 | 1000000 | 0.5810s | 7812.52KB
+2D | proto_to_array | 1000 | 1000000 | 0.2140s
+2D |   array_to_npz | 1000 | 1000000 | 0.4346s | 7812.76KB
+2D |   npz_to_array | 1000 | 1000000 | 0.1589s
+2D | array_to_proto | 1010 | 1020100 | 0.5825s | 7969.55KB
+2D | proto_to_array | 1010 | 1020100 | 0.2009s
+2D |   array_to_npz | 1010 | 1020100 | 0.6202s | 7969.79KB
+2D |   npz_to_array | 1010 | 1020100 | 0.1571s
+2D | array_to_proto | 1020 | 1040400 | 0.5978s | 8128.15KB
+2D | proto_to_array | 1020 | 1040400 | 0.2404s
+2D |   array_to_npz | 1020 | 1040400 | 0.4809s | 8128.38KB
+2D |   npz_to_array | 1020 | 1040400 | 0.1671s
+2D | array_to_proto | 1030 | 1060900 | 0.5648s | 8288.30KB
+2D | proto_to_array | 1030 | 1060900 | 0.1490s
+2D |   array_to_npz | 1030 | 1060900 | 0.7780s | 8288.54KB
+2D |   npz_to_array | 1030 | 1060900 | 0.1946s
+2D | array_to_proto | 1040 | 1081600 | 0.4428s | 8450.02KB
+2D | proto_to_array | 1040 | 1081600 | 0.2056s
+2D |   array_to_npz | 1040 | 1081600 | 0.6468s | 8450.26KB
+2D |   npz_to_array | 1040 | 1081600 | 0.1642s
+2D | array_to_proto | 1050 | 1102500 | 0.6471s | 8613.30KB
+2D | proto_to_array | 1050 | 1102500 | 0.2186s
+2D |   array_to_npz | 1050 | 1102500 | 0.6798s | 8613.54KB
+2D |   npz_to_array | 1050 | 1102500 | 0.2052s
+2D | array_to_proto | 1200 | 1440000 | 0.7602s | 11250.02KB
+2D | proto_to_array | 1200 | 1440000 | 0.2880s
+2D |   array_to_npz | 1200 | 1440000 | 0.7797s | 11250.26KB
+2D |   npz_to_array | 1200 | 1440000 | 0.2601s
+2D | array_to_proto | 1300 | 1690000 | 0.8668s | 13203.15KB
+2D | proto_to_array | 1300 | 1690000 | 0.3504s
+2D |   array_to_npz | 1300 | 1690000 | 1.1376s | 13203.38KB
+2D |   npz_to_array | 1300 | 1690000 | 0.3302s
+2D | array_to_proto | 1400 | 1960000 | 0.9949s | 15312.52KB
+2D | proto_to_array | 1400 | 1960000 | 0.3154s
+2D |   array_to_npz | 1400 | 1960000 | 1.6371s | 15312.76KB
+2D |   npz_to_array | 1400 | 1960000 | 0.3786s
+2D | array_to_proto | 1500 | 2250000 | 1.6894s | 17578.15KB
+2D | proto_to_array | 1500 | 2250000 | 0.4868s
+2D |   array_to_npz | 1500 | 2250000 | 1.4311s | 17578.38KB
+2D |   npz_to_array | 1500 | 2250000 | 0.4032s
+2D | array_to_proto | 1600 | 2560000 | 1.1717s | 20000.02KB
+2D | proto_to_array | 1600 | 2560000 | 0.5164s
+2D |   array_to_npz | 1600 | 2560000 | 1.3502s | 20000.26KB
+2D |   npz_to_array | 1600 | 2560000 | 0.4486s
+2D | array_to_proto | 1700 | 2890000 | 1.3600s | 22578.15KB
+2D | proto_to_array | 1700 | 2890000 | 0.6048s
+2D |   array_to_npz | 1700 | 2890000 | 1.2261s | 22578.38KB
+2D |   npz_to_array | 1700 | 2890000 | 0.4956s
+2D | array_to_proto | 1800 | 3240000 | 1.5108s | 25312.52KB
+2D | proto_to_array | 1800 | 3240000 | 0.6939s
+2D |   array_to_npz | 1800 | 3240000 | 1.1953s | 25312.76KB
+2D |   npz_to_array | 1800 | 3240000 | 0.5469s
+2D | array_to_proto | 1900 | 3610000 | 1.5801s | 28203.15KB
+2D | proto_to_array | 1900 | 3610000 | 0.7808s
+2D |   array_to_npz | 1900 | 3610000 | 1.3619s | 28203.38KB
+2D |   npz_to_array | 1900 | 3610000 | 0.6130s
+2D | array_to_proto | 3000 | 9000000 | 4.9425s | 70312.52KB
+2D | proto_to_array | 3000 | 9000000 | 1.8785s
+2D |   array_to_npz | 3000 | 9000000 | 3.5099s | 70312.76KB
+2D |   npz_to_array | 3000 | 9000000 | 1.4463s
