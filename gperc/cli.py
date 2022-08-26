@@ -70,8 +70,8 @@ from typing import List
 import torch
 from torch.profiler import profile, record_function, ProfilerActivity
 
-from .models import Perceiver
-from .configs import PerceiverConfig
+from gperc.models import Perceiver
+from gperc.configs import PerceiverConfig
 
 
 class Main:

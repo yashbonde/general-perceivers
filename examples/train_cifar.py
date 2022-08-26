@@ -9,12 +9,9 @@ from torch.utils.data import DataLoader
 from torchvision import transforms as TR
 from torchvision.datasets import CIFAR10
 
-# -----
-from gperc.utils import set_seed
-from gperc import ImageConfig, Perceiver
-from gperc.models import build_position_encoding
 
-# -----
+from gperc import set_seed, build_position_encoding, ImageConfig, Perceiver
+
 
 
 class PerceiverCIFAR10(torch.nn.Module):

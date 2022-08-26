@@ -10,9 +10,9 @@ from nbox.utils import folder, join
 from gperc import Perceiver, PerceiverConfig
 
 from gperc.configs import BinaryConfig, TextConfig, ImageConfig
-from gperc.data import Consumer
-from gperc.arrow import ArrowConsumer, ArrowConfig
-from gperc.trainer import Trainer, TrainerConfig
+from gperc.data.data import Consumer
+from gperc.data.arrow import ArrowConsumer, ArrowConfig
+from gperc.data.trainer import Trainer, TrainerConfig
 from gperc.utils import set_seed, get_files_in_folder
 
 

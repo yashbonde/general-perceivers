@@ -9,7 +9,7 @@ import numpy as np
 from tqdm import trange
 from nbox.utils import folder, join
 from gperc import PerceiverMLM, TextConfig, Consumer, set_seed, get_files_in_folder
-from gperc.data import get_vocab
+from gperc.data.data import get_vocab
 
 # this method tests the Consumer on itself, going to docs
 folder_path = join(folder(folder(__file__)), "docs", "source")

@@ -107,8 +107,8 @@ import subprocess
 from tqdm.auto import trange
 from pprint import pprint as peepee
 
-from .arrow import get_vocab, convert_to_gperc_consumer_ir
-from .utils import set_seed
+from gperc.data.arrow import get_vocab, convert_to_gperc_consumer_ir
+from gperc.utils import set_seed
 
 
 def get_time():

@@ -101,19 +101,19 @@ class NDArray(google.protobuf.message.Message):
             int8: NDArray.DType._Type.ValueType  # 12
             """Byte (-128 to 127)"""
 
-            S128: NDArray.DType._Type.ValueType  # 13
+            str128: NDArray.DType._Type.ValueType  # 13
             """String, 1 byte for every character, 128 bytes total"""
 
-            S64: NDArray.DType._Type.ValueType  # 14
+            str64: NDArray.DType._Type.ValueType  # 14
             """String, 1 byte for every character, 64 bytes total"""
 
-            S32: NDArray.DType._Type.ValueType  # 15
+            str320: NDArray.DType._Type.ValueType  # 15
             """String, 1 byte for every character, 32 bytes total"""
 
-            S16: NDArray.DType._Type.ValueType  # 16
+            str16: NDArray.DType._Type.ValueType  # 16
             """String, 1 byte for every character, 16 bytes total"""
 
-            S8: NDArray.DType._Type.ValueType  # 17
+            str8: NDArray.DType._Type.ValueType  # 17
             """String, 1 byte for every character, 8 bytes total"""
 
         class Type(_Type, metaclass=_TypeEnumTypeWrapper):
@@ -159,19 +159,19 @@ class NDArray(google.protobuf.message.Message):
         int8: NDArray.DType.Type.ValueType  # 12
         """Byte (-128 to 127)"""
 
-        S128: NDArray.DType.Type.ValueType  # 13
+        str128: NDArray.DType.Type.ValueType  # 13
         """String, 1 byte for every character, 128 bytes total"""
 
-        S64: NDArray.DType.Type.ValueType  # 14
+        str64: NDArray.DType.Type.ValueType  # 14
         """String, 1 byte for every character, 64 bytes total"""
 
-        S32: NDArray.DType.Type.ValueType  # 15
+        str320: NDArray.DType.Type.ValueType  # 15
         """String, 1 byte for every character, 32 bytes total"""
 
-        S16: NDArray.DType.Type.ValueType  # 16
+        str16: NDArray.DType.Type.ValueType  # 16
         """String, 1 byte for every character, 16 bytes total"""
 
-        S8: NDArray.DType.Type.ValueType  # 17
+        str8: NDArray.DType.Type.ValueType  # 17
         """String, 1 byte for every character, 8 bytes total"""
 
 

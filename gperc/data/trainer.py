@@ -10,7 +10,7 @@ import tarfile
 from tqdm.auto import trange
 import torch
 
-from .utils import timeit
+from gperc.utils import timeit
 
 class Trainer():
   def __init__(

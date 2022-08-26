@@ -68,7 +68,7 @@ from dataclasses import dataclass
 from typing import Callable, List
 
 
-from .utils import set_seed
+from gperc.utils import set_seed
 
 logger = datasets.utils.logging.get_logger(__name__)
 

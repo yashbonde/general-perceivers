@@ -7,10 +7,10 @@ from glob import glob
 from time import sleep
 from tempfile import gettempdir
 
-from .trainer import Trainer
-from .models import Perceiver
-from .configs import PerceiverConfig
-from .arrow import ArrowConsumer
+from gperc.data.trainer import Trainer
+from gperc.models import Perceiver
+from gperc.configs import PerceiverConfig
+from gperc.data.arrow import ArrowConsumer
 
 from nbox import Instance
 from nbox.utils import get_random_name

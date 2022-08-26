@@ -24,7 +24,7 @@ import math
 import torch
 from torch import nn
 from torch.nn import functional as F
-import torch_optimizer as toptim
+# import torch_optimizer as toptim
 
 VALID_REDUCTIONS = ["mean", "max", "sum", "last", "first", "eot", None]
 
@@ -447,7 +447,7 @@ class Perceiver(nn.Module):
         from inspect import getfullargspec as gfa
         
         # create reference to the class to be initialized
-        optim_cls = getattr(torch.optim, name, None) or getattr(toptim, name, None)
+        optim_cls = getattr(torch.optim, name, None) # or getattr(toptim, name, None)
         if optim_cls is None:
             raise ValueError(f"Unknown optimizer {name}")
         

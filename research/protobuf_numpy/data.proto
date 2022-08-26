@@ -36,11 +36,11 @@ syntax = "proto3";
       int32	   = 10;   // Integer (-2147483648 to 2147483647)
       int16	   = 11;   // Integer (-32768 to 32767)
       int8	   = 12;   // Byte (-128 to 127)
-      S128       = 13;   // String, 1 byte for every character, 128 bytes total
-      S64        = 14;   // String, 1 byte for every character, 64 bytes total
-      S32        = 15;   // String, 1 byte for every character, 32 bytes total
-      S16        = 16;   // String, 1 byte for every character, 16 bytes total
-      S8         = 17;   // String, 1 byte for every character, 8 bytes total
+      str128       = 13;   // String, 1 byte for every character, 128 bytes total
+      str64        = 14;   // String, 1 byte for every character, 64 bytes total
+      str320        = 15;   // String, 1 byte for every character, 32 bytes total
+      str16        = 16;   // String, 1 byte for every character, 16 bytes total
+      str8         = 17;   // String, 1 byte for every character, 8 bytes total
     }
 
     Type type                     = 1;

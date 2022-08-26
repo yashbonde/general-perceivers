@@ -59,7 +59,7 @@ def get_tensors(text):
     # create dataset
 
     # Set sequence size, this is the number of words that are sent to the model at once
-    seq_size = 1024
+    seq_size = 256
 
     # Create buckets, basically blocks of length = sequence_size. We remove the last element of the bucket to ensure constant sizes
     buckets = [text[i : i + seq_size] for i in range(0, len(text), seq_size)][:-1]
@@ -83,17 +83,19 @@ def create_dataset(tensor, mask_token_id, mask_perc=0.15):
 class PerceiverMLM(torch.nn.Module):
     def __init__(self, config):
         super().__init__()
-        self.emb = torch.nn.Embedding(len(vocabulary), config.input_dim)
-        self.pos_emb = torch.nn.Parameter(torch.normal(mean=0, std=0.02, size=(config.input_len, config.input_dim)))
+        # self.emb = torch.nn.Embedding(len(vocabulary), config.input_dim)
+        # self.pos_emb = torch.nn.Parameter(torch.normal(mean=0, std=0.02, size=(config.input_len, config.input_dim)))
         self.perc = Perceiver(config)
 
     def num_parameters(self):
         return sum(p.numel() for p in self.parameters() if p.requires_grad)
 
     def forward(self, x):
-        pos = torch.cat([self.pos_emb[None, ...] for _ in range(x.shape[0])], dim=0)
-        x = self.emb(x) + pos
-        logits = self.perc(x, x)
+        # pos = torch.cat([self.pos_emb[None, ...] for _ in range(x.shape[0])], dim=0)
+        # x = self.emb(x) + pos
+        # print("!@#!@#$!@#$!@#$:", x.shape)
+        # print(x[:1])
+        logits = self.perc(x)
         return logits
 
 
